@@ -1,0 +1,33 @@
+{
+  "ports": {
+    "http": "MARKETPLACE_HTTP_PORT",
+    "debug": "MARKETPLACE_DEBUG_PORT"
+  },
+  "jwt": {
+    "auth": {
+      "secret": "MARKETPLACE_JWT_AUTH_SECRET"
+    }
+  },
+  "logging": {
+    "loglevel": "MARKETPLACE_LOG_LEVEL"
+  },
+  "db": {
+    "host": "MARKETPLACE_DB_HOST",
+    "port": "MARKETPLACE_DB_PORT",
+    "database": "MARKETPLACE_DB_DATABASE,",
+    "user": "MARKETPLACE_DB_USER,",
+    "password": "MARKETPLACE_DB_PASSWORD,",
+    "connectionLimit": "MARKETPLACE_DB_CONNECTION_LIMIT,"
+  },
+  "content": {
+    "local": {
+      "configUrl": "MARKETPLACE_STORE_CONFIG_FILE",
+      "productUrl": "MARKETPLACE_CONTENT_PRODUCT_URL"
+    },
+    "panasonic": {
+      "baseUrl": "MARKETPLACE_CONTENT_PANASONIC_BASE_URL",
+      "configUrl": "MARKETPLACE_STORE_CONFIG_FILE",
+      "configStage": "MARKETPLACE_STAGE_DIR"
+    }
+  }
+}

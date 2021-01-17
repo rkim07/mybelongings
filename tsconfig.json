@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+	"target": "es5",
+	"moduleResolution": "node",
+	"module": "commonjs",
+	"declaration": false,
+	"noLib": false,
+	"emitDecoratorMetadata": true,
+	"experimentalDecorators": true,
+	"sourceMap": true,
+	"pretty": true,
+	"allowUnreachableCode": true,
+	"allowUnusedLabels": true,
+	"noImplicitAny": false,
+	"noImplicitReturns": false,
+	"noImplicitUseStrict": false,
+	"noFallthroughCasesInSwitch": false,
+	"noEmitOnError": false,
+	"allowJs": true,
+	"resolveJsonModule": true,
+	"allowSyntheticDefaultImports": true,
+	"suppressExcessPropertyErrors": true,
+	"suppressImplicitAnyIndexErrors": true,
+	"baseUrl": "./src",
+	"outDir": "build",
+	"jsx": "react",
+	"lib": [
+	  "esnext",
+	  "dom"
+	],
+	"typeRoots": [
+	  "node_modules/@types"
+	],
+	"types": [
+	  "chai",
+	  "chai-http",
+	  "node",
+	  "mocha",
+	  "sinon",
+	  "sinon-chai",
+	  "chai-as-promised"
+	]
+  },
+  "include": [
+	"src/**/*",
+	"test/**/*"
+  ],
+  "exclude": [
+	"node_modules"
+  ],
+  "compileOnSave": false
+}

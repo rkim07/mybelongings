@@ -1,0 +1,10 @@
+logging:
+  loglevel: debug
+
+db:
+  port: 3308
+  host: 'localhost'
+  database: 'mybelongings'
+  user: 'mybelongings'
+  password: 'bXlfc2VjcmV0X3Bhc3N3b3Jk'
+  connectionLimit: 5
