@@ -19,7 +19,7 @@ export class StoreService {
      * @param key
      * @param url
      */
-    public async getStore(key: Key, url: string = null): Promise<any> {
+    public async getStore(key: Key, url?: string): Promise<any> {
         const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
 
         if (!store) {
