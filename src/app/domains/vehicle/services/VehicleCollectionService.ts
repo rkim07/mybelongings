@@ -31,7 +31,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
      * @param vehicle
      * @param key
      */
-    public async updateVehicle(vehicle: any, key: Key = null) {
+    public async updateVehicle(vehicle: any, key?: Key) {
         await this.loadCollection();
 
         const existingVehicle = await this.findOne({ key: { $eq: key }});

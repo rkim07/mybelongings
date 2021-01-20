@@ -36,7 +36,7 @@ export class VehicleService {
      * @param key
      * @param url
      */
-    public async getVehicle(key: Key, url: string = null): Promise<any> {
+    public async getVehicle(key: Key, url?: string): Promise<any> {
         if (!key) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
         }

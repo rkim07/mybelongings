@@ -73,7 +73,7 @@ export class VehicleApiService {
      * @param modelKey
      * @param mfrName
      */
-    public async getApiModel(modelKey: Key, mfrName: string = null): Promise<NhtsaApiVehicleModel> {
+    public async getApiModel(modelKey: Key, mfrName?: string): Promise<NhtsaApiVehicleModel> {
         if (!modelKey) {
             throw new HandleUpstreamError(VEHICLE_API_ERRORS.MODEL_KEY_EMPTY);
         }
@@ -241,7 +241,7 @@ export class VehicleApiService {
      * @param modelName
      * @private
      */
-    private static formatName(mfrName, modelName = null) {
+    private static formatName(mfrName: string, modelName?: string) {
         const filterClass = VehicleApiHelper.getFilterClass(mfrName);
 
         return mfrName && !modelName ?
