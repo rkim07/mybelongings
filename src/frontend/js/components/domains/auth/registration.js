@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { prepareLoginData } from '../../../utils/ajax';
-import Notifier from '../../helpers/notifier';
+import { withContext } from '../../../contexts/appcontext';
+import { prepareLoginData } from '../../helpers/ajax';
+import Notifier from '../../shared/notifier';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
@@ -9,7 +10,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { withContext } from '../../../appcontext';
 
 const styles = theme => ({
 	main: {
@@ -39,7 +39,7 @@ const styles = theme => ({
 	}
 });
 
-class CreateLogin extends React.Component
+class Registration extends React.Component
 {
 	/**
 	 * Constructor
@@ -113,9 +113,14 @@ class CreateLogin extends React.Component
 		} else {
 			return (
 				<main className={classes.main}>
-					{/*{ this.props.notifierMsg ?
-						<Notifier open={true} type='error' message={this.props.notifierMsg}/> : null
-					}*/}
+					{/* this.props.notifierMsg && (
+						<Notifier
+							openNotifier={ openNotifier }
+							notifierType={ notifierType }
+							notifierMsg={ notifierMsg }
+							onHandleCloseNotifier={ this.onHandleCloseNotifier }
+						/>)
+					*/}
 					<Grid container justify='center'>
 						<Grid item xs={12} sm={12} md={12}>
 							<Paper className={classes.paper}>
@@ -179,8 +184,8 @@ class CreateLogin extends React.Component
 	}
 }
 
-CreateLogin.propTypes = {
+Registration.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-export default withContext(withStyles(styles)(CreateLogin));
+export default withContext(withStyles(styles)(Registration));

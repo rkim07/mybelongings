@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getStates } from '../../../utils/list';
-import { formatPhoneNumber, textMaskCustom } from '../../../utils/utils';
-import { prepareProfileData } from '../../../utils/ajax';
+import { getStates } from '../../helpers/list';
+import { formatPhoneNumber, textMaskCustom } from '../../helpers/utils';
+import { prepareProfileData } from '../../helpers/ajax';
 import Grid from '@material-ui/core/Grid';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -17,7 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import { withContext } from '../../../contexts/appcontext';
 
 const styles = theme => ({
 	root: {

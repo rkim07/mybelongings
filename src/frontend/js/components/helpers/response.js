@@ -4,10 +4,10 @@ import React from 'react';
  * Parse response object to return correct status, type, and message
  *
  * @param response
- * @returns {{statusType: *, message, statusCode: (*|string|"rejected"|number|"fulfilled")}}
+ * @returns {{statusType: *, responseStatus: string | "rejected" | number | "fulfilled", message, statusCode: *}}
  */
 export function parseResponse(response) {
-	const statusCodes = {
+	const statusCodeTypes = {
 		200: 'success',
 		201: 'success',
 		204: 'success',
@@ -16,15 +16,10 @@ export function parseResponse(response) {
 		500: 'error'
 	};
 
-	// Response data status code will override any
-	// other statuses code
-	const statusCode = response.data.statusCode ?
-		response.data.statusCode :
-		response.status
-
 	return {
-		statusCode: statusCode,
-		statusType: statusCodes[statusCode],
+		responseStatus: response.status,
+		statusCode: response.data.statusCode,
+		statusType: statusCodeTypes[response.data.statusCode],
 		message: response.data.message
 	}
 }

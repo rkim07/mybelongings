@@ -1,9 +1,9 @@
 import React from 'react';
-import { login, register } from './contexts/auth';
-import { uploadFile } from './contexts/file';
-import { getApiMfrs, getApiModelsByMfrKey } from './contexts/vehicleapi';
-import { getPropertiesByUserKey } from './contexts/properties';
-import { getVehiclesByUserKey, addVehicle, updateVehicle, deleteVehicle } from './contexts/vehicles';
+import { login, register} from "./auth";
+import { uploadFile } from './file';
+import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
+import { getPropertiesByUserKey } from './properties';
+import { getVehiclesByUserKey, addVehicle, updateVehicle, deleteVehicle } from './vehicles';
 
 const AppContext = React.createContext('');
 

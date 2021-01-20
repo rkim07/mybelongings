@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
-import { getVehicleColors } from '../../../utils/list';
-import { getYearsRange } from '../../../utils/date';
+import { withContext } from '../../../contexts/appcontext';
+import { getVehicleColors } from '../../helpers/list';
+import { getYearsRange } from '../../helpers/date';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -53,7 +53,7 @@ const theme = createMuiTheme({
 function Page(props) {
 	const {
 		classes,
-		pageMode,
+		section,
 		vehicle,
 		onHandleImageChange,
 		onHandleChange,
@@ -103,19 +103,19 @@ function Page(props) {
 	}, []);
 
 	return (
-		<Grid container spacing={4}>
-			<ValidatorForm
-				onSubmit={ (event) => onHandleSubmit(event) }
-			>
+		<ValidatorForm
+			onSubmit={ (event) => onHandleSubmit(event) }
+		>
+			<Grid container spacing={4}>
 				<Grid item xs={12}>
-					{ pageMode === 'view' ?
+					{ section === 'view' ?
 						<Image src={ vehicle.image_path } />
 						:
 						<FormControl className={classes.formControl} required>
 							<ThemeProvider theme={theme}>
 								<DropzoneArea
 									role="form"
-									initialFiles={ pageMode !== 'new' ? [vehicle.image_path] : [] }
+									initialFiles={ section !== 'add' ? [vehicle.image_path] : [] }
 									filesLimit={1}
 									showPreviews={false}
 									showPreviewsInDropzone={true}
@@ -136,7 +136,7 @@ function Page(props) {
 								inputProps={{
 									name: "condition",
 									id:   "condition",
-									readOnly: pageMode === 'view'
+									readOnly: section === 'view'
 								}}
 								validators={["required"]}
 								errorMessages={["This field is required"]}
@@ -160,7 +160,7 @@ function Page(props) {
 									inputProps={{
 										name: "year",
 										id:   "year",
-										readOnly: pageMode === 'view'
+										readOnly: section === 'view'
 									}}
 									validators={["required"]}
 									errorMessages={["This field is required"]}
@@ -186,7 +186,7 @@ function Page(props) {
 								inputProps={{
 									name: "mfrKey",
 									id:   "mfrKey",
-									readOnly: pageMode === 'view'
+									readOnly: section === 'view'
 								}}
 								validators={["required"]}
 								errorMessages={["This field is required"]}
@@ -212,7 +212,7 @@ function Page(props) {
 									inputProps={{
 										name: "modelKey",
 										id:   "modelKey",
-										readOnly: pageMode === 'view'
+										readOnly: section === 'view'
 									}}
 									validators={["required"]}
 									errorMessages={["This field is required"]}
@@ -238,7 +238,7 @@ function Page(props) {
 									inputProps={{
 										name: "color",
 										id:   "color",
-										readOnly: pageMode === 'view'
+										readOnly: section === 'view'
 									}}
 									validators={["required"]}
 									errorMessages={["This field is required"]}
@@ -263,7 +263,7 @@ function Page(props) {
 						inputProps={{
 							name: "vin",
 							id:   "vin",
-							readOnly: pageMode === 'view'
+							readOnly: section === 'view'
 						}}
 					/>
 					<FormHelperText>Vehicle identifier number</FormHelperText>
@@ -279,13 +279,13 @@ function Page(props) {
 						inputProps={{
 							name: "plate",
 							id:   "plate",
-							readOnly: pageMode === 'view'
+							readOnly: section === 'view'
 						}}
 					/>
 					</FormControl>
 				</Grid>
 				<Grid item xs={12}>
-					{ pageMode !== 'view' &&
+					{ section !== 'view' &&
 					<Button
 						type="submit"
 						variant="contained"
@@ -293,10 +293,10 @@ function Page(props) {
 						className={classes.button}
 						startIcon={<SaveIcon/>}
 					>
-						{ pageMode === 'new' ? 'New' : 'Update' }
+						{ section === 'add' ? 'Add' : 'Update' }
 					</Button>
 					}
-					{ pageMode === 'update' &&
+					{ section === 'view' &&
 					<Button
 						type="button"
 						variant="contained"
@@ -319,8 +319,8 @@ function Page(props) {
 						Back
 					</Button>
 				</Grid>
-			</ValidatorForm>
-		</Grid>
+			</Grid>
+		</ValidatorForm>
 	)
 }
 

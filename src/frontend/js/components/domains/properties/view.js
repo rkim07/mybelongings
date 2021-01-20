@@ -10,7 +10,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import { withContext } from '../../../contexts/appcontext';
 
 const styles = {
 	card: {

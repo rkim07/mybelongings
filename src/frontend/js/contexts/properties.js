@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-// import { setNotifierExceptionMsg, setNotifierMsg } from '../utils/messages';
+// import { setNotifierExceptionMsg, setNotifierMsg } from '../helpers/messages';
 
 const propertiesAxios = axios.create();
 

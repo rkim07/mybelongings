@@ -14,7 +14,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import { withContext } from '../../../contexts/appcontext';
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;

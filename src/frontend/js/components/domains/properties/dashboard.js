@@ -4,7 +4,7 @@ import List from './list';
 import View from './view';
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import { withContext } from '../../../contexts/appcontext';
 
 const styles = theme => ({
 	root: {

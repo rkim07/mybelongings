@@ -18,28 +18,6 @@ export function formatPhoneNumber(phoneNumberString) {
 }
 
 /**
- * Chunk list
- *
- * @param list
- * @returns {*}
- */
-export function chunkList(list) {
-	const perChunk = list.length / 2;
-
-	return list.reduce((resultArray, item, index) => {
-		const chunkIndex = Math.floor(index/perChunk)
-
-		if (!resultArray[chunkIndex]) {
-			resultArray[chunkIndex] = [] // start a new chunk
-		}
-
-		resultArray[chunkIndex].push(item)
-
-		return resultArray
-	}, []);
-}
-
-/**
  *
  * @param props
  * @returns {JSX.Element}

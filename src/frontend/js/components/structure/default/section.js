@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router-dom';
 import LandingPage from '../../../components/structure/default/landing';
-import CreateLogin from '../../../components/sections/auth/createlogin';
-import Login from '../../../components/sections/auth/login';
+import CreateLogin from '../../domains/auth/registration';
+import Login from '../../../components/domains/auth/login';
 import Footer from '../../../components/structure/default/footer';
-import Profile  from '../../sections/users/profile';
-import PropertiesDashboard  from '../../sections/properties/dashboard';
-import VehiclesDashboard  from '../../sections/vehicles/dashboard';
-import ProtectedRoute from '../../../components/sections/auth/protectedroute';
+import Profile  from '../../domains/users/profile';
+import PropertiesDashboard  from '../../domains/properties/dashboard';
+import VehiclesDashboard  from '../../domains/vehicles/dashboard';
+import ProtectedRoute from '../../../components/structure/protectedroute';
 import NotFound from '../../../components/structure/notfound';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -21,7 +21,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { Link } from 'react-router-dom'
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import { withContext } from '../../../contexts/appcontext';
 
 const styles = theme => ({
 	root: {
@@ -172,8 +172,8 @@ class Section extends React.Component
 						{ mobileSection }
 					</Toolbar>
 				</AppBar>
-				{renderMenu}
-				{renderMobileMenu}
+				{ renderMenu }
+				{ renderMobileMenu }
 				<Switch>
 					<Route
 						exact path='/'
@@ -193,9 +193,9 @@ class Section extends React.Component
 							<CreateLogin {...routeProps} {...other} />
 						}
 					/>
-					<ProtectedRoute path='/profile' component={Profile} />
-					<ProtectedRoute path='/properties' component={PropertiesDashboard} />
-					<ProtectedRoute path='/vehicles' component={VehiclesDashboard} />
+					<ProtectedRoute path='/profile' component={ Profile } />
+					<ProtectedRoute path='/properties' component={ PropertiesDashboard } />
+					<ProtectedRoute path='/vehicles' component={ VehiclesDashboard } />
 					<Route path='*' component={NotFound} />
 				</Switch>
 				<Footer />
