@@ -22,7 +22,7 @@ exports.PropertyAreaService = void 0;
 const typedi_1 = require("typedi");
 const PaintService_1 = require("../../paint/services/PaintService");
 const PropertyAreaCollectionService_1 = require("./PropertyAreaCollectionService");
-const UtilsHelper_1 = require("../../shared/helpers/UtilsHelper");
+const ImageHelper_1 = require("../../shared/helpers/ImageHelper");
 let PropertyAreaService = class PropertyAreaService {
     constructor() {
         this.propertyAreaCollectionService = typedi_1.Container.get(PropertyAreaCollectionService_1.PropertyAreaCollectionService);
@@ -75,7 +75,7 @@ let PropertyAreaService = class PropertyAreaService {
      */
     addDependencies(url, area) {
         return __awaiter(this, void 0, void 0, function* () {
-            area['image_path'] = UtilsHelper_1.UtilsHelper.getImagePath(url, area.image);
+            area['image_path'] = ImageHelper_1.ImageHelper.getImagePath(url, area.image);
             area['paint'] = yield this.paintService.getPaintByKey(area.paintKey, url);
             return area;
         });

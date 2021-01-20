@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
+const _ = require("lodash");
 const prop_types_1 = require("prop-types");
-const utils_1 = require("../../../helpers/utils");
 const homefacts_1 = require("./homefacts");
 const areas_1 = require("./areas");
 const Grid_1 = require("@material-ui/core/Grid");
@@ -30,10 +30,10 @@ function View(props) {
             react_1.default.createElement(Card_1.default, { className: classes.root },
                 react_1.default.createElement(CardHeader_1.default, { avatar: react_1.default.createElement(Avatar_1.default, { "aria-label": "property image", src: property.image_path, className: classes.avatar },
                         react_1.default.createElement("br", null)), title: react_1.default.createElement(Typography_1.default, { variant: "h5", component: "h5" },
-                        utils_1.capitalizeWords(property.address.street),
+                        _.startCase(property.address.street),
                         " ",
                         react_1.default.createElement("br", null),
-                        utils_1.capitalizeWords(property.address.city),
+                        _.startCase(property.address.city),
                         ", ",
                         property.address.state,
                         ", ",

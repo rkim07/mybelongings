@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProperties = exports.getPropertiesByUserKey = exports.getPropertyById = void 0;
+exports.getPropertiesByUserKey = exports.getProperties = exports.getPropertyById = void 0;
 const axios_1 = require("axios");
-// import { setNotifierExceptionMsg, setNotifierMsg } from '../helpers/messages';
+// import { setNotifierExceptionMsg, setNotifierMsg } from '../utils/messages';
 const propertiesAxios = axios_1.default.create();
 propertiesAxios.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
@@ -18,25 +18,33 @@ function getPropertyById(id) {
     return propertiesAxios
         .get(`/property-svc/properties/${id}`)
         .then(response => {
-        if (response.status === 200) {
-            if (response.data) {
-                this.setState({
-                    properties: response.data
-                });
-                return response;
-            }
-            else if (response.error) {
-                // setNotifierMsg('error', response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.getPropertyById = getPropertyById;
+/**
+ * Get all properties
+ *
+ * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ */
+function getProperties() {
+    return propertiesAxios
+        .get(`/property-svc/properties/user/${userKey}`)
+        .then(response => {
+        if (response) {
+            return response;
+        }
+    })
+        .catch((err) => {
+        return err;
+    });
+}
+exports.getProperties = getProperties;
 /**
  * Get properties by user key
  *
@@ -44,64 +52,16 @@ exports.getPropertyById = getPropertyById;
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
 function getPropertiesByUserKey(userKey) {
-    if (this.state.properties) {
-        return this.state.properties;
-    }
-    else {
-        return propertiesAxios
-            .get(`/property-svc/properties/user/${userKey}`)
-            .then(response => {
-            if (response.status === 200) {
-                if (response.data.length > 0) {
-                    this.setState({
-                        properties: response.data
-                    });
-                    return response;
-                }
-                else if (response.error) {
-                    // setNotifierMsg('error', response);
-                    return response.status;
-                }
-            }
-        })
-            .catch(error => {
-            // setNotifierExceptionMsg(error);
-            return error.response.status;
-        });
-    }
+    return propertiesAxios
+        .get(`/property-svc/properties/user/${userKey}`)
+        .then(response => {
+        if (response) {
+            return response;
+        }
+    })
+        .catch((err) => {
+        return err;
+    });
 }
 exports.getPropertiesByUserKey = getPropertiesByUserKey;
-/**
- * Get all properties
- *
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
- */
-function getProperties() {
-    if (this.state.properties) {
-        return this.state.properties;
-    }
-    else {
-        return propertiesAxios
-            .get('/property-svc/properties')
-            .then(response => {
-            if (response.status === 200) {
-                if (response.data) {
-                    this.setState({
-                        properties: response.data
-                    });
-                    return response;
-                }
-                else if (response.error) {
-                    // setNotifierMsg('error', response);
-                    return response.status;
-                }
-            }
-        })
-            .catch(error => {
-            // setNotifierExceptionMsg(error);
-            return error.response.status;
-        });
-    }
-}
-exports.getProperties = getProperties;
 //# sourceMappingURL=properties.js.map

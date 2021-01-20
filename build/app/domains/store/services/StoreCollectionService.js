@@ -35,6 +35,7 @@ let StoreCollectionService = class StoreCollectionService extends DatabaseCollec
      */
     getStores() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find()
                 .simplesort('name', false)

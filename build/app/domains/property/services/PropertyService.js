@@ -25,7 +25,7 @@ const AddressService_1 = require("../../address/services/AddressService");
 const PropertyCollectionService_1 = require("./PropertyCollectionService");
 const propertyAreaService_1 = require("./propertyAreaService");
 const models_1 = require("../../shared/models/models");
-const UtilsHelper_1 = require("../../shared/helpers/UtilsHelper");
+const ImageHelper_1 = require("../../shared/helpers/ImageHelper");
 var PROPERTY_ERRORS;
 (function (PROPERTY_ERRORS) {
     PROPERTY_ERRORS["PROPERTY_NOT_FOUND"] = "PROPERTY_ERRORS.PROPERTY_NOT_FOUND";
@@ -103,7 +103,7 @@ let PropertyService = class PropertyService {
      */
     addDependencies(url, property) {
         return __awaiter(this, void 0, void 0, function* () {
-            property['image_path'] = UtilsHelper_1.UtilsHelper.getImagePath(url, property.image);
+            property['image_path'] = ImageHelper_1.ImageHelper.getImagePath(url, property.image);
             property['address'] = yield this.addressService.getAddress(property.addressKey);
             property['areas'] = yield this.propertyAreaService.getAreasByPropertyKey(property.key, url);
             return property;

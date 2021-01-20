@@ -23,7 +23,7 @@ const typedi_1 = require("typedi");
 const StoreService_1 = require("../../store/services/StoreService");
 const PaintCollectionService_1 = require("./PaintCollectionService");
 const models_1 = require("../../shared/models/models");
-const UtilsHelper_1 = require("../../shared/helpers/UtilsHelper");
+const ImageHelper_1 = require("../../shared/helpers/ImageHelper");
 var PAINT_ERRORS;
 (function (PAINT_ERRORS) {
     PAINT_ERRORS["PAINT_NOT_FOUND"] = "PAINT_ERRORS.PAINT_NOT_FOUND";
@@ -93,7 +93,7 @@ let PaintService = class PaintService {
      */
     addDependencies(url, paint) {
         return __awaiter(this, void 0, void 0, function* () {
-            paint['image_path'] = UtilsHelper_1.UtilsHelper.getImagePath(url, paint.image);
+            paint['image_path'] = ImageHelper_1.ImageHelper.getImagePath(url, paint.image);
             paint['store'] = paint.storeKey ? yield this.storeService.getStoreByKey(paint.storeKey, url) : {};
             return paint;
         });

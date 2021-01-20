@@ -37,6 +37,7 @@ let PropertyCollectionService = class PropertyCollectionService extends Database
      */
     getProperties() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find()
                 .simplesort('year', false)

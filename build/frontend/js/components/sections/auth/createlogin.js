@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
 const prop_types_1 = require("prop-types");
-const ajax_1 = require("../../../helpers/ajax");
+const ajax_1 = require("../../../utils/ajax");
 const Button_1 = require("@material-ui/core/Button");
 const FormControl_1 = require("@material-ui/core/FormControl");
 const Grid_1 = require("@material-ui/core/Grid");

@@ -1,0 +1,47 @@
+CREATE DATABASE IF NOT EXISTS mybelongings;
+USE mybelongings;
+
+CREATE TABLE IF NOT EXISTS users (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS properties (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS property_areas (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS property_paints (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS addresses (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS stores (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS nhtsaapivehiclemfrs (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS nhtsaapivehiclemodels (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);

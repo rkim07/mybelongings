@@ -35,6 +35,7 @@ let NhtsaApiVehicleMfrCollectionService = class NhtsaApiVehicleMfrCollectionServ
      */
     getApiMfrs() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find()
                 .simplesort('mfrName', false)
@@ -56,7 +57,7 @@ let NhtsaApiVehicleMfrCollectionService = class NhtsaApiVehicleMfrCollectionServ
                     uniqueFieldValue: existingMfr.key,
                     updateFields: {
                         mfrId: mfr.mfrId,
-                        mfrName: mfr.mfrName.replace(/-/g, ' ').toLowerCase(),
+                        mfrName: mfr.mfrName,
                         modified: Datetime_1.Datetime.getNow()
                     }
                 });
@@ -64,7 +65,7 @@ let NhtsaApiVehicleMfrCollectionService = class NhtsaApiVehicleMfrCollectionServ
             else {
                 return yield this.addOne(new models_1.NhtsaApiVehicleMfr({
                     mfrId: mfr.mfrId,
-                    mfrName: mfr.mfrName.replace(/-/g, ' ').toLowerCase()
+                    mfrName: mfr.mfrName
                 }));
             }
         });

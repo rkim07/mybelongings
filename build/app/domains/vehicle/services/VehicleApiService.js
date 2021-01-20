@@ -17,6 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var VehicleApiService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VehicleApiService = exports.VEHICLE_API_ERRORS = void 0;
 const _ = require("lodash");
@@ -27,6 +28,7 @@ const requestPromise = require("request-promise");
 const models_1 = require("../../shared/models/models");
 const NhtsaApiVehicleMfrCollectionService_1 = require("./NhtsaApiVehicleMfrCollectionService");
 const NhtsaApiVehicleModelCollectionService_1 = require("./NhtsaApiVehicleModelCollectionService");
+const VehicleApiHelper_1 = require("../../shared/helpers/VehicleApiHelper");
 const path = require("path");
 const NHTSA_LIST_SOURCE = config.get('api.vehicles.nhtsa.listSource');
 const NHTSA_MFR_URL = config.get('api.vehicles.nhtsa.mfrUrl');
@@ -34,10 +36,14 @@ const NHTSA_MFR_MODELS_URL = config.get('api.vehicles.nhtsa.mfrModelsUrl');
 const LIST_FORMAT = config.get('api.vehicles.nhtsa.listFormat');
 var VEHICLE_API_ERRORS;
 (function (VEHICLE_API_ERRORS) {
-    VEHICLE_API_ERRORS["VEHICLE_API_MFR_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_API_MFR_NOT_FOUND";
-    VEHICLE_API_ERRORS["VEHICLE_API_MODEL_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_API_MODEL_NOT_FOUND";
+    VEHICLE_API_ERRORS["VEHICLE_MFR_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND";
+    VEHICLE_API_ERRORS["VEHICLE_MFRS_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND";
+    VEHICLE_API_ERRORS["VEHICLE_MODEL_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_MODEL_NOT_FOUND";
+    VEHICLE_API_ERRORS["VEHICLE_MODELS_NOT_FOUND"] = "VEHICLE_API_ERRORS.VEHICLE_MODELS_NOT_FOUND";
+    VEHICLE_API_ERRORS["MFR_KEY_EMPTY"] = "VEHICLE_API_ERRORS.MFR_KEY_EMPTY";
+    VEHICLE_API_ERRORS["MODEL_KEY_EMPTY"] = "VEHICLE_API_ERRORS.MODEL_KEY_EMPTY";
 })(VEHICLE_API_ERRORS = exports.VEHICLE_API_ERRORS || (exports.VEHICLE_API_ERRORS = {}));
-let VehicleApiService = class VehicleApiService {
+let VehicleApiService = VehicleApiService_1 = class VehicleApiService {
     constructor() {
         this.nhtsaApiVehicleMfrCollectionService = typedi_1.Container.get(NhtsaApiVehicleMfrCollectionService_1.NhtsaApiVehicleMfrCollectionService);
         this.nhtsaApiVehicleModelCollectionService = typedi_1.Container.get(NhtsaApiVehicleModelCollectionService_1.NhtsaApiVehicleModelCollectionService);
@@ -51,8 +57,9 @@ let VehicleApiService = class VehicleApiService {
         return __awaiter(this, void 0, void 0, function* () {
             const mfr = yield this.nhtsaApiVehicleMfrCollectionService.findOne({ key: { $eq: mfrKey } });
             if (!mfr) {
-                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_API_MFR_NOT_FOUND);
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND);
             }
+            mfr['mfrName'] = VehicleApiService_1.formatName(mfr.mfrName);
             return mfr;
         });
     }
@@ -61,20 +68,32 @@ let VehicleApiService = class VehicleApiService {
      */
     getApiMfrs() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.nhtsaApiVehicleMfrCollectionService.getApiMfrs();
+            const mfrs = yield this.nhtsaApiVehicleMfrCollectionService.getApiMfrs();
+            if (mfrs.length === 0) {
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND);
+            }
+            return yield Promise.all(mfrs.map((mfr) => {
+                mfr['mfrName'] = VehicleApiService_1.formatName(mfr.mfrName);
+                return mfr;
+            }));
         });
     }
     /**
      * Get API manufacturer by key
      *
      * @param modelKey
+     * @param mfrName
      */
-    getApiModel(modelKey) {
+    getApiModel(modelKey, mfrName = null) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!modelKey) {
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.MODEL_KEY_EMPTY);
+            }
             const model = yield this.nhtsaApiVehicleModelCollectionService.findOne({ key: { $eq: modelKey } });
             if (!model) {
-                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_API_MODEL_NOT_FOUND);
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MODEL_NOT_FOUND);
             }
+            model['model'] = VehicleApiService_1.formatName(mfrName, model.model);
             return model;
         });
     }
@@ -83,7 +102,12 @@ let VehicleApiService = class VehicleApiService {
      */
     getApiModels() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.nhtsaApiVehicleModelCollectionService.getApiModels();
+            const models = yield this.nhtsaApiVehicleModelCollectionService.getApiModels();
+            //@TODO name filtering solution since manufacturer name is unknown but required by custom filter
+            return yield Promise.all(models.map((model) => {
+                model['model'] = VehicleApiService_1.formatName(null, model.model);
+                return model;
+            }));
         });
     }
     /**
@@ -93,35 +117,18 @@ let VehicleApiService = class VehicleApiService {
      */
     getApiModelsByMfrKey(mfrKey) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.nhtsaApiVehicleModelCollectionService.getApiModelsByMfrKey(mfrKey);
-        });
-    }
-    /**
-     * Sync with NHTSA Vehicle API
-     */
-    syncNhtsaApi() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // Fetch API and get all vehicles manufactures
-                const list = yield this.getNhtsaMfrs(NHTSA_LIST_SOURCE);
-                // Save to API manufacturers DB
-                const savedMfrs = yield Promise.all(list.map((mfr) => __awaiter(this, void 0, void 0, function* () {
-                    return yield this.updateApiMfrs(mfr);
-                })));
-                // Add or update all manufacturers models
-                for (const mfr of savedMfrs) {
-                    const apiModels = yield this.getNhtsaModelsByMfrId(mfr.mfrId);
-                    if (apiModels) {
-                        yield Promise.all(apiModels.map((model) => __awaiter(this, void 0, void 0, function* () {
-                            yield this.updateApiModelsByMfrKey(mfr.key, model);
-                        })));
-                    }
-                }
-                return true;
+            if (!mfrKey) {
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.MFR_KEY_EMPTY);
             }
-            catch (err) {
-                throw new Error('Failed to sync with NHTSA API.');
+            const models = yield this.nhtsaApiVehicleModelCollectionService.getApiModelsByMfrKey(mfrKey);
+            if (models.length === 0) {
+                throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MODELS_NOT_FOUND);
             }
+            const mfr = yield this.getApiMfr(mfrKey);
+            return yield Promise.all(models.map((model) => {
+                model['model'] = VehicleApiService_1.formatName(mfr.mfrName, model.model);
+                return model;
+            }));
         });
     }
     /**
@@ -150,6 +157,43 @@ let VehicleApiService = class VehicleApiService {
                 modelId: model.Model_ID,
                 model: escape(model.Model_Name)
             });
+        });
+    }
+    /**
+     * Sync with NHTSA Vehicle API
+     */
+    syncNhtsaApi() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Fetch API and get all vehicles manufactures
+                const list = yield this.getNhtsaMfrs(NHTSA_LIST_SOURCE);
+                const filterClass = VehicleApiHelper_1.VehicleApiHelper.getFilterClass();
+                // Save to API manufacturers DB
+                const savedMfrs = yield Promise.all(list.map((mfr) => __awaiter(this, void 0, void 0, function* () {
+                    // Remove all hyphens and save as lower case
+                    mfr['Make_Name'] = filterClass.formatDbMfrName(mfr.Make_Name);
+                    return yield this.updateApiMfrs(mfr);
+                })));
+                if (savedMfrs.length === 0) {
+                    throw new models_1.HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND);
+                }
+                // Add or update all manufacturers models
+                for (const mfr of savedMfrs) {
+                    const apiModels = yield this.getNhtsaModelsByMfrId(mfr.mfrId);
+                    if (apiModels) {
+                        yield Promise.all(apiModels.map((model) => __awaiter(this, void 0, void 0, function* () {
+                            // Remove all space special character and save as lower case
+                            model['Make_Name'] = filterClass.formatDbMfrName(model.Make_Name);
+                            model['Model_Name'] = filterClass.formatDbModelName(model.Model_Name);
+                            yield this.updateApiModelsByMfrKey(mfr.key, model);
+                        })));
+                    }
+                }
+                return true;
+            }
+            catch (err) {
+                throw new Error('Failed to sync with NHTSA API.');
+            }
         });
     }
     /**
@@ -194,6 +238,21 @@ let VehicleApiService = class VehicleApiService {
             });
         });
     }
+    /**
+     * Get specific class instance by manufacturer name and return its
+     * formatted name
+     *
+     * @param mfrName
+     * @param modelName
+     * @private
+     */
+    static formatName(mfrName, modelName = null) {
+        const filterClass = VehicleApiHelper_1.VehicleApiHelper.getFilterClass(mfrName);
+        return mfrName && !modelName ?
+            filterClass.formatFrontEndMfrName(mfrName)
+            :
+                filterClass.formatFrontEndModelName(modelName);
+    }
 };
 __decorate([
     typedi_1.Inject(),
@@ -203,7 +262,7 @@ __decorate([
     typedi_1.Inject(),
     __metadata("design:type", NhtsaApiVehicleModelCollectionService_1.NhtsaApiVehicleModelCollectionService)
 ], VehicleApiService.prototype, "nhtsaApiVehicleModelCollectionService", void 0);
-VehicleApiService = __decorate([
+VehicleApiService = VehicleApiService_1 = __decorate([
     typedi_1.Service()
 ], VehicleApiService);
 exports.VehicleApiService = VehicleApiService;

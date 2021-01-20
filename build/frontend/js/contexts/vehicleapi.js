@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getApiModelsByMfrKey = exports.getApiMfrs = void 0;
 const axios_1 = require("axios");
-// import { setNotifierExceptionMsg, setNotifierMsg } from '../helpers/messages';
 const apiVehiclesAxios = axios_1.default.create();
 apiVehiclesAxios.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
@@ -17,22 +16,12 @@ function getApiMfrs() {
     return apiVehiclesAxios
         .get(`/vehicle-api-svc/manufacturers`)
         .then(response => {
-        if (response.status === 200) {
-            if (response.data) {
-                this.setState({
-                    manufacturers: response.data
-                });
-                return response;
-            }
-            else if (response.error) {
-                // setNotifierMsg('error', response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.getApiMfrs = getApiMfrs;
@@ -46,22 +35,12 @@ function getApiModelsByMfrKey(mfrKey) {
     return apiVehiclesAxios
         .get(`/vehicle-api-svc/models/manufacturer/${mfrKey}`)
         .then(response => {
-        if (response.status === 200) {
-            if (response.data) {
-                this.setState({
-                    models: response.data
-                });
-                return response;
-            }
-            else if (response.error) {
-                // setNotifierMsg('error', response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.getApiModelsByMfrKey = getApiModelsByMfrKey;

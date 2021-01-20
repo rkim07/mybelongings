@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
+const _ = require("lodash");
 const prop_types_1 = require("prop-types");
-const utils_1 = require("../../../helpers/utils");
 const Grid_1 = require("@material-ui/core/Grid");
 const Table_1 = require("@material-ui/core/Table");
 const TableBody_1 = require("@material-ui/core/TableBody");
@@ -27,10 +27,10 @@ function HomeFacts(props) {
                             react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, property.year)),
                         react_1.default.createElement(TableRow_1.default, { key: "type" },
                             react_1.default.createElement(TableCell_1.default, { component: "th", scope: "row" }, "Type"),
-                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, utils_1.capitalizeWords(property.type))),
+                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, _.startCase(property.type))),
                         react_1.default.createElement(TableRow_1.default, { key: "style" },
                             react_1.default.createElement(TableCell_1.default, { component: "th", scope: "row" }, "Style"),
-                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, utils_1.capitalizeWords(property.style))),
+                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, _.startCase(property.style))),
                         react_1.default.createElement(TableRow_1.default, { key: "sq_ft" },
                             react_1.default.createElement(TableCell_1.default, { component: "th", scope: "row" }, "Sq Ft"),
                             react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, property.sqFt)),
@@ -42,7 +42,7 @@ function HomeFacts(props) {
                             react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, property.stories)),
                         react_1.default.createElement(TableRow_1.default, { key: "subdivision" },
                             react_1.default.createElement(TableCell_1.default, { component: "th", scope: "row" }, "Subdivision"),
-                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, utils_1.capitalizeWords(property.subdivision))))))),
+                            react_1.default.createElement(TableCell_1.default, { style: { width: 80 }, align: "right" }, _.startCase(property.subdivision))))))),
         react_1.default.createElement(Grid_1.default, { item: true, xs: 6 },
             react_1.default.createElement(TableContainer_1.default, null,
                 react_1.default.createElement(Table_1.default, { className: classes.table, "aria-label": "custom table" },

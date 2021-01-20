@@ -11,8 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
 const prop_types_1 = require("prop-types");
+const notifier_1 = require("../../helpers/notifier");
+const response_1 = require("../../helpers/response");
 const styles_1 = require("@material-ui/core/styles");
 const appcontext_1 = require("../../../appcontext");
+const date_1 = require("../../../utils/date");
 const list_1 = require("./list");
 const page_1 = require("./page");
 const Container_1 = require("@material-ui/core/Container");
@@ -28,56 +31,108 @@ const styles = theme => ({
 class Dashboard extends react_1.default.Component {
     constructor(props) {
         super(props);
-        this.onHandleClick = (vehicle, mode) => {
+        this.onHandleChange = (e) => {
+            const { name, value } = e.target;
+            let vehicle = this.state.vehicle;
+            if (name === "mfrKey") {
+                vehicle['modelKey'] = '';
+            }
+            vehicle[name] = value;
             this.setState({
-                mode: mode,
                 vehicle: vehicle
             });
         };
+        this.onHandleClick = (data, pageMode) => {
+            const vehicle = pageMode !== 'new' ? data :
+                {
+                    mfrKey: '',
+                    modelKey: '',
+                    image: '',
+                    condition: 'new',
+                    year: date_1.currentYear(),
+                    color: '',
+                    vin: '',
+                    plate: ''
+                };
+            this.setState({
+                pageMode: pageMode,
+                vehicle: vehicle,
+                openNotifier: false,
+                notifierType: '',
+                notifierMsg: ''
+            });
+        };
         this.onHandleDelete = (key) => __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.props.deleteVehicle(key);
-            if (response === 204) {
-                this.setState({
-                    mode: 'list'
+            const results = yield this.props.deleteVehicle(key);
+            /*if (results) {
+                const vehicles = this.props.vehicles;
+    
+                _.remove(vehicles, (vehicle) => {
+                    return vehicle.key === results.data.vehicle.key;
                 });
-            }
-            else {
-            }
+            }*/
+            const response = response_1.parseResponse(results);
+            this.setState({
+                pageMode: response.statusType === 'error' ? this.state.pageMode : 'list',
+                openNotifier: true,
+                notifierType: response.statusType,
+                notifierMsg: response.message
+            });
         });
-        this.onHandleSubmit = (vehicle, file) => __awaiter(this, void 0, void 0, function* () {
+        this.onHandleSubmit = (e) => __awaiter(this, void 0, void 0, function* () {
+            e.preventDefault();
+            const { file, vehicle } = this.state;
             if (file.length) {
-                const uploaded = yield this.props.uploadFile(file[0]);
-                vehicle.image = uploaded.fileName;
+                const uploadedResponse = yield this.props.uploadFile(file[0]);
+                vehicle.image = uploadedResponse.data.fileName;
             }
             vehicle.year = parseInt(vehicle.year);
             vehicle['userKey'] = this.props.user.userKey;
-            const response = vehicle.key ?
+            const results = vehicle.key ?
                 yield this.props.updateVehicle(vehicle.key, vehicle) :
                 yield this.props.addVehicle(vehicle);
-            if (response === 200 || response === 201) {
+            const response = response_1.parseResponse(results);
+            this.setState({
+                pageMode: response.statusType === 'error' ? this.state.pageMode : 'list',
+                openNotifier: true,
+                notifierType: response.statusType,
+                notifierMsg: response.message
+            });
+        });
+        this.onHandleImageChange = (file) => {
+            if (_.size(file) > 0) {
                 this.setState({
-                    mode: 'list'
+                    file: file
                 });
             }
-            else {
-            }
-        });
-        this.onHandleGoBack = (e) => {
+        };
+        this.onHandleGoBack = () => {
             this.setState({
-                mode: 'list'
+                pageMode: 'list'
+            });
+        };
+        this.onHandleCloseNotifier = () => {
+            this.setState({
+                pageMode: this.state.pageMode,
+                openNotifier: false,
+                notifierType: '',
+                notifierMsg: ''
             });
         };
         this.state = {
-            mode: 'list',
-            vehicle: {}
+            pageMode: 'list',
+            vehicle: {},
+            file: [],
+            openNotifier: false,
+            notifierType: '',
+            notifierMsg: ''
         };
+        this.onHandleChange = this.onHandleChange.bind(this);
         this.onHandleClick = this.onHandleClick.bind(this);
         this.onHandleDelete = this.onHandleDelete.bind(this);
         this.onHandleSubmit = this.onHandleSubmit.bind(this);
         this.onHandleGoBack = this.onHandleGoBack.bind(this);
-    }
-    componentDidMount() {
-        this.props.getVehiclesByUserKey(this.props.user.userKey);
+        this.onHandleCloseNotifier = this.onHandleCloseNotifier.bind(this);
     }
     /**
      * Render
@@ -86,12 +141,14 @@ class Dashboard extends react_1.default.Component {
      */
     render() {
         const { classes } = this.props;
-        return (react_1.default.createElement(Container_1.default, { className: classes.cardGrid, maxWidth: "md" }, {
-            'list': react_1.default.createElement(list_1.default, { onHandleClick: this.onHandleClick, onHandleDelete: this.onHandleDelete }),
-            'add': react_1.default.createElement(page_1.default, { pageMode: "add", onHandleGoBack: this.onHandleGoBack, onHandleSubmit: this.onHandleSubmit }),
-            'update': react_1.default.createElement(page_1.default, { pageMode: "update", vehicle: this.state.vehicle, onHandleGoBack: this.onHandleGoBack, onHandleSubmit: this.onHandleSubmit, onHandleDelete: this.onHandleDelete }),
-            'view': react_1.default.createElement(page_1.default, { pageMode: "view", vehicle: this.state.vehicle, onHandleGoBack: this.onHandleGoBack })
-        }[this.state.mode]));
+        return (react_1.default.createElement(Container_1.default, { className: classes.cardGrid, maxWidth: "md" },
+            this.state.openNotifier && (react_1.default.createElement(notifier_1.default, { openNotifier: this.state.openNotifier, notifierType: this.state.notifierType, notifierMsg: this.state.notifierMsg, onHandleCloseNotifier: this.onHandleCloseNotifier })),
+            {
+                'list': react_1.default.createElement(list_1.default, { onHandleClick: this.onHandleClick, onHandleDelete: this.onHandleDelete }),
+                'new': react_1.default.createElement(page_1.default, { pageMode: "new", vehicle: this.state.vehicle, onHandleChange: this.onHandleChange, onHandleImageChange: this.onHandleImageChange, onHandleGoBack: this.onHandleGoBack, onHandleSubmit: this.onHandleSubmit }),
+                'update': react_1.default.createElement(page_1.default, { pageMode: "update", vehicle: this.state.vehicle, onHandleChange: this.onHandleChange, onHandleImageChange: this.onHandleImageChange, onHandleDelete: this.onHandleDelete, onHandleGoBack: this.onHandleGoBack, onHandleSubmit: this.onHandleSubmit }),
+                'view': react_1.default.createElement(page_1.default, { pageMode: "view", vehicle: this.state.vehicle, onHandleGoBack: this.onHandleGoBack })
+            }[this.state.pageMode]));
     }
 }
 Dashboard.propTypes = {

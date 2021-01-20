@@ -25,12 +25,17 @@ const typedi_2 = require("typedi");
 const VehicleApiService_1 = require("./VehicleApiService");
 const VehicleCollectionService_1 = require("./VehicleCollectionService");
 const models_1 = require("../../shared/models/models");
-const UtilsHelper_1 = require("../../shared/helpers/UtilsHelper");
+const ImageHelper_1 = require("../../shared/helpers/ImageHelper");
 const FileService_1 = require("../../shared/services/FileService");
 var VEHICLE_ERRORS;
 (function (VEHICLE_ERRORS) {
     VEHICLE_ERRORS["VEHICLE_NOT_FOUND"] = "VEHICLE_ERRORS.VEHICLE_NOT_FOUND";
+    VEHICLE_ERRORS["VEHICLES_NOT_FOUND"] = "VEHICLE_ERRORS.VEHICLES_NOT_FOUND";
+    VEHICLE_ERRORS["VEHICLE_NOT_ADDED"] = "VEHICLE_ERRORS.VEHICLE_NOT_ADDED";
+    VEHICLE_ERRORS["VEHICLE_NOT_UPDATED"] = "VEHICLE_ERRORS.VEHICLE_NOT_UPDATED";
     VEHICLE_ERRORS["VIN_ALREADY_EXISTS"] = "VEHICLE_ERRORS.VIN_ALREADY_EXISTS";
+    VEHICLE_ERRORS["VEHICLE_KEY_EMPTY"] = "VEHICLE_ERRORS.VEHICLE_KEY_EMPTY";
+    VEHICLE_ERRORS["NEW_VEHICLE_EMPTY"] = "VEHICLE_ERRORS.NEW_VEHICLE_EMPTY";
     VEHICLE_ERRORS["USER_KEY_EMPTY"] = "VEHICLE_ERRORS.USER_KEY_EMPTY";
 })(VEHICLE_ERRORS = exports.VEHICLE_ERRORS || (exports.VEHICLE_ERRORS = {}));
 let VehicleService = class VehicleService {
@@ -47,6 +52,9 @@ let VehicleService = class VehicleService {
      */
     getVehicle(key, url = null) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!key) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+            }
             const vehicle = yield this.vehicleCollectionService.findOne({ key: { $eq: key } });
             if (!vehicle) {
                 throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
@@ -62,6 +70,9 @@ let VehicleService = class VehicleService {
     getVehicles(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const vehicles = yield this.vehicleCollectionService.getVehicles();
+            if (vehicles.length === 0) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
+            }
             return yield Promise.all(vehicles.map((vehicle) => __awaiter(this, void 0, void 0, function* () {
                 return yield this.addDependencies(url, vehicle);
             })));
@@ -78,30 +89,61 @@ let VehicleService = class VehicleService {
             if (!userKey) {
                 throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.USER_KEY_EMPTY);
             }
-            const results = yield this.vehicleCollectionService.find({ userKey: { $eq: userKey } });
-            if (!results) {
-                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
+            const vehicles = yield this.vehicleCollectionService.find({ userKey: { $eq: userKey } });
+            if (vehicles.length === 0) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
             }
-            const vehicles = yield Promise.all(results.map((vehicle) => __awaiter(this, void 0, void 0, function* () {
+            const results = yield Promise.all(vehicles.map((vehicle) => __awaiter(this, void 0, void 0, function* () {
                 return yield this.addDependencies(url, vehicle);
             })));
-            return _.sortBy(vehicles, o => o.model);
+            return _.sortBy(results, o => o.model);
         });
     }
     /**
-     * Add or update vehicle
+     * Add vehicle
      *
      * @param url
-     * @param body
-     * @param key
+     * @param vehicle
      */
-    updateVehicle(url, body, key = null) {
+    addVehicle(url, vehicle) {
         return __awaiter(this, void 0, void 0, function* () {
-            const vehicle = yield this.vehicleCollectionService.updateVehicle(key, body);
             if (!vehicle) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.NEW_VEHICLE_EMPTY);
+            }
+            const existingVehicleWithVin = yield this.vehicleCollectionService.findByField('vin', vehicle.vin, 1);
+            // Make sure VIN numbers are unique
+            if (existingVehicleWithVin) {
                 throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VIN_ALREADY_EXISTS);
             }
-            return yield this.addDependencies(url, vehicle);
+            const results = yield this.vehicleCollectionService.updateVehicle(vehicle);
+            if (!results) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_ADDED);
+            }
+            return yield this.addDependencies(url, results);
+        });
+    }
+    /**
+     * Update vehicle
+     *
+     * @param url
+     * @param vehicle
+     * @param key
+     */
+    updateVehicle(url, vehicle, key) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!key) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+            }
+            const existingVehicleWithVin = yield this.vehicleCollectionService.findByField('vin', vehicle.vin, 1);
+            // Make sure VIN numbers are unique
+            if (existingVehicleWithVin.key !== vehicle.key) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VIN_ALREADY_EXISTS);
+            }
+            const results = yield this.vehicleCollectionService.updateVehicle(vehicle, key);
+            if (!results) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_UPDATED);
+            }
+            return yield this.addDependencies(url, results);
         });
     }
     /**
@@ -111,10 +153,16 @@ let VehicleService = class VehicleService {
      */
     deleteVehicle(key) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!key) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+            }
             const vehicle = yield this.vehicleCollectionService.findOne({ key: { $eq: key } });
+            if (!vehicle) {
+                throw new models_1.HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
+            }
             yield this.vehicleCollectionService.removeByFieldValue('key', vehicle.key);
             yield this.fileService.removeFile(vehicle.image);
-            return true;
+            return vehicle;
         });
     }
     /**
@@ -129,7 +177,7 @@ let VehicleService = class VehicleService {
             const model = yield this.vehicleApiService.getApiModel(vehicle.modelKey);
             vehicle['mfrName'] = mfr.mfrName;
             vehicle['model'] = model.model;
-            vehicle['image_path'] = UtilsHelper_1.UtilsHelper.getImagePath(url, vehicle.image);
+            vehicle['image_path'] = ImageHelper_1.ImageHelper.getImagePath(url, vehicle.image);
             return vehicle;
         });
     }

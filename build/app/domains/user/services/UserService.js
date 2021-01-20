@@ -22,7 +22,7 @@ exports.UserService = exports.USER_ERRORS = void 0;
 const typedi_1 = require("typedi");
 const UserCollectionService_1 = require("./UserCollectionService");
 const models_1 = require("../../shared/models/models");
-const UtilsHelper_1 = require("../../shared/helpers/UtilsHelper");
+const ImageHelper_1 = require("../../shared/helpers/ImageHelper");
 var USER_ERRORS;
 (function (USER_ERRORS) {
     USER_ERRORS["USER_NOT_FOUND"] = "USER_NOT_FOUND";
@@ -70,7 +70,7 @@ let UserService = class UserService {
      */
     addDependencies(url, user) {
         return __awaiter(this, void 0, void 0, function* () {
-            user['image_path'] = UtilsHelper_1.UtilsHelper.getImagePath(url, user.image);
+            user['image_path'] = ImageHelper_1.ImageHelper.getImagePath(url, user.image);
             return user;
         });
     }

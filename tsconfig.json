@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-	"target": "es5",
+    "target": "es6",
 	"moduleResolution": "node",
 	"module": "commonjs",
 	"declaration": false,
@@ -21,8 +21,10 @@
 	"allowSyntheticDefaultImports": true,
 	"suppressExcessPropertyErrors": true,
 	"suppressImplicitAnyIndexErrors": true,
-	"baseUrl": "./src",
-	"outDir": "build",
+	"baseUrl": "./src/",
+	"outDir": "./build",
+	"noEmitHelpers": false,
+	"listFiles": false,
 	"jsx": "react",
 	"lib": [
 	  "esnext",
@@ -46,7 +48,9 @@
 	"test/**/*"
   ],
   "exclude": [
-	"node_modules"
+    "node_modules",
+    "build",
+    "src/tasks"
   ],
   "compileOnSave": false
 }

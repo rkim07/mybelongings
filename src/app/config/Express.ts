@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
+import * as useragent from 'express-useragent';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -10,18 +11,19 @@ import { Container } from 'typedi';
 import * as config from 'config';
 import { EventDispatcher } from 'event-dispatch';
 import { logger } from '../common/logging';
-// import { VersionService } from '../domains/shared/services/VersionService';
-// import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
+import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
+import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
 import { NotificationManager } from './NotificationManager';
 
-/*const swaggerUi = require('swagger-ui-express');
+const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require(process.cwd() + '/spec.json');
-import * as SwaggerExpressMiddleware from 'swagger-express-middleware';*/
+import * as SwaggerExpressMiddleware from 'swagger-express-middleware';
+
+export let server;
 
 export class ExpressConfig {
 
     public app: express.Express;
-    public server: any;
     public eventDispatcher: EventDispatcher = new EventDispatcher();
 
     constructor() {
@@ -31,13 +33,16 @@ export class ExpressConfig {
         const self = this;
 
         // Only allow swagger api endpoing if using development branch
-        /*const versionService = Container.get(VersionService);
-        if (versionService.getVersion().version == 'development') {
-            this.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-        }*/
+        // const versionService = Container.get(VersionService);
+        // if (versionService.getVersion().version == 'development') {
+        this.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+        // }
 
+        // Serve static contents
         this.app.use(express.static(path.join(__dirname, '../../frontend/views/')));
         this.app.use(express.static(path.join(__dirname, '../../frontend/js/')));
+        this.app.use(express.static(path.join(__dirname, '../../assets/css')));
+        this.app.use(express.static(path.join(__dirname, '../../assets/images')));
 
         this.app.use(cors());
         this.app.use(bodyParser.json());
@@ -48,22 +53,17 @@ export class ExpressConfig {
             res.sendStatus(200);
         });
 
-        /*SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {
+        SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {
             this.app.use(
                 middleware.metadata(),
                 middleware.parseRequest(),
                 middleware.validateRequest(),
+                RequestorDecoratorMiddleware.decorateRequest,
                 AuthorizationMiddleware.authorizeRequest,
                 useragent.express()
             );
             self.setupControllers();
-        });*/
-
-        self.setupControllers();
-    }
-
-    public stopServer(cb) {
-        this.server.close(cb);
+        });
     }
 
     private setupControllers() {
@@ -80,7 +80,7 @@ export class ExpressConfig {
         const listen = this.getListener();
 
         // Start Webserver
-        this.server = this.app.listen(listen, () => {
+        server = this.app.listen(listen, () => {
             if (/\.sock$/.exec(listen)) {
                 logger.info(`
                     ------------

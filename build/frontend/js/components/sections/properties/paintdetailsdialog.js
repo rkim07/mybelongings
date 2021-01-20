@@ -12,8 +12,8 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
+const _ = require("lodash");
 const prop_types_1 = require("prop-types");
-const utils_1 = require("../../../helpers/utils");
 const Dialog_1 = require("@material-ui/core/Dialog");
 const DialogTitle_1 = require("@material-ui/core/DialogTitle");
 const DialogContent_1 = require("@material-ui/core/DialogContent");
@@ -49,15 +49,15 @@ function PaintDetailsDialog(props) {
     const { classes, paint, open, onHandleClose, areaName } = props;
     return (react_1.default.createElement(Dialog_1.default, { onClose: onHandleClose, "aria-labelledby": "customized-dialog-title", open: open },
         react_1.default.createElement(DialogTitle, { id: "customized-dialog-title", onClose: onHandleClose },
-            utils_1.capitalizeWords(areaName),
+            _.startCase(areaName),
             " Paint"),
         react_1.default.createElement(DialogContent, { dividers: true },
             react_1.default.createElement(Card_1.default, { className: classes.root },
                 react_1.default.createElement(CardMedia_1.default, { component: "img", alt: "Paint Details", height: "140", image: paint.image_path, title: "Paint Details" }),
                 react_1.default.createElement(CardContent_1.default, null,
-                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, utils_1.capitalizeWords(paint.name)),
-                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, utils_1.capitalizeWords(paint.usage)),
-                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, utils_1.capitalizeWords(paint.color)),
+                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, _.startCase(paint.name)),
+                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, _.startCase(paint.usage)),
+                    react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, _.startCase(paint.color)),
                     react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, paint.hex),
                     react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, paint.rgb),
                     react_1.default.createElement(Typography_1.default, { variant: "body2", color: "textSecondary", component: "p" }, paint.lrv),

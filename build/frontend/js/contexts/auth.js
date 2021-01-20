@@ -25,9 +25,8 @@ function login(credentials) {
             }
         }
     })
-        .catch(error => {
-        //setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.login = login;
@@ -52,9 +51,8 @@ function register(credentials) {
             }
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.register = register;

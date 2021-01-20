@@ -4,7 +4,6 @@ const react_1 = require("react");
 const prop_types_1 = require("prop-types");
 const styles_1 = require("@material-ui/core/styles");
 const appcontext_1 = require("../../../appcontext");
-const utils_1 = require("../../../helpers/utils");
 const Grid_1 = require("@material-ui/core/Grid");
 const Card_1 = require("@material-ui/core/Card");
 const CardContent_1 = require("@material-ui/core/CardContent");
@@ -31,10 +30,17 @@ const styles = theme => ({
     }
 });
 function List(props) {
-    const { classes, vehicles, onHandleClick, onHandleDelete } = props;
+    const { classes, user, onHandleClick, onHandleDelete, getVehiclesByUserKey } = props;
+    const [vehicles, setVehicles] = react_1.useState('');
+    react_1.useEffect(() => {
+        getVehiclesByUserKey(user.userKey).then(response => {
+            setVehicles(response.data.vehicles);
+        });
+        return () => setVehicles('');
+    }, []);
     return (react_1.default.createElement(Grid_1.default, { container: true, spacing: 4 },
         react_1.default.createElement(Grid_1.default, { item: true, xs: 12 },
-            react_1.default.createElement(Button_1.default, { type: "button", variant: "contained", color: "default", className: classes.button, startIcon: react_1.default.createElement(Add_1.default, null), onClick: () => onHandleClick(null, 'add') }, "Add New")),
+            react_1.default.createElement(Button_1.default, { type: "button", variant: "contained", color: "default", className: classes.button, startIcon: react_1.default.createElement(Add_1.default, null), onClick: () => onHandleClick(null, 'new') }, "Add New")),
         vehicles &&
             vehicles.map((vehicle) => (react_1.default.createElement(Grid_1.default, { item: true, key: vehicle.key, xs: 12, sm: 6, md: 4 },
                 react_1.default.createElement(Card_1.default, { className: classes.card },
@@ -43,9 +49,9 @@ function List(props) {
                         react_1.default.createElement(Typography_1.default, { gutterBottom: true, variant: "h5", component: "h4" },
                             vehicle.year,
                             " ",
-                            utils_1.capitalizeWords(vehicle.mfrName),
+                            vehicle.mfrName,
                             " ",
-                            utils_1.capitalizeWords(vehicle.model))),
+                            vehicle.model)),
                     react_1.default.createElement(CardActions_1.default, null,
                         react_1.default.createElement(IconButton_1.default, { "aria-label": "view", color: "default", className: classes.button, onClick: () => onHandleClick(vehicle, 'view') },
                             react_1.default.createElement(DirectionsCar_1.default, null)),

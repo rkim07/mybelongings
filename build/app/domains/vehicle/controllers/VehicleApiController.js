@@ -48,10 +48,27 @@ let VehicleApiController = class VehicleApiController {
     syncNhtsaApi() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.apiVehicleService.syncNhtsaApi();
+                const mfrs = yield this.apiVehicleService.syncNhtsaApi();
+                return {
+                    mfrs: mfrs,
+                    statusCode: 200,
+                    message: 'Successfully synced all vehicles from NHTSA API.'
+                };
             }
             catch (err) {
-                throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the auth service.');
+                if (err instanceof models_1.HandleUpstreamError) {
+                    switch (err.key) {
+                        case VehicleApiService_1.VEHICLE_API_ERRORS.MFR_KEY_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'Empty manufacturer key provided.');
+                        case VehicleApiService_1.VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND:
+                            return new models_1.ResponseError(500, err.key, 'No manufacturers were found for sync.');
+                        default:
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    }
+                }
+                else {
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                }
             }
         });
     }
@@ -73,10 +90,25 @@ let VehicleApiController = class VehicleApiController {
     getManufacturers() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.apiVehicleService.getApiMfrs();
+                const mfrs = yield this.apiVehicleService.getApiMfrs();
+                return {
+                    mfrs: mfrs,
+                    statusCode: 200,
+                    message: 'Successfully retrieved all manufactures.'
+                };
             }
             catch (err) {
-                throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the auth service.');
+                if (err instanceof models_1.HandleUpstreamError) {
+                    switch (err.key) {
+                        case VehicleApiService_1.VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND:
+                            return new models_1.ResponseError(500, err.key, 'No manufacturers were found for sync.');
+                        default:
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    }
+                }
+                else {
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                }
             }
         });
     }
@@ -104,10 +136,27 @@ let VehicleApiController = class VehicleApiController {
     getManufacturerModels(mfrKey) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.apiVehicleService.getApiModelsByMfrKey(mfrKey);
+                const models = yield this.apiVehicleService.getApiModelsByMfrKey(mfrKey);
+                return {
+                    models: models,
+                    statusCode: 200,
+                    message: 'Successfully retrieved all models for a particular manufacturer.'
+                };
             }
             catch (err) {
-                throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the auth service.');
+                if (err instanceof models_1.HandleUpstreamError) {
+                    switch (err.key) {
+                        case VehicleApiService_1.VEHICLE_API_ERRORS.MFR_KEY_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'Empty manufacturer key provided.');
+                        case VehicleApiService_1.VEHICLE_API_ERRORS.VEHICLE_MODELS_NOT_FOUND:
+                            return new models_1.ResponseError(404, err.key, 'No models for this particular manufacturer were found.');
+                        default:
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    }
+                }
+                else {
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                }
             }
         });
     }

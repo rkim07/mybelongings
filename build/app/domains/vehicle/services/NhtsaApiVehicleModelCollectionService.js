@@ -35,6 +35,7 @@ let NhtsaApiVehicleModelCollectionService = class NhtsaApiVehicleModelCollection
      */
     getApiModels() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find()
                 .simplesort('model', false)
@@ -48,6 +49,7 @@ let NhtsaApiVehicleModelCollectionService = class NhtsaApiVehicleModelCollection
      */
     getApiModelsByMfrKey(mfrKey) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find({ mfrKey: { $eq: mfrKey } })
                 .simplesort('model', false)
@@ -70,7 +72,7 @@ let NhtsaApiVehicleModelCollectionService = class NhtsaApiVehicleModelCollection
                     updateFields: {
                         mfrKey: mfrModel.mfrKey,
                         modelId: mfrModel.modelId,
-                        model: mfrModel.model.replace(/%20/g, ' ').toLowerCase(),
+                        model: mfrModel.model,
                         modified: Datetime_1.Datetime.getNow()
                     }
                 });
@@ -79,7 +81,7 @@ let NhtsaApiVehicleModelCollectionService = class NhtsaApiVehicleModelCollection
                 return yield this.addOne(new models_1.NhtsaApiVehicleModel({
                     mfrKey: mfrModel.mfrKey,
                     modelId: mfrModel.modelId,
-                    model: mfrModel.model.replace(/%20/g, ' ').toLowerCase()
+                    model: mfrModel.model
                 }));
             }
         });

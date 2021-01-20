@@ -35,6 +35,7 @@ let VehicleCollectionService = class VehicleCollectionService extends DatabaseCo
      */
     getVehicles() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.loadCollection();
             return this.collection.chain()
                 .find()
                 .simplesort('year', false)
@@ -44,10 +45,10 @@ let VehicleCollectionService = class VehicleCollectionService extends DatabaseCo
     /**
      * Add or update vehicle
      *
-     * @param key
      * @param vehicle
+     * @param key
      */
-    updateVehicle(key, vehicle) {
+    updateVehicle(vehicle, key = null) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loadCollection();
             const existingVehicle = yield this.findOne({ key: { $eq: key } });
@@ -70,10 +71,6 @@ let VehicleCollectionService = class VehicleCollectionService extends DatabaseCo
                 });
             }
             else {
-                const existingVin = yield this.findByField('vin', vehicle.vin, 1);
-                if (existingVin) {
-                    return false;
-                }
                 return yield this.addOne(new models_1.Vehicle({
                     userKey: vehicle.userKey,
                     mfrKey: vehicle.mfrKey,

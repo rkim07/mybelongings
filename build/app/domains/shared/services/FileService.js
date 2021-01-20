@@ -53,11 +53,10 @@ let FileService = class FileService {
      */
     removeFile(fileName) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!fileName) {
-                throw new HandleUpstreamError_1.HandleUpstreamError(FILE_ERRORS.EMPTY_FILE_NAME);
+            if (fileName) {
+                fs.unlinkSync(`${SOURCE_PATH}/${fileName}`);
+                fs.unlinkSync(`${BUILD_PATH}/${fileName}`);
             }
-            fs.unlinkSync(`${SOURCE_PATH}/${fileName}`);
-            fs.unlinkSync(`${BUILD_PATH}/${fileName}`);
             return true;
         });
     }

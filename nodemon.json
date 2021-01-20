@@ -1,0 +1,7 @@
+{
+    "watch": ["src"],
+    "ext": "ts",
+    "ignore": ["src/test/**/*"],
+    "signal": "SIGTERM",
+    "exec": "yarn build && node --inspect=57645 ./build/app/app.js"
+}

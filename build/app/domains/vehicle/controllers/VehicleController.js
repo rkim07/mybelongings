@@ -54,10 +54,67 @@ let VehicleController = class VehicleController {
     getVehicle(req, vehicleKey) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.vehicleService.getVehicle(vehicleKey, req.requestor.referrer);
+                const vehicle = yield this.vehicleService.getVehicle(vehicleKey, req.requestor.referrer);
+                return {
+                    vehicle: vehicle,
+                    statusCode: 200,
+                    message: 'Successfully retrieved specific vehicle.'
+                };
             }
             catch (err) {
-                throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                if (err instanceof models_1.HandleUpstreamError) {
+                    switch (err.key) {
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'Empty vehicle key provided.');
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
+                            return new models_1.ResponseError(404, err.key, 'No vehicles were found for the user key provided.');
+                        default:
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    }
+                }
+                else {
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                }
+            }
+        });
+    }
+    /**
+     * @swagger
+     * paths:
+     *   /vehicle-svc/vehicles:
+     *     get:
+     *       summary: Get all vehicles
+     *       description: Retrieve vehicles data from manufacturer implemented API.
+     *       responses:
+     *         200:
+     *           description: DB data has been retrieved successfully.
+     *         500:
+     *           description: An unexpected error occurred in the vehicle service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    getVehicles(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const vehicles = yield this.vehicleService.getVehicles(req.requestor.referrer);
+                return {
+                    vehicles: vehicles,
+                    statusCode: 200,
+                    message: 'Successfully retrieved all vehicles.'
+                };
+            }
+            catch (err) {
+                if (err instanceof models_1.HandleUpstreamError) {
+                    switch (err.key) {
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLES_NOT_FOUND:
+                            return new models_1.ResponseError(404, err.key, 'No vehicles were found.');
+                        default:
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    }
+                }
+                else {
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                }
             }
         });
     }
@@ -87,47 +144,27 @@ let VehicleController = class VehicleController {
     getVehiclesByUserKey(req, userKey) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.vehicleService.getVehiclesByUserKey(userKey, req.requestor.referrer);
+                const vehicles = yield this.vehicleService.getVehiclesByUserKey(userKey, req.requestor.referrer);
+                return {
+                    vehicles: vehicles,
+                    statusCode: 200,
+                    message: 'Successfully retrieved all vehicles for this user.'
+                };
             }
             catch (err) {
                 if (err instanceof models_1.HandleUpstreamError) {
                     switch (err.key) {
                         case VehicleService_1.VEHICLE_ERRORS.USER_KEY_EMPTY:
-                            throw new models_1.ResponseError(500, err.key, 'Empty user key provided in order to get vehicle.');
-                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                            throw new models_1.ResponseError(404, err.key, 'No vehicle was found for the user key provided.');
+                            return new models_1.ResponseError(500, err.key, 'Empty user key provided.');
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLES_NOT_FOUND:
+                            return new models_1.ResponseError(404, err.key, 'No vehicles were found for the user key provided.');
                         default:
-                            throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                     }
                 }
                 else {
-                    throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the basket service.');
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                 }
-            }
-        });
-    }
-    /**
-     * @swagger
-     * paths:
-     *   /vehicle-svc/vehicles:
-     *     get:
-     *       summary: Get all vehicles
-     *       description: Retrieve vehicles data from manufacturer implemented API.
-     *       responses:
-     *         200:
-     *           description: DB data has been retrieved successfully.
-     *         500:
-     *           description: An unexpected error occurred in the vehicle service.
-     *           schema:
-     *             $ref: '#/definitions/ResponseError'
-     */
-    getVehicles(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield this.vehicleService.getVehicles(req.requestor.referrer);
-            }
-            catch (err) {
-                throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the auth service.');
             }
         });
     }
@@ -143,13 +180,15 @@ let VehicleController = class VehicleController {
      *       parameters:
      *         - in: body
      *           name: request
-     *           description: The vehicle information.
+     *           description: New vehicle information.
      *           required: true
      *           schema:
      *             $ref: '#/definitions/Vehicle'
      *       responses:
      *         201:
      *           description: DB data has been added successfully.
+     *           schema:
+     *             $ref: '#/definitions/Vehicle'
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
@@ -158,19 +197,28 @@ let VehicleController = class VehicleController {
     addVehicle(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.vehicleService.updateVehicle(req.requestor.referrer, body);
+                const vehicle = yield this.vehicleService.addVehicle(req.requestor.referrer, body);
+                return {
+                    vehicle: vehicle,
+                    statusCode: 201,
+                    message: 'Successfully added vehicle'
+                };
             }
             catch (err) {
                 if (err instanceof models_1.HandleUpstreamError) {
                     switch (err.key) {
-                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                            throw new models_1.ResponseError(404, err.key, 'No vehicle was found for the vehicle key provided.');
+                        case VehicleService_1.VEHICLE_ERRORS.NEW_VEHICLE_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'New vehicle information is empty.');
+                        case VehicleService_1.VEHICLE_ERRORS.VIN_ALREADY_EXISTS:
+                            return new models_1.ResponseError(500, err.key, 'Same VIN already found on another vehicle.');
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_ADDED:
+                            return new models_1.ResponseError(500, err.key, 'Vehicle cannot be added at this time.');
                         default:
-                            throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                     }
                 }
                 else {
-                    throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                 }
             }
         });
@@ -213,19 +261,28 @@ let VehicleController = class VehicleController {
     putVehicle(req, vehicleKey, body) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.vehicleService.updateVehicle(req.requestor.referrer, body, vehicleKey);
+                const vehicle = yield this.vehicleService.updateVehicle(req.requestor.referrer, body, vehicleKey);
+                return {
+                    vehicle: vehicle,
+                    statusCode: 200,
+                    message: 'Successfully updated vehicle.'
+                };
             }
             catch (err) {
                 if (err instanceof models_1.HandleUpstreamError) {
                     switch (err.key) {
-                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                            throw new models_1.ResponseError(404, err.key, 'No vehicle was found for the vehicle key provided.');
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'Empty vehicle key provided.');
+                        case VehicleService_1.VEHICLE_ERRORS.VIN_ALREADY_EXISTS:
+                            return new models_1.ResponseError(500, err.key, 'Same VIN already found on another vehicle.');
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_UPDATED:
+                            return new models_1.ResponseError(500, err.key, 'Vehicle cannot be updated at this time.');
                         default:
-                            throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                     }
                 }
                 else {
-                    throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                 }
             }
         });
@@ -256,22 +313,31 @@ let VehicleController = class VehicleController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    deleteVehicle(vehicleKey) {
+    deleteVehicle(vehicleKey, response) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.vehicleService.deleteVehicle(vehicleKey);
+                const vehicle = yield this.vehicleService.deleteVehicle(vehicleKey);
+                if (vehicle) {
+                    response.send({
+                        vehicle: vehicle,
+                        statusCode: 204,
+                        message: 'Successfully deleted vehicle.'
+                    });
+                }
             }
             catch (err) {
                 if (err instanceof models_1.HandleUpstreamError) {
                     switch (err.key) {
+                        case VehicleService_1.VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
+                            return new models_1.ResponseError(500, err.key, 'Empty vehicle key provide.');
                         case VehicleService_1.VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                            throw new models_1.ResponseError(404, err.key, 'No vehicle was found for the vehicle key provided.');
+                            return new models_1.ResponseError(500, err.key, 'Vehicle not found for delete.');
                         default:
-                            throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                            return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                     }
                 }
                 else {
-                    throw new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                    return new models_1.ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
                 }
             }
         });
@@ -290,6 +356,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], VehicleController.prototype, "getVehicle", null);
 __decorate([
+    routing_controllers_1.Get('/vehicles'),
+    __param(0, routing_controllers_1.Req()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], VehicleController.prototype, "getVehicles", null);
+__decorate([
     routing_controllers_1.Get('/vehicles/user/:user_key'),
     __param(0, routing_controllers_1.Req()),
     __param(1, routing_controllers_1.Param('user_key')),
@@ -297,13 +370,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], VehicleController.prototype, "getVehiclesByUserKey", null);
-__decorate([
-    routing_controllers_1.Get('/vehicles'),
-    __param(0, routing_controllers_1.Req()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], VehicleController.prototype, "getVehicles", null);
 __decorate([
     routing_controllers_1.HttpCode(201),
     routing_controllers_1.Post('/vehicle'),
@@ -325,9 +391,9 @@ __decorate([
 __decorate([
     routing_controllers_1.HttpCode(204),
     routing_controllers_1.Delete('/vehicles/:vehicle_key'),
-    __param(0, routing_controllers_1.Param('vehicle_key')),
+    __param(0, routing_controllers_1.Param('vehicle_key')), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], VehicleController.prototype, "deleteVehicle", null);
 VehicleController = __decorate([

@@ -1,9 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteVehicle = exports.updateVehicle = exports.addVehicle = exports.getVehicles = exports.getVehiclesByUserKey = exports.getVehicleById = void 0;
-const _ = require("lodash");
+exports.deleteVehicle = exports.updateVehicle = exports.addVehicle = exports.getVehiclesByUserKey = exports.getVehicles = exports.getVehicleById = void 0;
 const axios_1 = require("axios");
-// import { setNotifierExceptionMsg, setNotifierMsg } from '../helpers/messages';
 const vehiclesAxios = axios_1.default.create();
 vehiclesAxios.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
@@ -19,25 +17,33 @@ function getVehicleById(key) {
     return vehiclesAxios
         .get(`/vehicle-svc/vehicles/${key}`)
         .then(response => {
-        if (response.status === 200) {
-            if (response.data) {
-                this.setState({
-                    vehicle: response.data
-                });
-                return response.status;
-            }
-            else if (response.error) {
-                // setNotifierMsg('error', response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.getVehicleById = getVehicleById;
+/**
+ * Get all vehicles
+ *
+ * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ */
+function getVehicles() {
+    return vehiclesAxios
+        .get('/vehicle-svc/vehicles')
+        .then(response => {
+        if (response) {
+            return response;
+        }
+    })
+        .catch((err) => {
+        return err;
+    });
+}
+exports.getVehicles = getVehicles;
 /**
  * Get vehicles by user key
  *
@@ -45,66 +51,18 @@ exports.getVehicleById = getVehicleById;
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
 function getVehiclesByUserKey(userKey) {
-    if (this.state.vehicles) {
-        return this.state.vehicles;
-    }
-    else {
-        return vehiclesAxios
-            .get(`/vehicle-svc/vehicles/user/${userKey}`)
-            .then(response => {
-            if (response.status === 200) {
-                if (response.data.length > 0) {
-                    this.setState({
-                        vehicles: response.data
-                    });
-                    return response.status;
-                }
-                else if (response.error) {
-                    // setNotifierMsg('error', response);
-                    return response.status;
-                }
-            }
-        })
-            .catch(error => {
-            // setNotifierExceptionMsg(error);
-            return error.response.status;
-        });
-    }
+    return vehiclesAxios
+        .get(`/vehicle-svc/vehicles/user/${userKey}`)
+        .then(response => {
+        if (response) {
+            return response;
+        }
+    })
+        .catch((err) => {
+        return err;
+    });
 }
 exports.getVehiclesByUserKey = getVehiclesByUserKey;
-/**
- * Get all vehicles
- *
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
- */
-function getVehicles() {
-    if (this.state.vehicles) {
-        return this.state.vehicles;
-    }
-    else {
-        return vehiclesAxios
-            .get('/vehicle-svc/vehicles')
-            .then(response => {
-            if (response.status === 200) {
-                if (response.data) {
-                    this.setState({
-                        vehicles: response.data
-                    });
-                    return response.status;
-                }
-                else if (response.error) {
-                    // setNotifierMsg('error', response);
-                    return response.status;
-                }
-            }
-        })
-            .catch(error => {
-            // setNotifierExceptionMsg(error);
-            return error.response.status;
-        });
-    }
-}
-exports.getVehicles = getVehicles;
 /**
  * Add vehicle
  *
@@ -115,25 +73,12 @@ function addVehicle(vehicle) {
     return vehiclesAxios
         .post('/vehicle-svc/vehicle', vehicle)
         .then(response => {
-        if (response.status === 201) {
-            if (response.data) {
-                let existingVehicles = this.state.vehicles || [];
-                existingVehicles.push(response.data);
-                // setNotifierMsg("success", UsersMsg.added);
-                this.setState({
-                    vehicles: existingVehicles
-                });
-                return response.status;
-            }
-            else if (response.error) {
-                // setNotifierMsg("error", response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.addVehicle = addVehicle;
@@ -154,26 +99,12 @@ function updateVehicle(key, vehicle) {
     return vehiclesAxios
         .put(`/vehicle-svc/vehicles/${key}`, vehicle)
         .then(response => {
-        if (response.status === 200) {
-            if (response.data) {
-                let existingVehicles = this.state.vehicles;
-                let vehicle = _.find(existingVehicles, function (o) { return o.key === response.data.key; });
-                _.merge(vehicle, response.data);
-                // setNotifierMsg("success", UsersMsg.added);
-                this.setState({
-                    vehicles: existingVehicles
-                });
-                return response.status;
-            }
-            else if (response.error) {
-                // setNotifierMsg("error", response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        // setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.updateVehicle = updateVehicle;
@@ -187,27 +118,12 @@ function deleteVehicle(key) {
     return vehiclesAxios
         .delete(`/vehicle-svc/vehicles/${key}`)
         .then(response => {
-        if (response.status === 204) {
-            if (_.empty(response.data)) {
-                let existingVehicles = this.state.vehicles;
-                _.remove(existingVehicles, (vehicle) => {
-                    return vehicle.key === existingVehicles.key;
-                });
-                //setNotifierMsg("success", TransactionMsg.removed);
-                this.setState({
-                    vehicles: existingVehicles
-                });
-                return response.status;
-            }
-            else if (response.error) {
-                // setNotifierMsg("error", response);
-                return response.status;
-            }
+        if (response) {
+            return response;
         }
     })
-        .catch(error => {
-        //setNotifierExceptionMsg(error);
-        return error.response.status;
+        .catch((err) => {
+        return err;
     });
 }
 exports.deleteVehicle = deleteVehicle;
