@@ -7,7 +7,7 @@ package/build
 package/payload
 package/VERSION.TXT
 coverage/
-build/
+build
 /*.db
 typings/
 .idea/
