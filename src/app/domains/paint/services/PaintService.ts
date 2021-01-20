@@ -23,7 +23,7 @@ export class PaintService {
      * @param key
      * @param url
      */
-    public async getPaint(key: Key, url: string = null): Promise<any> {
+    public async getPaint(key: Key, url?: string): Promise<any> {
         const paint = await this.paintCollectionService.findOne({ key: { $eq: key }});
 
         if (!paint) {
