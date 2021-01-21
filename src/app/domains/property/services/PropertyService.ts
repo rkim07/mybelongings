@@ -26,26 +26,26 @@ export class PropertyService {
     /**
      * Get property by key
      */
-    public async getProperty(key: Key, url: string): Promise<any> {
+    public async getProperty(key: Key, origin: string): Promise<any> {
         const property = await this.propertyCollectionService.findOne({ key: { $eq: key }});
 
         if (!property) {
             throw new HandleUpstreamError(PROPERTY_ERRORS.PROPERTY_NOT_FOUND);
         }
 
-        return await this.addDependencies(url, property);
+        return await this.addDependencies(origin, property);
     }
 
     /**
      * Get all properties
      *
-     * @param url
+     * @param origin
      */
-    public async getProperties(url: string): Promise<any> {
+    public async getProperties(origin: string): Promise<any> {
         const properties = await this.propertyCollectionService.getProperties();
 
         return await Promise.all(properties.map(async (property) => {
-            return await this.addDependencies(url, property);
+            return await this.addDependencies(origin, property);
         }));
     }
 
@@ -53,9 +53,9 @@ export class PropertyService {
      * Get all properties by user key
      *
      * @param userKey
-     * @param url
+     * @param origin
      */
-    public async getPropertiesByUserKey(userKey: Key, url: string): Promise<any> {
+    public async getPropertiesByUserKey(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(PROPERTY_ERRORS.USER_KEY_EMPTY);
         }
@@ -67,7 +67,7 @@ export class PropertyService {
         }
 
         const properties = await Promise.all(results.map(async (property) => {
-            return await this.addDependencies(url, property);
+            return await this.addDependencies(origin, property);
         }));
 
         return _.sortBy(properties, o => o.address.street);
@@ -76,24 +76,24 @@ export class PropertyService {
     /**
      * Add or update property
      *
-     * @param url
+     * @param origin
      * @param body
      */
-    public async updateProperty(url: string, body: any): Promise<any> {
+    public async updateProperty(origin: string, body: any): Promise<any> {
         const property = await this.propertyCollectionService.updateProperty(body);
-        return await this.addDependencies(url, property);
+        return await this.addDependencies(origin, property);
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param property
      */
-    private async addDependencies(url, property) {
-        property['image_path'] = ImageHelper.getImagePath(url, property.image);
+    private async addDependencies(origin, property) {
+        property['image_path'] = ImageHelper.getImagePath(origin, property.image);
         property['address'] = await this.addressService.getAddress(property.addressKey);
-        property['areas'] = await this.propertyAreaService.getAreasByPropertyKey(property.key, url);
+        property['areas'] = await this.propertyAreaService.getAreasByPropertyKey(property.key, origin);
 
         return property;
     }

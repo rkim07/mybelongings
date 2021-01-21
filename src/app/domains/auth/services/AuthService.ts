@@ -1,6 +1,9 @@
 import { Container, Inject, Service } from 'typedi';
 import { JWTHelper } from '../../shared/helpers/JWTHelper';
+import { Hash } from '../../shared/models/utilities/Hash';
+import { Key } from '../../shared/models/utilities/Key';
 import { UserCollectionService } from '../../user/services/UserCollectionService';
+import { User } from '../../shared/models/domains/User';
 
 const bcrypt = require('bcrypt');
 
@@ -16,57 +19,84 @@ export class AuthService {
      * @param body
      */
     public async login(body: any): Promise<any> {
-        const user = await this.userCollectionService.find({ username: { $eq: body.username }});
+        let user = await this.userCollectionService.findOne({ username: { $eq: body.username }});
 
         if (!user) {
             return {
-                msg: 'Incorrect username or password'
+                message: 'Unregistered user.'
             };
         }
 
-        const userData = {
-            'userKey': user[0].key,
-            'firstName': user[0].firstName,
-            'lastName': user[0].lastName,
-            'email': user[0].email
-        };
+        // Check if plain text password matches with hashed password
+        const match = Hash.compare(body.password, user.password);
 
-        // Decrypt encrypted password and compare with plain text password
-        const match = bcrypt.compareSync(body.password, user[0].password);
+        if (!match) {
+            return {
+                message: 'Incorrect credentials.'
+            };
+        }
 
-        if (match) {
-            return {
-                token: AuthService.signJwtToken(user[0]),
-                user: userData
-            };
-        } else {
-            return {
-                msg: 'Incorrect username or password'
-            };
+        // Generate tokens
+        const [accessToken, refreshToken] = await AuthService.generateTokens(user);
+
+        // Save refresh token for later use
+        user['refreshToken'] = refreshToken
+        await this.userCollectionService.updateUser(user);
+
+        return {
+            token: accessToken,
+            message: 'User successfully logged in.'
         }
     }
 
     /**
      * Register new user
      *
-     * @param body
+     * @param data
      */
-    public async register(body: any): Promise<any> {
-        const user = await this.userCollectionService.find({ email: { $eq: body.email }});
+    public async register(data: User): Promise<any> {
+        const existingUser = await this.userCollectionService.find({ email: { $eq: data.email }});
 
-        if (user) {
+        if (existingUser.length) {
             return {
-                msg: 'User already registered'
+                message: 'User already registered'
             };
         }
 
         // Add new user
-        const newUser = await this.userCollectionService.updateUser(body);
+        const newUser = await this.userCollectionService.updateUser(data);
 
         return {
-            token: AuthService.signJwtToken(newUser)
+            user: {
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                email: newUser.email,
+            },
+            message: 'User successfully registered'
         };
     }
+
+    /**
+     * Generate tokens
+     *
+     * @param user
+     * @private
+     */
+    private static async generateTokens(user): Promise<any> {
+        // Prepare token's payload
+        const jwtPayload = {
+            key: Key.generate(),
+            userKey: user.key,
+            authorities: user.authorities
+        };
+
+        // Generate tokens
+        const accessToken = await JWTHelper.signToken(jwtPayload, 'access');
+        const refreshToken = await JWTHelper.signToken(jwtPayload, 'refresh');
+
+        return [accessToken, refreshToken];
+    }
+
 
     /**
      * Refresh token
@@ -74,19 +104,5 @@ export class AuthService {
      * @param body
      */
     public async refreshToken(body: any): Promise<any> {
-    }
-
-    /**
-     * Sign JWT token
-     *
-     * @param user
-     */
-    private static signJwtToken(user): any {
-        // Hide properties from JWT token
-        delete user.intr_type;
-        delete user.username;
-        delete user.password;
-
-        return JWTHelper.signToken(user);
     }
 }

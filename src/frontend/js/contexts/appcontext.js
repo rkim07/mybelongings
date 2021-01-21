@@ -18,8 +18,7 @@ export class AppContextProvider extends React.Component
 		super(props);
 
 		this.state = {
-			token: localStorage.getItem('token') !== undefined ? localStorage.getItem('token') : '',
-			user: localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : '',
+			token: localStorage.getItem('token') !== undefined ? localStorage.getItem('token') : ''
 		};
 
 		this.register = register.bind(this);
@@ -39,11 +38,9 @@ export class AppContextProvider extends React.Component
 	 */
 	logout = () => {
 		localStorage.removeItem('token');
-		localStorage.removeItem('user');
 
 		this.setState({
-			token: '',
-			user: '',
+			token: ''
 		});
 	}
 

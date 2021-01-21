@@ -19,40 +19,40 @@ export class UserService {
     /**
      * Get user by key
      *
-     * @param url
+     * @param origin
      * @param key
      */
-    public async getUser(url:string, key: Key): Promise<any> {
+    public async getUser(origin:string, key: Key): Promise<any> {
         const user = await this.userCollectionService.findOne({ key: { $eq: key }});
 
         if (!user) {
             throw new HandleUpstreamError(USER_ERRORS.USER_NOT_FOUND);
         }
 
-        return await this.addDependencies(url, user);
+        return await this.addDependencies(origin, user);
     }
 
     /**
      * Get all users
      *
-     * @param url
+     * @param origin
      */
-    public async getUsers(url: string): Promise<any> {
+    public async getUsers(origin: string): Promise<any> {
         const users = await this.userCollectionService.getUsers();
 
         return await Promise.all(users.map(async (user) => {
-            return await this.addDependencies(url, user);
+            return await this.addDependencies(origin, user);
         }));
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param user
      */
-    private async addDependencies(url, user) {
-        user['image_path'] = ImageHelper.getImagePath(url, user.image);
+    private async addDependencies(origin, user) {
+        user['image_path'] = ImageHelper.getImagePath(origin, user.image);
         return user;
     }
 }

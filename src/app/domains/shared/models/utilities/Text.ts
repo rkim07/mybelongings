@@ -1,6 +1,4 @@
-import * as Url from 'url-parse';
-
-export class TextHelperImpl {
+export class Text {
 
     /**
      * Capitalize each word in sentence
@@ -8,13 +6,7 @@ export class TextHelperImpl {
      * @param sentence
      * @returns {*}
      */
-    public capitalizeWords(sentence) {
+    static capitalizeWords(sentence) {
         return sentence.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
     }
 }
-
-const TextHelper = new TextHelperImpl();
-
-export {
-    TextHelper
-};

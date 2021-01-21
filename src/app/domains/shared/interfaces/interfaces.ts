@@ -1,11 +1,10 @@
 export * from './Action';
 export * from './AuthorisedRequest';
-export * from './AuthorisedRequestor';
 export * from './DecodedJWT';
-export * from './DeviceInfo';
 export * from './DispatchedEvent';
 export * from './Event';
 export * from './Request';
 export * from './Requestor';
+
 export * from './User';
 export * from './Vehicle';

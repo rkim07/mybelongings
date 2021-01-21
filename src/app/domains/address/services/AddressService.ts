@@ -16,9 +16,9 @@ export class AddressService {
      * Get address by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getAddress(key: Key, url: string = null): Promise<Address> {
+    public async getAddress(key: Key, origin?: string): Promise<Address> {
         const address = await this.addressCollectionService.findOne({ key: { $eq: key }});
 
         if (!address) {

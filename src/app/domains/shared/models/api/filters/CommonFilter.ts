@@ -1,5 +1,5 @@
 import * as _ from  'lodash';
-import { TextHelper } from "../../../helpers/TextHelper";
+import { Text } from '../../utilities/Text';
 
 /**
  * Common filter
@@ -38,7 +38,7 @@ export class CommonFilter {
         } else if (/^\d\w+$/i.test(urlDecoded)) {
             formatted = urlDecoded.toUpperCase();
         } else {
-            formatted = TextHelper.capitalizeWords(urlDecoded);
+            formatted = Text.capitalizeWords(urlDecoded);
         }
 
         return formatted;

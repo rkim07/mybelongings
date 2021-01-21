@@ -1,6 +1,6 @@
 import * as _ from  'lodash';
 import { CommonFilter } from "./CommonFilter";
-import { TextHelper } from "../../../helpers/TextHelper";
+import { Text } from '../../utilities/Text';
 
 export class AstonMartin extends CommonFilter {
 
@@ -21,7 +21,7 @@ export class AstonMartin extends CommonFilter {
 
         if (/^\w+\d+\s.*/i.test(parent)) {
             const lowerCased = parent.toLowerCase();
-            return TextHelper.capitalizeWords(lowerCased);
+            return Text.capitalizeWords(lowerCased);
         }
 
         return parent;

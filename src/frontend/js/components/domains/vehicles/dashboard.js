@@ -48,7 +48,7 @@ class Dashboard extends React.Component
 	}
 
 	componentDidMount() {
-		this.props.getVehiclesByUserKey(this.props.user.userKey).then(response => {
+		this.props.getVehiclesByUserKey().then(response => {
 			this.setState({
 				vehicles: response.data.vehicles
 			});

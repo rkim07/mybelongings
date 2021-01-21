@@ -7,8 +7,7 @@ import { NhtsaApiVehicleMfr, NhtsaApiVehicleModel, Key, HandleUpstreamError } fr
 import { NhtsaApiVehicleMfrInterface, NhtsaApiVehicleModelInterface } from '../../shared/interfaces/vehicle'
 import { NhtsaApiVehicleMfrCollectionService } from './NhtsaApiVehicleMfrCollectionService';
 import { NhtsaApiVehicleModelCollectionService } from './NhtsaApiVehicleModelCollectionService';
-import {VehicleApiHelper} from "../../shared/helpers/VehicleApiHelper";
-import {VEHICLE_ERRORS} from "./VehicleService";
+import { VehicleApiHelper } from "../../shared/helpers/VehicleApiHelper";
 
 const path = require("path");
 

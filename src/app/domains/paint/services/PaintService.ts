@@ -21,28 +21,28 @@ export class PaintService {
      * Get paint by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getPaint(key: Key, url?: string): Promise<any> {
+    public async getPaint(key: Key, origin?: string): Promise<any> {
         const paint = await this.paintCollectionService.findOne({ key: { $eq: key }});
 
         if (!paint) {
             throw new HandleUpstreamError(PAINT_ERRORS.PAINT_NOT_FOUND);
         }
 
-        return await this.addDependencies(url, paint);
+        return await this.addDependencies(origin, paint);
     }
 
     /**
      * Get all paints
      *
-     * @param url
+     * @param origin
      */
-    public async getPaints(url: string): Promise<any> {
+    public async getPaints(origin: string): Promise<any> {
         const paints = await this.paintCollectionService.getPaints();
 
         return await Promise.all(paints.map(async (paint) => {
-            return await this.addDependencies(url, paint);
+            return await this.addDependencies(origin, paint);
         }));
     }
 
@@ -50,33 +50,33 @@ export class PaintService {
      * Get paint by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getPaintByKey(key: Key, url: string): Promise<any> {
+    public async getPaintByKey(key: Key, origin: string): Promise<any> {
         const paint = await this.paintCollectionService.findOne({ key: { $eq: key }});
-        return await this.addDependencies(url, paint);
+        return await this.addDependencies(origin, paint);
     }
 
     /**
      * Add or update paint
      *
-     * @param url
+     * @param origin
      * @param body
      */
-    public async updatePaint(url: string, body: any): Promise<any> {
+    public async updatePaint(origin: string, body: any): Promise<any> {
         const paint = await this.paintCollectionService.updatePaint(body);
-        return await this.addDependencies(url, paint);
+        return await this.addDependencies(origin, paint);
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param paint
      */
-    private async addDependencies(url, paint) {
-        paint['image_path'] = ImageHelper.getImagePath(url, paint.image);
-        paint['store'] = paint.storeKey ? await this.storeService.getStoreByKey(paint.storeKey, url) : {};
+    private async addDependencies(origin, paint) {
+        paint['image_path'] = ImageHelper.getImagePath(origin, paint.image);
+        paint['store'] = paint.storeKey ? await this.storeService.getStoreByKey(paint.storeKey, origin) : {};
         return paint;
     }
 }

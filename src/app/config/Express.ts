@@ -1,19 +1,17 @@
+import * as config from 'config';
+import * as path from 'path';
+import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as useragent from 'express-useragent';
-import * as fs from 'fs';
-import * as path from 'path';
-
+import * as stoppable from 'stoppable';
 import { useContainer, useExpressServer } from 'routing-controllers';
 import { Container } from 'typedi';
-
-import * as config from 'config';
 import { EventDispatcher } from 'event-dispatch';
-import { logger } from '../common/logging';
 import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
 import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
-import { NotificationManager } from './NotificationManager';
+import { logger } from '../common/logging';
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require(process.cwd() + '/spec.json');
@@ -113,8 +111,8 @@ export class ExpressConfig {
             this.eventDispatcher.dispatch('server:started');
         });
 
-        // Start Notification Manager
-        Container.get(NotificationManager);
+        // NPM library that will gracefully shutdown the server
+        stoppable(server, 2000);
     }
 
     private getListener(): string {

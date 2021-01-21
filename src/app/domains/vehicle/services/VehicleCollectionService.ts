@@ -42,15 +42,15 @@ export class VehicleCollectionService extends DatabaseCollectionService {
                 uniqueField: 'key',
                 uniqueFieldValue: existingVehicle.key,
                 updateFields: {
-            mfrKey: vehicle.mfrKey,
-            modelKey: vehicle.modelKey,
-            image: vehicle.image,
-            year: vehicle.year,
-            color: vehicle.color,
-            vin: vehicle.vin,
-            plate: vehicle.plate,
-                    condition: vehicle.condition,
-                    modified: Datetime.getNow()
+                mfrKey: vehicle.mfrKey,
+                modelKey: vehicle.modelKey,
+                image: vehicle.image,
+                year: vehicle.year,
+                color: vehicle.color,
+                vin: vehicle.vin,
+                plate: vehicle.plate,
+                condition: vehicle.condition,
+                modified: Datetime.getNow()
     }
             });
         } else {

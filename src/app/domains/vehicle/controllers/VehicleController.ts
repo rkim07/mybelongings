@@ -1,6 +1,7 @@
 import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put, Req, Res } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
-import { HandleUpstreamError, Key, ResponseError } from '../../shared/models/models';
+import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
+import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
 import { VEHICLE_ERRORS, VehicleService } from '../services/VehicleService';
 
 @JsonController('/vehicle-svc')
@@ -100,32 +101,37 @@ export class VehicleController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-svc/vehicles/user/{user_key}:
+     *   /vehicle-svc/vehicles/user:
      *     get:
      *       summary: Fetch the vehicle of a user by key.
      *       description: Return the vehicle of a user, excluding items.
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
      *       parameters:
-     *         - in: path
-     *           name: user_key
-     *           description: The key for the current user.
-     *           required: true
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
      *           type: string
+     *           required: true
      *       responses:
      *         200:
      *           description: DB data has been retrieved successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
+     *         x-404_NO_VEHICLES_FOUND:
+     *           description: No vehicles found for user key provided.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/vehicles/user/:user_key')
-    public async getVehiclesByUserKey(
-        @Req() req: any,
-        @Param('user_key') userKey: string): Promise<any> {
+    @Get('/vehicles/user')
+    public async getVehiclesByUserKey(@Req() { requestor: { userKey, origin }}: AuthorisedRequest): Promise<any> {
         try {
-            const vehicles = await this.vehicleService.getVehiclesByUserKey(userKey, req.requestor.referrer);
+            const vehicles = await this.vehicleService.getVehiclesByUserKey(userKey, origin);
 
             return {
                 vehicles: vehicles,

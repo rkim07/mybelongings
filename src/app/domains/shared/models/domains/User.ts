@@ -1,16 +1,16 @@
+import { Hash } from "../utilities/Hash";
 import { Datetime } from '../utilities/Datetime';
 import { Key } from '../utilities/Key';
 
-const bcrypt = require('bcrypt');
-
 export class User {
     key: Key;
-    intr_type: User.TypeEnum;
+    authorities: Array<string>;
     firstName: string;
     lastName: string;
     email: string;
     username: string;
-    password: any;
+    password: string;
+    refreshToken: string;
     created: string;
     modified: string;
 
@@ -24,26 +24,20 @@ export class User {
         lastName: string,
         email: string,
         username: string,
-        password: string
+        password: string,
+        refreshToken: string
     }) {
-        this.intr_type = User.TypeEnum.User;
-        this.key = Key.generate();
+        const userKey = Key.generate()
+
+        this.key = userKey;
+        this.authorities = ['ROLE_USER'];
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.email = data.email;
         this.username = data.username;
-        this.password = this.encryptPassword(data.password);
+        this.password = Hash.hash(userKey + data.password);
+        this.refreshToken = data.refreshToken;
         this.modified = this.created = Datetime.getNow();
-    }
-
-    /**
-     * Password encryption
-     *
-     * @param password
-     */
-    private encryptPassword(password) {
-        const saltRounds = 10;
-        return bcrypt.hashSync(password, saltRounds);
     }
 }
 

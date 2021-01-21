@@ -16,13 +16,13 @@ export class PropertyAreaService {
     /**
      * Get all property areas
      *
-     * @param url
+     * @param origin
      */
-    public async getAreas(url: string): Promise<Property[]> {
+    public async getAreas(origin: string): Promise<Property[]> {
         const areas = await this.propertyAreaCollectionService.getAll();
 
         return await Promise.all(areas.map(async (area) => {
-            return await this.addDependencies(url, area);
+            return await this.addDependencies(origin, area);
         }));
     }
 
@@ -30,36 +30,36 @@ export class PropertyAreaService {
      * Get areas by property key
      *
      * @param propertyKey
-     * @param url
+     * @param origin
      */
-    public async getAreasByPropertyKey(propertyKey: Key, url: string): Promise<PropertyArea[]> {
+    public async getAreasByPropertyKey(propertyKey: Key, origin: string): Promise<PropertyArea[]> {
         const areas = await this.propertyAreaCollectionService.find({ propertyKey: { $eq: propertyKey }});
 
         return await Promise.all(areas.map(async (area) => {
-            return await this.addDependencies(url, area);
+            return await this.addDependencies(origin, area);
         }));
     }
 
     /**
      * Add or update property area
      *
-     * @param url
+     * @param origin
      * @param body
      */
-    public async updatePropertyArea(url: string, body: any): Promise<PropertyArea> {
+    public async updatePropertyArea(origin: string, body: any): Promise<PropertyArea> {
         const area = await this.propertyAreaCollectionService.updateArea(body);
-        return await this.addDependencies(url, area);
+        return await this.addDependencies(origin, area);
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param area
      */
-    private async addDependencies(url, area) {
-        area['image_path'] = ImageHelper.getImagePath(url, area.image);
-        area['paint'] = await this.paintService.getPaintByKey(area.paintKey, url);
+    private async addDependencies(origin, area) {
+        area['image_path'] = ImageHelper.getImagePath(origin, area.image);
+        area['paint'] = await this.paintService.getPaintByKey(area.paintKey, origin);
         return area;
     }
 }

@@ -34,9 +34,9 @@ export class VehicleService {
      * Get vehicle by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getVehicle(key: Key, url?: string): Promise<any> {
+    public async getVehicle(key: Key, origin?: string): Promise<any> {
         if (!key) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
         }
@@ -47,15 +47,15 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
         }
 
-        return await this.addDependencies(url, vehicle);
+        return await this.addDependencies(origin, vehicle);
     }
 
     /**
      * Get all vehicles
      *
-     * @param url
+     * @param origin
      */
-    public async getVehicles(url: string): Promise<any> {
+    public async getVehicles(origin: string): Promise<any> {
         const vehicles = await this.vehicleCollectionService.getVehicles();
 
         if (vehicles.length === 0) {
@@ -63,7 +63,7 @@ export class VehicleService {
         }
 
         return await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(url, vehicle);
+            return await this.addDependencies(origin, vehicle);
         }));
     }
 
@@ -71,9 +71,9 @@ export class VehicleService {
      * Get all vehicles by user key
      *
      * @param userKey
-     * @param url
+     * @param origin
      */
-    public async getVehiclesByUserKey(userKey: Key, url: string): Promise<any> {
+    public async getVehiclesByUserKey(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.USER_KEY_EMPTY);
         }
@@ -85,7 +85,7 @@ export class VehicleService {
         }
 
         const results = await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(url, vehicle);
+            return await this.addDependencies(origin, vehicle);
         }));
 
         return _.sortBy(results, o => o.model);
@@ -94,10 +94,10 @@ export class VehicleService {
     /**
      * Add vehicle
      *
-     * @param url
+     * @param origin
      * @param vehicle
      */
-    public async addVehicle(url: string, vehicle: any): Promise<any> {
+    public async addVehicle(origin: string, vehicle: any): Promise<any> {
         if (!vehicle) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.NEW_VEHICLE_EMPTY);
         }
@@ -115,17 +115,17 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_ADDED);
         }
 
-        return await this.addDependencies(url, results);
+        return await this.addDependencies(origin, results);
     }
 
     /**
      * Update vehicle
      *
-     * @param url
+     * @param origin
      * @param vehicle
      * @param key
      */
-    public async updateVehicle(url: string, vehicle: any, key: Key): Promise<any> {
+    public async updateVehicle(origin: string, vehicle: any, key: Key): Promise<any> {
         if (!key) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
         }
@@ -143,7 +143,7 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_UPDATED);
         }
 
-        return await this.addDependencies(url, results);
+        return await this.addDependencies(origin, results);
     }
 
     /**
@@ -170,16 +170,16 @@ export class VehicleService {
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param vehicle
      */
-    private async addDependencies(url, vehicle) {
+    private async addDependencies(origin, vehicle) {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
 
         vehicle['mfrName'] = mfr.mfrName;
         vehicle['model'] = model.model;
-        vehicle['image_path'] = ImageHelper.getImagePath(url, vehicle.image);
+        vehicle['image_path'] = ImageHelper.getImagePath(origin, vehicle.image);
 
         return vehicle;
     }

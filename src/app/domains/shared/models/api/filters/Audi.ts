@@ -1,5 +1,5 @@
-import { CommonFilter } from "./CommonFilter";
-import {TextHelper} from "../../../helpers/TextHelper";
+import { CommonFilter } from './CommonFilter';
+import { Text } from '../../utilities/Text';
 
 export class Audi extends CommonFilter {
     constructor() {
@@ -22,7 +22,7 @@ export class Audi extends CommonFilter {
             const splitted = lowerCased.split(' ');
             splitted.map((word, index) => {
                if (word != 'e-tron') {
-                   splitted[index] = TextHelper.capitalizeWords(word);
+                   splitted[index] = Text.capitalizeWords(word);
                }
             });
 

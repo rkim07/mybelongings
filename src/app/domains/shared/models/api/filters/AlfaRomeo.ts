@@ -1,6 +1,6 @@
 import * as _ from  'lodash';
 import { CommonFilter } from "./CommonFilter";
-import { TextHelper } from "../../../helpers/TextHelper";
+import { Text } from '../../utilities/Text';
 
 export class AlfaRomeo extends CommonFilter {
 
@@ -22,7 +22,7 @@ export class AlfaRomeo extends CommonFilter {
         if (/^giulia/i.test(urlDecoded)){
             return 'Giulia';
         } else if (/^\d+\w\s\.*/i.test(urlDecoded)) {
-            return TextHelper.capitalizeWords(urlDecoded);
+            return Text.capitalizeWords(urlDecoded);
         } else {
             return _.capitalize(urlDecoded);
         }

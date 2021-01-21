@@ -40,7 +40,6 @@ export * from './utilities/CustomError';
  *         type: string
  *       message:
  *         type: string
- *     additionalProperties: false
  *     required:
  *       - statusCode
  *       - errorCode
@@ -53,29 +52,28 @@ export * from './utilities/CustomError';
  *         $ref: "#/definitions/Key"
  *       firstName:
  *         type: string
- *         minLength: 1
+ *         minLength: 4
  *       lastName:
  *         type: string
- *         minLength: 1
+ *         minLength: 2
  *       email:
  *         type: string
- *         minLength: 1
+ *         minLength: 5
  *       username:
  *         type: string
- *         minLength: 1
+ *         minLength: 5
  *       password:
  *         type: string
- *         minLength: 1
- *
+ *         minLength: 4
+ *       authorities:
+ *         type: array
+ *         items:
+ *           type: string
  *       created:
- *         description: Date/time when user entry was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when user entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
- *     additionalProperties: false
+ *         $ref: "#/definitions/Datetime"
+ *
  *     required:
  *       - firstName
  *       - lastName
@@ -106,14 +104,9 @@ export * from './utilities/CustomError';
  *       condition:
  *         type: string
  *       created:
- *         description: Date/time when vehicle was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when vehicle was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
- *     additionalProperties: false
+ *         $ref: "#/definitions/Datetime"
  *     required:
  *       - mfrKey
  *       - modelKey
@@ -172,14 +165,9 @@ export * from './utilities/CustomError';
  *       subdivision:
  *         type: string
  *       created:
- *         description: Date/time when property entry was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when property entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
- *     additionalProperties: false
+ *         $ref: "#/definitions/Datetime"
  *     required:
  *       - userKey
  *       - addressKey
@@ -211,13 +199,9 @@ export * from './utilities/CustomError';
  *       painted:
  *         type: string
  *       created:
- *         description: Date/time when property paint was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when property paint entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *
  *   Paint:
  *     type: object
@@ -249,13 +233,9 @@ export * from './utilities/CustomError';
  *       notes:
  *         type: string
  *       created:
- *         description: Date/time when paint entry was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when paint entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *
  *   Store:
  *     type: object
@@ -279,13 +259,9 @@ export * from './utilities/CustomError';
  *       notes:
  *         type: string
  *       created:
- *         description: Date/time when paint entry was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when paint entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *
  *   Address:
  *     type: object
@@ -313,14 +289,9 @@ export * from './utilities/CustomError';
  *         type: string
  *         minLength: 1
  *       created:
- *         description: Date/time when address entry was created.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
+ *         $ref: "#/definitions/Datetime"
  *       modified:
- *         description: Date/time when address entry was modified.
- *         allOf:
- *           - $ref: "#/definitions/Datetime"
- *     additionalProperties: false
+ *         $ref: "#/definitions/Datetime"
  *     required:
  *       - street
  *       - city

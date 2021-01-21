@@ -25,7 +25,7 @@ export class UserCollectionService extends DatabaseCollectionService {
      *
      * @param user
      */
-    public async updateUser(user: any) {
+    public async updateUser(user: User) {
         await this.loadCollection();
 
         const existingUser = await this.findOne({ key: { $eq: user.key }});
@@ -35,21 +35,25 @@ export class UserCollectionService extends DatabaseCollectionService {
                 uniqueField: 'key',
                 uniqueFieldValue: existingUser.key,
                 updateFields: {
+                    authorities: user.authorities,
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email,
                     username: user.username,
                     password: user.password,
+                    refreshToken: user.refreshToken,
                     modified: Datetime.getNow()
                 }
             });
         } else {
             return await this.addOne(new User({
+                authorities: user.authorities,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 username: user.username,
-                password: user.password
+                password: user.password,
+                refreshToken: user.refreshToken
             }));
         }
     }

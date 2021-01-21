@@ -42,7 +42,7 @@ export class AuthController {
      */
     @HttpCode(201)
     @Post('/login')
-    public async loginUser(@Body() body: any): Promise<any> {
+    public async login(@Body() body: any): Promise<any> {
         try {
             return await this.authService.login(body);
         } catch (error) {

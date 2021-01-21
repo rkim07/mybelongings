@@ -1,6 +1,6 @@
 import * as _ from  'lodash';
 import { CommonFilter } from "./CommonFilter";
-import { TextHelper } from "../../../helpers/TextHelper";
+import { Text } from '../../utilities/Text';
 
 export class Cadillac extends CommonFilter {
 
@@ -22,7 +22,7 @@ export class Cadillac extends CommonFilter {
         if(/^Escalade\s\.*/i.test(parent)){
             return parent.toUpperCase();
         } else if (/^\d+\w+\s\/.*/i.test(parent)) {
-            return TextHelper.capitalizeWords(parent);
+            return Text.capitalizeWords(parent);
         } else {
             return _.capitalize(parent);
         }

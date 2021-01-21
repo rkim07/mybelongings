@@ -1,23 +1,23 @@
 import * as _ from  'lodash';
 import { FilterFactory } from '../models/api/FilterFactory';
 import { CommonFilter } from '../models/api/filters/CommonFilter';
-import { TextHelper } from './TextHelper';
+import { Text } from '../models/utilities/Text';
 
-export class VehicleApiHelperImpl {
+export class VehicleApiHelper {
 
     /**
      * Get specific filter class. If none, return common filter
      *
      * @param name
      */
-    public getFilterClass(name = null) {
+    static getFilterClass(name?: string) {
         if (!name) {
             return new CommonFilter();
         }
 
         try {
             const camelCaseWords = _.camelCase(name);
-            const capitalizedWord = TextHelper.capitalizeWords(camelCaseWords);
+            const capitalizedWord = Text.capitalizeWords(camelCaseWords);
             const filter: any = new FilterFactory(capitalizedWord, '');
 
             return filter;
@@ -26,9 +26,3 @@ export class VehicleApiHelperImpl {
         }
     }
 }
-
-const VehicleApiHelper = new VehicleApiHelperImpl();
-
-export {
-    VehicleApiHelper
-};

@@ -53,9 +53,9 @@ export function getVehicles() {
  * @param userKey
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
-export function getVehiclesByUserKey(userKey) {
+export function getVehiclesByUserKey() {
 	return vehiclesAxios
-		.get(`/vehicle-svc/vehicles/user/${userKey}`)
+		.get(`/vehicle-svc/vehicles/user`)
 		.then(response => {
 			if (response) {
 				return response;

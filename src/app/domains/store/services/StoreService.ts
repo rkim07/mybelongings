@@ -17,26 +17,26 @@ export class StoreService {
      * Get store by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getStore(key: Key, url?: string): Promise<any> {
+    public async getStore(key: Key, origin?: string): Promise<any> {
         const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
 
         if (!store) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
         }
 
-        return await this.addDependencies(url, store);
+        return await this.addDependencies(origin, store);
     }
 
     /**
      * Get all stores
      */
-    public async getStores(url: string): Promise<any> {
+    public async getStores(origin: string): Promise<any> {
         const stores = await this.storeCollectionService.getStores();
 
         return await Promise.all(stores.map(async (store) => {
-            return await this.addDependencies(url, store);
+            return await this.addDependencies(origin, store);
         }));
     }
 
@@ -44,31 +44,31 @@ export class StoreService {
      * Get store by key
      *
      * @param key
-     * @param url
+     * @param origin
      */
-    public async getStoreByKey(key: Key, url: string): Promise<any> {
+    public async getStoreByKey(key: Key, origin: string): Promise<any> {
         const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
-        return await this.addDependencies(url, store);
+        return await this.addDependencies(origin, store);
     }
 
     /**
      * Add or update store
      *
-     * @param url
+     * @param origin
      * @param body
      */
-    public async updateStore(url: string, body: any): Promise<any> {
+    public async updateStore(origin: string, body: any): Promise<any> {
         const store = await this.storeCollectionService.updateStore(body);
-        return await this.addDependencies(url, store);
+        return await this.addDependencies(origin, store);
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param url
+     * @param origin
      * @param store
      */
-    private async addDependencies(url, store) {
+    private async addDependencies(origin, store) {
         store['address'] = await this.addressService.getAddress(store.addressKey);
         return store;
     }
