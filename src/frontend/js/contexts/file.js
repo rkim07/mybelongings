@@ -5,7 +5,7 @@ import axios from 'axios';
 const filesAxios = axios.create();
 
 filesAxios.interceptors.request.use((config) => {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
 
 	return config;
 });

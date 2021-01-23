@@ -6,7 +6,7 @@ function ProtectedRoute(props) {
 	const { component: Component, ...rest } = props;
 
 	return (
-		props.token ?
+		props.accessToken ?
 			<Route {...rest} component={Component} /> :
 			<Redirect to='/login' />
 	)

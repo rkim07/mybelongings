@@ -69,6 +69,8 @@ export * from './utilities/CustomError';
  *         type: array
  *         items:
  *           type: string
+ *       refreshToken:
+ *         type: string
  *       created:
  *         $ref: "#/definitions/Datetime"
  *       modified:

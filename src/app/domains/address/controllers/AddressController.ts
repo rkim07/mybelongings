@@ -24,7 +24,7 @@ export class AddressController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the address service.
      *           schema:
@@ -51,7 +51,7 @@ export class AddressController {
      *       description: Get all addresses
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the address service.
      *           schema:
@@ -84,7 +84,7 @@ export class AddressController {
      *             $ref: '#/definitions/Address'
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
      *           schema:
      *              $ref: '#/definitions/Address'
      *         500:

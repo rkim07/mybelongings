@@ -1,7 +1,11 @@
-import { Body, HttpCode, JsonController, Post } from 'routing-controllers';
+import { Body, HttpCode, JsonController, Get, Post, Req } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
-import { ResponseError } from '../../shared/models/models';
-import { AuthService } from '../services/AuthService';
+import {HandleUpstreamError, ResponseError} from '../../shared/models/models';
+import {AUTH_ERRORS, AuthService} from '../services/AuthService';
+import {AuthorisedRequest} from "../../shared/interfaces/AuthorisedRequest";
+import {VEHICLE_ERRORS} from "../../vehicle/services/VehicleService";
+
+const DEFAULT_AUTH_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
 
 @JsonController('/auth-svc')
 export class AuthController {
@@ -17,7 +21,7 @@ export class AuthController {
      *       summary: Login user.
      *       description: Login user
      *       tags:
-     *          - Auth
+     *         - Auth
      *       parameters:
      *         - in: body
      *           name: login
@@ -32,9 +36,15 @@ export class AuthController {
      *                type: string
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
+     *         401:
+     *           description: Unauthorized request
      *           schema:
-     *             $ref: '#/definitions/User'
+     *             $ref: '#/definitions/ResponseError'
+     *         403:
+     *           description: Forbidden request
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the auth service.
      *           schema:
@@ -44,9 +54,146 @@ export class AuthController {
     @Post('/login')
     public async login(@Body() body: any): Promise<any> {
         try {
-            return await this.authService.login(body);
-        } catch (error) {
-            throw new ResponseError(500, error.key, 'An unexpected error occurred in the auth service.');
+            const login = await this.authService.login(body);
+
+            return {
+                accessToken: login.accessToken,
+                refreshToken: login.refreshToken,
+                message: 'User logged in.'
+            }
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case AUTH_ERRORS.UNREGISTERED_USER:
+                        return new ResponseError(404, err.key, 'Unregistered user.');
+                    case AUTH_ERRORS.INVALID_CREDENTIALS:
+                        return new ResponseError(401, err.key, 'Invalid credentials.');
+                    case AUTH_ERRORS.TOKENS_NOT_CREATED:
+                        console.error('An unexpected error occurred while creating the tokens.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /auth-svc/logout:
+     *     get:
+     *       summary: Logout user.
+     *       description: Logout user.
+     *       tags:
+     *         - Auth
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The refresh JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *       responses:
+     *         200:
+     *           description: Data has been posted successfully.
+     *         500:
+     *           description: An unexpected error occurred in the auth service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Get('/logout')
+    public async logout(@Req() { requestor: { userKey }}: AuthorisedRequest): Promise<any> {
+        try {
+            await this.authService.logout(userKey);
+
+            return {
+                message: 'Logout success.'
+            }
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case AUTH_ERRORS.USER_KEY_EMPTY:
+                        console.error('User key not found.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_ERRORS.USER_NOT_FOUND:
+                        console.error('User not found.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /auth-svc/refresh:
+     *     get:
+     *       summary: Refresh access token.
+     *       description: Refresh access token with provided refresh token.
+     *       tags:
+     *         - Auth
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The refresh JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *       responses:
+     *         200:
+     *           description: Data has been posted successfully.
+     *         401:
+     *           description: Unauthorized request
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         403:
+     *           description: Forbidden request
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the auth service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Get('/refresh')
+    public async refreshToken(@Req() { requestor: { userKey, jwt }}: AuthorisedRequest): Promise<any> {
+        try {
+            const refresh = await this.authService.refresh(userKey, jwt);
+
+            return {
+                accessToken: refresh.accessToken,
+                refreshToken: refresh.refreshToken,
+                message: 'Token refreshed.'
+            }
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case AUTH_ERRORS.USER_KEY_EMPTY:
+                        console.error('User key not found.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_ERRORS.USER_NOT_FOUND:
+                        console.error('User not found.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_ERRORS.TOKEN_NOT_CREATED:
+                        console.error('An unexpected error occurred while creating the token.');
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
         }
     }
 
@@ -56,9 +203,9 @@ export class AuthController {
      *   /auth-svc/register:
      *     post:
      *       summary: Register user.
-     *       description: Register user
+     *       description: Register user.
      *       tags:
-     *          - Auth
+     *         - Auth
      *       parameters:
      *         - in: body
      *           name: request
@@ -68,7 +215,7 @@ export class AuthController {
      *             $ref: '#/definitions/User'
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
      *           schema:
      *             $ref: '#/definitions/User'
      *         500:
@@ -80,19 +227,23 @@ export class AuthController {
     @Post('/register')
     public async register(@Body() body: any): Promise<any> {
         try {
-            return await this.authService.register(body);
-        } catch (error) {
-            throw new ResponseError(500, error.key, 'An unexpected error occurred in the auth service.');
-        }
-    }
+            const registration = await this.authService.register(body);
 
-    @HttpCode(201)
-    @Post('/refresh')
-    public async refreshToken(@Body() body: any): Promise<any> {
-        try {
-            return await this.authService.refreshToken(body);
-        } catch (error) {
-            throw new ResponseError(500, error.key, 'An unexpected error occurred in the auth service.');
+            return {
+                user: registration.user,
+                message: 'User successfully registered.'
+            }
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case AUTH_ERRORS.USER_ALREADY_REGISTERED:
+                        return new ResponseError(409, err.key, 'User already registered.');
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
         }
     }
 }

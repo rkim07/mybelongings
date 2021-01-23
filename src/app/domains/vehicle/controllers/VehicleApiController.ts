@@ -18,7 +18,7 @@ export class VehicleApiController {
      *       description: Retrieve API manufacturers list maintained by NHTSA API
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the vehicle API service.
      *           schema:
@@ -59,7 +59,7 @@ export class VehicleApiController {
      *       description: Retrieve vehicle list from DB
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the vehicle API service.
      *           schema:
@@ -92,7 +92,7 @@ export class VehicleApiController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-api-svc/models/manufacturer/{mfr_key}:
+     *   /vehicle-api-svc/manufacturers/{mfr_key}/models:
      *     get:
      *       summary: Get a list of all vehicles
      *       description: Retrieve vehicle list from DB
@@ -104,13 +104,13 @@ export class VehicleApiController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/models/manufacturer/:mfr_key')
+    @Get('/manufacturers/:mfr_key/models')
     public async getManufacturerModels(@Param('mfr_key') mfrKey: string): Promise<any> {
         try {
             const models = await this.apiVehicleService.getApiModelsByMfrKey(mfrKey);

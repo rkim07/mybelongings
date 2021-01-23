@@ -1,16 +1,24 @@
-export function sectionToggler(response, curSection) {
+
+/**
+ * Functionality to toggle the sections
+ *
+ * @param statusType
+ * @param curSection
+ * @returns {string}
+ */
+export function sectionToggler(statusType, curSection) {
 	let section = '';
 
 	switch (curSection) {
 		case 'update':
-			if (response.statusType === 'success' ||
-				response.statusType === 'error' ||
-				response.statusType === 'warning') {
+			if (statusType === 'success' ||
+				statusType === 'error' ||
+				statusType === 'warning') {
 				section = 'update';
 			}
 			break;
 		case 'add':
-			section = response.statusType === 'error' ? 'add' : 'list';
+			section = statusType === 'error' ? 'add' : 'list';
 			break;
 		default:
 			section = 'list';

@@ -4,8 +4,17 @@ import { Hash } from '../../shared/models/utilities/Hash';
 import { Key } from '../../shared/models/utilities/Key';
 import { UserCollectionService } from '../../user/services/UserCollectionService';
 import { User } from '../../shared/models/domains/User';
+import {HandleUpstreamError} from "../../shared/models/utilities/HandleUpstreamError";
 
-const bcrypt = require('bcrypt');
+export enum AUTH_ERRORS {
+    USER_NOT_FOUND = 'AUTH_ERRORS.USER_NOT_FOUND',
+    UNREGISTERED_USER = 'AUTH_ERRORS.UNREGISTERED_USER',
+    USER_ALREADY_REGISTERED = 'AUTH_ERRORS.USER_ALREADY_REGISTERED',
+    INVALID_CREDENTIALS = 'AUTH_ERRORS.INVALID_CREDENTIALS',
+    TOKEN_NOT_CREATED = 'AUTH_ERRORS.TOKEN_NOT_CREATED',
+    TOKENS_NOT_CREATED = 'AUTH_ERRORS.TOKENS_NOT_CREATED',
+    USER_KEY_EMPTY = 'AUTH_ERRORS.USER_KEY_EMPTY'
+}
 
 @Service()
 export class AuthService {
@@ -22,30 +31,79 @@ export class AuthService {
         let user = await this.userCollectionService.findOne({ username: { $eq: body.username }});
 
         if (!user) {
-            return {
-                message: 'Unregistered user.'
-            };
+            throw new HandleUpstreamError(AUTH_ERRORS.UNREGISTERED_USER);
         }
 
         // Check if plain text password matches with hashed password
-        const match = Hash.compare(body.password, user.password);
-
-        if (!match) {
-            return {
-                message: 'Incorrect credentials.'
-            };
+        if (!Hash.compare(body.password, user.password)) {
+            throw new HandleUpstreamError(AUTH_ERRORS.INVALID_CREDENTIALS);
         }
 
         // Generate tokens
-        const [accessToken, refreshToken] = await AuthService.generateTokens(user);
+        const accessToken  = await this.generateToken(user.key, user.authorities, 'access');
+        const refreshToken = await this.generateToken(user.key, user.authorities, 'refresh');
+
+        if (!accessToken || !refreshToken) {
+            throw new HandleUpstreamError(AUTH_ERRORS.TOKENS_NOT_CREATED);
+        }
 
         // Save refresh token for later use
         user['refreshToken'] = refreshToken
         await this.userCollectionService.updateUser(user);
 
         return {
-            token: accessToken,
-            message: 'User successfully logged in.'
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        }
+    }
+
+    /**
+     * Logout user
+     *
+     * @param userKey
+     */
+    public async logout(userKey): Promise<any> {
+        if (!userKey) {
+            throw new HandleUpstreamError(AUTH_ERRORS.USER_KEY_EMPTY);
+        }
+
+        const user = await this.userCollectionService.findOne({ key: { $eq: userKey }});
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_ERRORS.USER_NOT_FOUND);
+        }
+
+        user.accessToken = '';
+        user.refreshToken = '';
+        return await this.userCollectionService.updateUser(user);
+    }
+
+    /**
+     * Send new access token
+     *
+     * @param userKey
+     * @param jwt
+     */
+    public async refresh(userKey, jwt): Promise<any> {
+        if (!userKey) {
+            throw new HandleUpstreamError(AUTH_ERRORS.USER_KEY_EMPTY);
+        }
+
+        const user = await this.userCollectionService.findOne({ key: { $eq: userKey }});
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_ERRORS.USER_NOT_FOUND);
+        }
+
+        // Generate tokens
+        const accessToken = await this.generateToken(user.key, user.authorities, 'access');
+
+        if (!accessToken) {
+            throw new HandleUpstreamError(AUTH_ERRORS.TOKEN_NOT_CREATED);
+        }
+
+        return {
+            accessToken: accessToken
         }
     }
 
@@ -58,9 +116,7 @@ export class AuthService {
         const existingUser = await this.userCollectionService.find({ email: { $eq: data.email }});
 
         if (existingUser.length) {
-            return {
-                message: 'User already registered'
-            };
+            throw new HandleUpstreamError(AUTH_ERRORS.USER_ALREADY_REGISTERED);
         }
 
         // Add new user
@@ -72,37 +128,26 @@ export class AuthService {
                 lastName: newUser.lastName,
                 email: newUser.email,
             },
-            message: 'User successfully registered'
         };
     }
 
     /**
-     * Generate tokens
+     * Generate token
      *
-     * @param user
+     * @param userKey
+     * @param userRoles
+     * @param tokenType
      * @private
      */
-    private static async generateTokens(user): Promise<any> {
+    private async generateToken(userKey: Key, userRoles: string, tokenType: string): Promise<any> {
         // Prepare token's payload
         const jwtPayload = {
             key: Key.generate(),
-            userKey: user.key,
-            authorities: user.authorities
+            userKey: userKey,
+            authorities: userRoles
         };
 
-        // Generate tokens
-        const accessToken = await JWTHelper.signToken(jwtPayload, 'access');
-        const refreshToken = await JWTHelper.signToken(jwtPayload, 'refresh');
-
-        return [accessToken, refreshToken];
-    }
-
-
-    /**
-     * Refresh token
-     *
-     * @param body
-     */
-    public async refreshToken(body: any): Promise<any> {
+        // Generate token
+        return await JWTHelper.signToken(jwtPayload, tokenType);
     }
 }

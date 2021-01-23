@@ -28,7 +28,7 @@ export class PropertyController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the property service.
      *           schema:
@@ -54,7 +54,7 @@ export class PropertyController {
      *       description: Get all properties
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the property service.
      *           schema:
@@ -86,7 +86,7 @@ export class PropertyController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *           schema:
      *             $ref: '#/definitions/Property'
      *         x-404_NO_PROPERTY_FOUND:
@@ -99,11 +99,11 @@ export class PropertyController {
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/properties/user/:user_key')
-    public async getPropertiesByUserKey(
+    public async getUserProperties(
         @Req() req: any,
         @Param('user_key') userKey: string): Promise<any> {
         try {
-            return await this.propertyService.getPropertiesByUserKey(userKey, req.requestor.referrer);
+            return await this.propertyService.getUserProperties(userKey, req.requestor.referrer);
         } catch (error) {
             if (error instanceof HandleUpstreamError) {
                 switch(error.key) {
@@ -138,7 +138,7 @@ export class PropertyController {
      *             $ref: '#/definitions/Property'
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
      *           schema:
      *              $ref: '#/definitions/Property'
      *         500:
@@ -170,7 +170,7 @@ export class PropertyController {
      *       parameters:
      *         - in: body
      *           name: request
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *           required: true
      *           schema:
      *             $ref: '#/definitions/PropertyArea'

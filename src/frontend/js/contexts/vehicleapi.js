@@ -4,7 +4,7 @@ import axios from 'axios';
 const apiVehiclesAxios = axios.create();
 
 apiVehiclesAxios.interceptors.request.use((config) => {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
 
 	return config;
 });
@@ -35,7 +35,7 @@ export function getApiMfrs() {
  */
 export function getApiModelsByMfrKey(mfrKey) {
 	return apiVehiclesAxios
-		.get(`/vehicle-api-svc/models/manufacturer/${mfrKey}`)
+		.get(`/vehicle-api-svc/manufacturers/${mfrKey}/models`)
 		.then(response => {
 			if (response) {
 				return response;

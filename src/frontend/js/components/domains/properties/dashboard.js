@@ -38,7 +38,7 @@ class Dashboard extends React.Component
 	 * After component is mounted
 	 */
 	componentDidMount() {
-		this.props.getPropertiesByUserKey(this.props.user.userKey);
+		this.props.getUserProperties();
 	}
 
 	/**

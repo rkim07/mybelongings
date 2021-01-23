@@ -9,7 +9,7 @@ const root = document.getElementById('root');
 ReactDOM.render(
     <AppContextProvider>
         <Router>
-            <App {...(root.dataset)}/>
+            <App { ...(root.dataset) }/>
         </Router>
     </AppContextProvider>,
     root

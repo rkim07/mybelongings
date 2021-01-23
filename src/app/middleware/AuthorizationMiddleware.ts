@@ -1,11 +1,10 @@
 import { NextFunction, Response } from 'express';
+import { HttpError } from 'routing-controllers';
 import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
-import { HttpError } from 'routing-controllers';
 import { logger } from '../common/logging';
 import { JWTHelper } from '../domains/shared/helpers/JWTHelper';
 import { AuthorisedRequest, JwtDecoded } from '../domains/shared/interfaces/interfaces';
-import { User } from '../domains/shared/models/models';
 
 export namespace AuthorizationMiddleware {
 
@@ -20,14 +19,22 @@ export namespace AuthorizationMiddleware {
      */
     export async function authorizeRequest(req: AuthorisedRequest, res: Response, next: NextFunction) {
         // All requests are unauthorized until (some) conditions below are met
-        const token: string = req.headers.authorization;
+        let prefix: string = '';
+        let token: string = '';
         let jwtUser: any;
         let authorizedRequest: boolean = false;
+
+        // All requests are unauthorized until (some) conditions below are met
+        const authHeader: string = req.headers.authorization;
+
+        if (authHeader) {
+            [prefix, token] = authHeader.split(' ');
+        }
 
         // If the endpoint doesn't contain any security restrictions
         if (!req.swagger.operation.security) {
             // If there is a token, verify it and decode it, attaching the User to the request
-            if (token) {
+            if (prefix === 'Bearer' && token) {
                 try {
                     await verifyToken();
                     await  authorizeUser();
@@ -38,14 +45,14 @@ export namespace AuthorizationMiddleware {
 
             authorizedRequest = true;
         } else {
-            if (token) {
+            if (prefix === 'Bearer' && token) {
                 // Promise stack to verify, then authorize the user against required roles
                 try {
                     await verifyToken();
                     await authorizeUserRoles();
                     await authorizeUser();
                 } catch (err) {
-                    handleUnauthorizedUser();
+                    return handleUnauthorizedUser(err);
                 }
             }
         }
@@ -113,8 +120,8 @@ export namespace AuthorizationMiddleware {
         /**
          * If the user is unathorized, catch and store the error message
          */
-        function handleUnauthorizedUser() {
-            next(new HttpError(401, 'Unauthorized.'));
+        function handleUnauthorizedUser(err?: any) {
+            res.status(401).json({ error: 'Unauthorized'});
         }
     }
 }

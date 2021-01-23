@@ -1,27 +1,46 @@
 import React from 'react';
-import * as _ from 'lodash';
 import axios from 'axios';
+import { addUpdateCollection, removeFromCollection } from './helpers/collection';
+import { addStatusType, refreshToken, setAuthenticationHeader } from './helpers/exchange';
 
 const vehiclesAxios = axios.create();
 
+// Request interceptor
 vehiclesAxios.interceptors.request.use((config) => {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+	return setAuthenticationHeader(config);
+}, (error) => Promise.reject(error));
 
-	return config;
-});
+// Response interceptor
+// Is the marker being refreshed?
+let isRefreshing = false
+// Retry queue, each item will be a function to be executed
+let requests = []
+
+vehiclesAxios.interceptors.response.use((response) => {
+	return addStatusType(response);
+}, (err) => {
+	return refreshToken(vehiclesAxios, err, requests, isRefreshing);
+}, (error) => {
+	return Promise.reject(error)
+})
 
 /**
  * Get vehicle by ID
  *
- * @param id
+ * @param key
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
-export function getVehicleById(key) {
+export function getVehicle(key) {
 	return vehiclesAxios
 		.get(`/vehicle-svc/vehicles/${key}`)
 		.then(response => {
-			if (response) {
-				return response;
+			const { data, status, error} = response;
+
+			if (data) {
+				data.vehicle = data.vehicle ? data.vehicle : [];
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
@@ -32,14 +51,19 @@ export function getVehicleById(key) {
 /**
  * Get all vehicles
  *
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ * @returns {Promise<T>}
  */
 export function getVehicles() {
 	return vehiclesAxios
 		.get('/vehicle-svc/vehicles')
-		.then(response => {
-			if (response) {
-				return response;
+		.then((response) => {
+			const { data, status, error} = response;
+
+			if (data) {
+				data.vehicles = data.vehicles ? data.vehicles : [];
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
@@ -53,12 +77,17 @@ export function getVehicles() {
  * @param userKey
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
-export function getVehiclesByUserKey() {
+export function getUserVehicles() {
 	return vehiclesAxios
-		.get(`/vehicle-svc/vehicles/user`)
-		.then(response => {
-			if (response) {
-				return response;
+		.get(`/vehicle-svc/vehicles/by/user`)
+		.then((response) => {
+			const { data, status, error} = response;
+
+			if (data) {
+				data.vehicles = data.vehicles ? data.vehicles : [];
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
@@ -70,14 +99,22 @@ export function getVehiclesByUserKey() {
  * Add vehicle
  *
  * @param vehicle
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ * @param vehicles
+ * @returns {Promise<T>}
  */
-export function addVehicle(vehicle) {
+export function addVehicle(vehicle, vehicles) {
+	vehicle = prepareSubmitData(vehicle);
+
 	return vehiclesAxios
 		.post('/vehicle-svc/vehicle', vehicle)
-		.then(response => {
-			if (response) {
-				return response;
+		.then((response) => {
+			const { data, status, error} = response;
+
+			if (data.statusCode < 400) {
+				data['vehicles'] = addUpdateCollection(data.vehicle, vehicles);
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
@@ -90,21 +127,23 @@ export function addVehicle(vehicle) {
  *
  * @param key
  * @param vehicle
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ * @param vehicles
+ * @returns {Promise<T>}
  */
-export function updateVehicle(key, vehicle) {
-	// Remove during update
-	delete (vehicle.mfrName);
-	delete (vehicle.model);
-	delete (vehicle.image_path);
-	delete (vehicle.created);
-	delete (vehicle.modified);
+export function updateVehicle(key, vehicle, vehicles) {
+	// Prepare data for backend
+	vehicle = prepareSubmitData(vehicle, key);
 
 	return vehiclesAxios
 		.put(`/vehicle-svc/vehicles/${key}`, vehicle)
-		.then(response => {
-			if (response) {
-				return response;
+		.then((response) => {
+			const { data, status, error} = response;
+
+			if (data.statusCode < 400) {
+				data['vehicles'] = addUpdateCollection(data.vehicle, vehicles);
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
@@ -116,17 +155,44 @@ export function updateVehicle(key, vehicle) {
  * Delete vehicle
  *
  * @param key
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ * @param vehicles
+ * @returns {Promise<T>}
  */
-export function deleteVehicle(key) {
+export function deleteVehicle(key, vehicles) {
 	return vehiclesAxios
 		.delete(`/vehicle-svc/vehicles/${key}`)
-		.then(response => {
-			if (response) {
-				return response;
+		.then((response) => {
+			const { data, status,  error } = response;
+
+			if (data.statusCode < 400) {
+				data['vehicles'] = removeFromCollection(data.vehicle, vehicles);
+				return data;
+			} else if (error) {
+				return status;
 			}
 		})
 		.catch((err) => {
 			return err;
 		});
+}
+
+/**
+ * Prepare data for submit
+ *
+ * @param vehicle
+ * @param key
+ * @returns {*}
+ */
+function prepareSubmitData(vehicle, key = null) {
+	vehicle.year = parseInt(vehicle.year);
+
+	if (key) {
+		delete (vehicle.mfrName);
+		delete (vehicle.model);
+		delete (vehicle.image_path);
+		delete (vehicle.created);
+		delete (vehicle.modified);
+	}
+
+	return vehicle;
 }

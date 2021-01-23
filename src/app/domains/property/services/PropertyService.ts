@@ -55,7 +55,7 @@ export class PropertyService {
      * @param userKey
      * @param origin
      */
-    public async getPropertiesByUserKey(userKey: Key, origin: string): Promise<any> {
+    public async getUserProperties(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(PROPERTY_ERRORS.USER_KEY_EMPTY);
         }

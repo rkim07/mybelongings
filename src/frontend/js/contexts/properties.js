@@ -5,7 +5,7 @@ import axios from 'axios';
 const propertiesAxios = axios.create();
 
 propertiesAxios.interceptors.request.use((config) => {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
 
 	return config;
 });
@@ -53,7 +53,7 @@ export function getProperties() {
  * @param userKey
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
-export function getPropertiesByUserKey(userKey) {
+export function getUserProperties(userKey) {
 	return propertiesAxios
 		.get(`/property-svc/properties/user/${userKey}`)
 		.then(response => {

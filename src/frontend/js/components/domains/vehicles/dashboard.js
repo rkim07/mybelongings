@@ -2,14 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
-import { parseResponse } from '../../helpers/response';
 import { sectionToggler } from '../../helpers/section';
 import List from './list';
 import Page from './page';
 import Notifier from '../../shared/notifier';
 import AlertDialog from '../../shared/alertdialog';
 import { currentYear } from '../../helpers/date';
-import { addUpdateCollection, removeFromCollection } from '../../helpers/collection';
 import Container from '@material-ui/core/Container';
 
 const styles = theme => ({
@@ -48,9 +46,9 @@ class Dashboard extends React.Component
 	}
 
 	componentDidMount() {
-		this.props.getVehiclesByUserKey().then(response => {
+		this.props.getUserVehicles().then(response => {
 			this.setState({
-				vehicles: response.data.vehicles
+				vehicles: response.vehicles
 			});
 		});
 	}
@@ -95,23 +93,15 @@ class Dashboard extends React.Component
 	onHandleDelete = async(key) => {
 		const { section, vehicles } = this.state;
 
-		const results = await this.props.deleteVehicle(key).then((response) => {
-			if (response.data.statusCode < 400) {
-				removeFromCollection(vehicles, response.data.vehicle);
-			}
-
-			return response;
-		});
-
-		const parsed = parseResponse(results);
+		const response = await this.props.deleteVehicle(key, vehicles);
 
 		this.setState({
-			section: sectionToggler(parsed, section),
+			section: sectionToggler(response.statusType, section),
 			openNotifier: true,
 			openAlert: false,
-			notifierType: parsed.statusType,
-			notifierMsg: parsed.message,
-			vehicles: vehicles
+			notifierType: response.statusType,
+			notifierMsg: response.message,
+			vehicles: response.vehicles
 		});
 	}
 
@@ -120,38 +110,24 @@ class Dashboard extends React.Component
 
 		const { section, file, vehicle, vehicles } = this.state;
 
+		// Upload file first
 		if (file.length) {
 			const uploadedResponse = await this.props.uploadFile(file[0]);
 			vehicle.image = uploadedResponse.data.fileName;
 		}
 
-		vehicle.year = parseInt(vehicle.year);
-		vehicle['userKey'] = this.props.user.userKey;
-
 		// Update if there's existing key otherwise add
-		const results = vehicle.key ?
-			await this.props.updateVehicle(vehicle.key, vehicle).then((response) => {
-				if (response.data.statusCode < 400) {
-					addUpdateCollection(vehicles, response.data.vehicle);
-				}
-				return response;
-			})
+		const response = vehicle.key ?
+			await this.props.updateVehicle(vehicle.key, vehicle, vehicles)
 			:
-			await this.props.addVehicle(vehicle).then((response) => {
-				if (response.data.statusCode < 400) {
-					addUpdateCollection(vehicles, response.data.vehicle);
-				}
-				return response;
-			});
-
-		const parsed = parseResponse(results);
+			await this.props.addVehicle(vehicle, vehicles);
 
 		this.setState({
-			section: sectionToggler(parsed, section),
+			section: sectionToggler(response.statusType, section),
 			openNotifier: true,
-			notifierType: parsed.statusType,
-			notifierMsg: parsed.message,
-			vehicles: vehicles
+			notifierType: response.statusType,
+			notifierMsg: response.message,
+			vehicles: response.vehicles
 		});
 	}
 

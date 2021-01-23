@@ -2,8 +2,8 @@ import React from 'react';
 import { login, register} from "./auth";
 import { uploadFile } from './file';
 import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
-import { getPropertiesByUserKey } from './properties';
-import { getVehiclesByUserKey, addVehicle, updateVehicle, deleteVehicle } from './vehicles';
+import { getUserProperties } from './properties';
+import { getUserVehicles, addVehicle, updateVehicle, deleteVehicle } from './vehicles';
 
 const AppContext = React.createContext('');
 
@@ -18,7 +18,8 @@ export class AppContextProvider extends React.Component
 		super(props);
 
 		this.state = {
-			token: localStorage.getItem('token') !== undefined ? localStorage.getItem('token') : ''
+			accessToken: localStorage.getItem('accessToken') !== undefined ? localStorage.getItem('accessToken') : '',
+			refreshToken: localStorage.getItem('refreshToken') !== undefined ? localStorage.getItem('refreshToken') : ''
 		};
 
 		this.register = register.bind(this);
@@ -26,8 +27,8 @@ export class AppContextProvider extends React.Component
 		this.uploadFile = uploadFile.bind(this);
 		this.getApiMfrs = getApiMfrs.bind(this);
 		this.getApiModelsByMfrKey = getApiModelsByMfrKey.bind(this);
-		this.getPropertiesByUserKey = getPropertiesByUserKey.bind(this);
-		this.getVehiclesByUserKey = getVehiclesByUserKey.bind(this);
+		this.getUserProperties = getUserProperties.bind(this);
+		this.getUserVehicles = getUserVehicles.bind(this);
 		this.addVehicle = addVehicle.bind(this);
 		this.updateVehicle = updateVehicle.bind(this);
 		this.deleteVehicle = deleteVehicle.bind(this);
@@ -37,10 +38,12 @@ export class AppContextProvider extends React.Component
 	 * Logout
 	 */
 	logout = () => {
-		localStorage.removeItem('token');
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
 
 		this.setState({
-			token: ''
+			accessToken: '',
+			refreshToken: ''
 		});
 	}
 
@@ -54,15 +57,15 @@ export class AppContextProvider extends React.Component
 					uploadFile: this.uploadFile,
 					getApiMfrs: this.getApiMfrs,
 					getApiModelsByMfrKey: this.getApiModelsByMfrKey,
-					getPropertiesByUserKey: this.getPropertiesByUserKey,
-					getVehiclesByUserKey: this.getVehiclesByUserKey,
+					getUserProperties: this.getUserProperties,
+					getUserVehicles: this.getUserVehicles,
 					addVehicle: this.addVehicle,
 					updateVehicle: this.updateVehicle,
 					deleteVehicle: this.deleteVehicle,
 					...this.state
 				}}>
 
-				{this.props.children}
+				{ this.props.children }
 
 			</AppContext.Provider>
 		)

@@ -1,42 +1,55 @@
 import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put, Req, Res } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
-import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
+import {HandleUpstreamError, Key, ResponseError} from '../../shared/models/models';
 import { VEHICLE_ERRORS, VehicleService } from '../services/VehicleService';
+
+const DEFAULT_VEHICLE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
 
 @JsonController('/vehicle-svc')
 export class VehicleController {
 
     @Inject()
-    private vehicleService: VehicleService = Container.get(VehicleService);
-
     /**
      * @swagger
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     get:
-     *       summary: Retrieve a specific vehicle.
+     *       summary: Fetch a specific vehicle.
      *       description: Retrieve a specific vehicle.
+     *       tags:
+     *         - Vehicle
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
      *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *         - in: path
      *           name: vehicle_key
      *           description: The vehicle key being queried.
-     *           required: true
      *           type: string
+     *           minimum: 5
+     *           required: true
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
+    private vehicleService: VehicleService = Container.get(VehicleService);
+
     @Get('/vehicles/:vehicle_key')
     public async getVehicle(
-        @Req() req: any,
-        @Param('vehicle_key') vehicleKey: string): Promise<any> {
+        @Req() { requestor: { origin }}: AuthorisedRequest,
+        @Param('vehicle_key') vehicleKey: Key): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.getVehicle(vehicleKey, req.requestor.referrer);
+            const vehicle = await this.vehicleService.getVehicle(vehicleKey, origin);
 
             return {
                 vehicle: vehicle,
@@ -47,14 +60,15 @@ export class VehicleController {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
                     case VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, err.key, 'Empty vehicle key provided.');
+                        console.error('Empty vehicle key provided.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     case VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                        return new ResponseError(404, err.key, 'No vehicles were found for the user key provided.');
+                        return new ResponseError(404, err.key, 'No vehicles were found for the user.');
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -64,11 +78,11 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles:
      *     get:
-     *       summary: Get all vehicles
-     *       description: Retrieve vehicles data from manufacturer implemented API.
+     *       summary: Fetch all vehicles
+     *       description: Fetch all users vehicles.
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
@@ -90,10 +104,10 @@ export class VehicleController {
                     case VEHICLE_ERRORS.VEHICLES_NOT_FOUND:
                         return new ResponseError(404, err.key, 'No vehicles were found.');
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -101,10 +115,12 @@ export class VehicleController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-svc/vehicles/user:
+     *   /vehicle-svc/vehicles/by/user:
      *     get:
      *       summary: Fetch the vehicle of a user by key.
-     *       description: Return the vehicle of a user, excluding items.
+     *       description: Return the vehicle of a user
+     *       tags:
+     *         - Vehicle
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -116,7 +132,7 @@ export class VehicleController {
      *           required: true
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
      *         x-404_NO_VEHICLES_FOUND:
@@ -128,10 +144,10 @@ export class VehicleController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/vehicles/user')
-    public async getVehiclesByUserKey(@Req() { requestor: { userKey, origin }}: AuthorisedRequest): Promise<any> {
+    @Get('/vehicles/by/user')
+    public async getUserVehicles(@Req() { requestor: { userKey, origin }}: AuthorisedRequest): Promise<any> {
         try {
-            const vehicles = await this.vehicleService.getVehiclesByUserKey(userKey, origin);
+            const vehicles = await this.vehicleService.getUserVehicles(userKey, origin);
 
             return {
                 vehicles: vehicles,
@@ -141,15 +157,17 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_ERRORS.USER_KEY_EMPTY:
-                        return new ResponseError(500, err.key, 'Empty user key provided.');
                     case VEHICLE_ERRORS.VEHICLES_NOT_FOUND:
-                        return new ResponseError(404, err.key, 'No vehicles were found for the user key provided.');
+                        console.info('User does not have any vehicles.');
+                        return new ResponseError(404, err.key, 'No vehicles were found for the user.');
+                    case VEHICLE_ERRORS.USER_KEY_EMPTY:
+                        console.error('Empty user key provided.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -172,7 +190,7 @@ export class VehicleController {
      *             $ref: '#/definitions/Vehicle'
      *       responses:
      *         201:
-     *           description: DB data has been added successfully.
+     *           description: Data has been added successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
      *         500:
@@ -196,17 +214,16 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_ERRORS.NEW_VEHICLE_EMPTY:
-                        return new ResponseError(500, err.key, 'New vehicle information is empty.');
+                    case VEHICLE_ERRORS.EMPTY_NEW_VEHICLE_INFO:
+                        console.error('Failed to provide all the information to add new vehicle.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     case VEHICLE_ERRORS.VIN_ALREADY_EXISTS:
                         return new ResponseError(500, err.key, 'Same VIN already found on another vehicle.');
-                    case VEHICLE_ERRORS.VEHICLE_NOT_ADDED:
-                        return new ResponseError(500, err.key, 'Vehicle cannot be added at this time.');
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -264,16 +281,15 @@ export class VehicleController {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
                     case VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, err.key, 'Empty vehicle key provided.');
+                        console.error(500, err.key, 'Empty vehicle key provided.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     case VEHICLE_ERRORS.VIN_ALREADY_EXISTS:
                         return new ResponseError(500, err.key, 'Same VIN already found on another vehicle.');
-                    case VEHICLE_ERRORS.VEHICLE_NOT_UPDATED:
-                        return new ResponseError(500, err.key, 'Vehicle cannot be updated at this time.');
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -283,9 +299,10 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     delete:
-     *       summary: Delete the vehicle.
-     *       description:
-     *           Remove the vehicle.
+     *       summary: Delete  vehicle.
+     *       description: Remove  vehicle.
+     *       tags:
+     *         - Vehicle
      *       parameters:
      *         - in: path
      *           name: vehicle_key
@@ -321,14 +338,16 @@ export class VehicleController {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
                     case VEHICLE_ERRORS.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, err.key, 'Empty vehicle key provide.');
+                        console.error('Empty vehicle key provide.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     case VEHICLE_ERRORS.VEHICLE_NOT_FOUND:
-                        return new ResponseError(500, err.key, 'Vehicle not found for delete.');
+                        console.error('Vehicle cannot be deleted at this time.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                        return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, 'An unexpected error occurred in the vehicle service.');
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }

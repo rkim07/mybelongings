@@ -14,7 +14,7 @@ export enum VEHICLE_ERRORS {
     VEHICLE_NOT_UPDATED = 'VEHICLE_ERRORS.VEHICLE_NOT_UPDATED',
     VIN_ALREADY_EXISTS = 'VEHICLE_ERRORS.VIN_ALREADY_EXISTS',
     VEHICLE_KEY_EMPTY = 'VEHICLE_ERRORS.VEHICLE_KEY_EMPTY',
-    NEW_VEHICLE_EMPTY = 'VEHICLE_ERRORS.NEW_VEHICLE_EMPTY',
+    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_ERRORS.EMPTY_NEW_VEHICLE_INFO',
     USER_KEY_EMPTY = 'VEHICLE_ERRORS.USER_KEY_EMPTY'
 }
 
@@ -73,7 +73,7 @@ export class VehicleService {
      * @param userKey
      * @param origin
      */
-    public async getVehiclesByUserKey(userKey: Key, origin: string): Promise<any> {
+    public async getUserVehicles(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(VEHICLE_ERRORS.USER_KEY_EMPTY);
         }
@@ -99,7 +99,7 @@ export class VehicleService {
      */
     public async addVehicle(origin: string, vehicle: any): Promise<any> {
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.NEW_VEHICLE_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_ERRORS.EMPTY_NEW_VEHICLE_INFO);
         }
 
         const existingVehicleWithVin = await this.vehicleCollectionService.findByField('vin', vehicle.vin, 1);

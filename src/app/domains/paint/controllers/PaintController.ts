@@ -24,7 +24,7 @@ export class PaintController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the paint service.
      *           schema:
@@ -50,7 +50,7 @@ export class PaintController {
      *       description: Get all paints
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the paint service.
      *           schema:
@@ -83,7 +83,7 @@ export class PaintController {
      *             $ref: '#/definitions/Paint'
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
      *           schema:
      *              $ref: '#/definitions/Paint'
      *         500:

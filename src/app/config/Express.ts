@@ -62,6 +62,14 @@ export class ExpressConfig {
             );
             self.setupControllers();
         });
+
+        this.app.get('/*', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'), (err) => {
+                if (err) {
+                    res.status(500).send(err);
+                }
+            });
+        });
     }
 
     private setupControllers() {
@@ -82,7 +90,7 @@ export class ExpressConfig {
             if (/\.sock$/.exec(listen)) {
                 logger.info(`
                     ------------
-                    Server Started!
+                    MyBelongings Server Started!
 
                     Socket: ${listen}
                     Health: /ping
@@ -99,7 +107,7 @@ export class ExpressConfig {
             } else {
                 logger.info(`
                     ------------
-                    Server Started!
+                    MyBelongings Server Started!
 
                     Http: http://localhost:${listen}
                     Health: http://localhost:${listen}/ping

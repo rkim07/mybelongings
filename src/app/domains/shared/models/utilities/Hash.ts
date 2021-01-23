@@ -1,7 +1,7 @@
 import * as config from 'config';
 const bcrypt = require('bcrypt');
 
-const SALT_ROUNDS = config.get('hash.saltRounds').toString();
+const SALT_ROUNDS = config.get('hash.bcrypt.saltRounds').toString();
 
 export class Hash {
 

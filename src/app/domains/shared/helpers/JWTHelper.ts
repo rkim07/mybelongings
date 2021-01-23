@@ -1,23 +1,19 @@
 import * as config from 'config';
+import * as bluebird from 'bluebird';
 import * as jwt from 'jsonwebtoken';
 import * as models from '../models/models';
 
-const bluebird = require('bluebird');
-
 const JWT_AUTH_SECRET = config.get('jwt.auth.secret').toString();
 const JWT_SERVER_ISSUER = config.get('jwt.server.issuer').toString();
-const JWT_SERVER_TOKEN_ACCESS_SECRET = config.get('jwt.server.token.access.secret').toString();
+const JWT_SERVER_SECRET = config.get('jwt.server.secret').toString();
 const JWT_SERVER_TOKEN_ACCESS_EXPIRATION = config.get('jwt.server.token.access.expiration');
-const JWT_SERVER_TOKEN_REFRESH_SECRET = config.get('jwt.server.token.refresh.secret').toString();
 const JWT_SERVER_TOKEN_REFRESH_EXPIRATION = config.get('jwt.server.token.refresh.expiration');
 
 const jwtServerToken = {
     access: {
-        secret: JWT_SERVER_TOKEN_ACCESS_SECRET,
         expiration: JWT_SERVER_TOKEN_ACCESS_EXPIRATION
     },
     refresh: {
-        secret: JWT_SERVER_TOKEN_REFRESH_SECRET,
         expiration: JWT_SERVER_TOKEN_REFRESH_EXPIRATION
     }
 };
@@ -46,7 +42,7 @@ class JWTHelperImpl {
 
         return jwt.sign(
             payload,
-            secretOrPublicKey || Buffer.from(jwtServerToken[tokenType].secret, 'base64'),
+            secretOrPublicKey || Buffer.from(JWT_SERVER_SECRET, 'base64'),
             {
                 issuer: JWT_SERVER_ISSUER,
                 expiresIn: jwtServerToken[tokenType].expiration,
@@ -59,22 +55,16 @@ class JWTHelperImpl {
      * Decide if server secret or authSecret has to be used
      *
      * @param token
-     * @param tokenType
      */
-    public verifyToken = (token: string, tokenType?: string) => {
-        // Default
-        if (!tokenType) {
-            tokenType = 'access';
-        }
-
+    public verifyToken = (token: string) => {
         const decodedToken = jwt.decode(token);
         let secret: Buffer = Buffer.from(JWT_AUTH_SECRET, 'base64');
 
         // Type cast to any because JWT will return wrong type
         if ((decodedToken as any).iss === JWT_SERVER_ISSUER) {
-            secret = Buffer.from(jwtServerToken[tokenType].secret, 'base64');
+            secret = Buffer.from(JWT_SERVER_SECRET, 'base64');
         }
-        
+
         return this.verify(token, secret);
     }
 }

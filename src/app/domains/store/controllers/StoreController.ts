@@ -24,7 +24,7 @@ export class StoreController {
      *           type: string
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the store service.
      *           schema:
@@ -50,7 +50,7 @@ export class StoreController {
      *       description: Get all stores
      *       responses:
      *         200:
-     *           description: DB data has been retrieved successfully.
+     *           description: Data has been retrieved successfully.
      *         500:
      *           description: An unexpected error occurred in the store service.
      *           schema:
@@ -83,7 +83,7 @@ export class StoreController {
      *             $ref: '#/definitions/Store'
      *       responses:
      *         201:
-     *           description: DB data has been posted successfully.
+     *           description: Data has been posted successfully.
      *           schema:
      *              $ref: '#/definitions/Store'
      *         500:
