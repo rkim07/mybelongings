@@ -12,7 +12,6 @@ import Profile from './components/domains/users/profile';
 import PropertiesDashboard from './components/domains/properties/dashboard';
 import VehiclesDashboard from './components/domains/vehicles/dashboard';
 import NotFound from './components/structure/notfound';
-import Hello from './components/structure/default/hello';
 
 const styles = theme => ({
 	root: {
