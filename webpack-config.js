@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
 	devtool: 'source-map',
-	entry: "./src/frontend/js/index.tsx",
+	entry: "./src/frontend/js/index.js",
 	mode: "development",
 	output: {
 		path: path.resolve(__dirname, "build/frontend/js"),
@@ -19,7 +19,20 @@ module.exports = {
 				use: {
 					loader: 'ts-loader'
 				}
-			}
+			},
+			{
+				test: /\.js$/,
+				exclude: /node_modules/,
+				use: {
+					loader: "babel-loader"
+				}
+			},
+			{
+				test: /\.(jpg|png)$/,
+				use: {
+					loader: 'url-loader',
+				},
+			},
 		]
 	}
 }

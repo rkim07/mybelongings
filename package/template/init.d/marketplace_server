@@ -1,0 +1,114 @@
+#!/bin/bash
+# chkconfig: 45 80 1
+# wdogconfig: marketplace_server restart 10000 5
+# vsdconfig: - 80 1
+# description: Marketplace Service init.d script
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+source /etc/sysconfig/plugin_info
+source $PLUGIN_CFG_DIR/marketplace.cfg
+source $MARKETPLACE_DIR/bin/marketplace_base
+source /etc/sysconfig/plugins/w3serv.cfg
+
+# Start at the correct directory
+cd $MARKETPLACE_DIR
+
+# Set the DNS resolution timeout
+export RES_OPTIONS="attempts:2 timeout:5"
+
+# Get all export APP params
+export `cat $PLUGIN_CFG_DIR/marketplace.cfg`
+
+# Get all overrides for the app
+if [ -f $MARKETPLACE_CONFIG_OVERRIDE_FILE ]; then
+    export `cat $MARKETPLACE_CONFIG_OVERRIDE_FILE`
+else
+    log "No config override provided, using defaults. Place overrides here: $MARKETPLACE_CONFIG_OVERRIDE_FILE"
+fi
+
+export NODE_ENV=production
+export LD_LIBRARY_PATH=$MARKETPLACE_DIR/addons
+
+APP_NAME="marketplace_server"
+
+case "$1" in
+        start)
+            IS_RUNNING=0
+            if [ -f "${MARKETPLACE_PID_FILE}" ]; then
+                # Is PID running?
+                kill -0 $(cat ${MARKETPLACE_PID_FILE})
+                if [ $? -eq 0 ]; then
+                    IS_RUNNING=1
+                fi
+            fi
+
+            if [ $IS_RUNNING -eq 0 ]; then
+                log "Starting"
+                echo "Starting ${APP_NAME}"
+                ${W3NODE8_CLI} app/app.js &>> $PLUGIN_LOG_DIR/app.log &
+
+                RETURN_CODE=$?
+                if [ ${RETURN_CODE} -eq 0 ]; then
+                    # create lock file
+                    touch "${MARKETPLACE_LOCK_FILE}"
+
+                    # create pid file
+                    PID=$!
+                    echo ${PID} > "${MARKETPLACE_PID_FILE}"
+                fi
+                log "Started"
+            else
+                echo "${APP_NAME} already running"
+            fi
+
+            exit ${RETURN_CODE}
+        ;;
+
+        stop)
+            log "Stopping"
+
+            RETURN_CODE=0
+
+            # check if app is running
+            status ${APP_NAME}
+            if [ $? -ne 3 ]
+            then
+                echo -n "Stopping ${APP_NAME}"
+
+                # kill app
+                killproc -p ${MARKETPLACE_PID_FILE}
+
+                # clean up lock and PID files
+                RETURN_CODE=$?
+                if [ ${RETURN_CODE} -eq 0 ]
+                then
+                    rm -f "${MARKETPLACE_LOCK_FILE}"
+                    rm -f "${MARKETPLACE_PID_FILE}"
+                fi
+                echo ""
+            fi
+
+            log "Stopped"
+            exit ${RETURN_CODE}
+        ;;
+
+        status)
+            status ${APP_NAME}
+        ;;
+
+        restart)
+            # Stop the service and regardless of whether it was
+            # running or not, start it again.
+            $0 stop
+            $0 start
+        ;;
+
+        *)
+            # print usage example
+            echo "Usage: $0 start|stop|restart|status"
+            exit 1
+        ;;
+
+esac

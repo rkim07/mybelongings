@@ -1,27 +1,27 @@
+import * as config from 'config';
+import * as path from 'path';
+import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
-
+import * as useragent from 'express-useragent';
+import * as stoppable from 'stoppable';
 import { useContainer, useExpressServer } from 'routing-controllers';
 import { Container } from 'typedi';
-
-import * as config from 'config';
 import { EventDispatcher } from 'event-dispatch';
+import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
+import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
 import { logger } from '../common/logging';
-// import { VersionService } from '../domains/shared/services/VersionService';
-// import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
-import { NotificationManager } from './NotificationManager';
 
-/*const swaggerUi = require('swagger-ui-express');
+const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require(process.cwd() + '/spec.json');
-import * as SwaggerExpressMiddleware from 'swagger-express-middleware';*/
+import * as SwaggerExpressMiddleware from 'swagger-express-middleware';
+
+export let server;
 
 export class ExpressConfig {
 
     public app: express.Express;
-    public server: any;
     public eventDispatcher: EventDispatcher = new EventDispatcher();
 
     constructor() {
@@ -31,13 +31,16 @@ export class ExpressConfig {
         const self = this;
 
         // Only allow swagger api endpoing if using development branch
-        /*const versionService = Container.get(VersionService);
-        if (versionService.getVersion().version == 'development') {
-            this.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-        }*/
+        // const versionService = Container.get(VersionService);
+        // if (versionService.getVersion().version == 'development') {
+        this.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+        // }
 
+        // Serve static contents
         this.app.use(express.static(path.join(__dirname, '../../frontend/views/')));
         this.app.use(express.static(path.join(__dirname, '../../frontend/js/')));
+        this.app.use(express.static(path.join(__dirname, '../../assets/css')));
+        this.app.use(express.static(path.join(__dirname, '../../assets/images')));
 
         this.app.use(cors());
         this.app.use(bodyParser.json());
@@ -48,22 +51,25 @@ export class ExpressConfig {
             res.sendStatus(200);
         });
 
-        /*SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {
+        SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {
             this.app.use(
                 middleware.metadata(),
                 middleware.parseRequest(),
                 middleware.validateRequest(),
+                RequestorDecoratorMiddleware.decorateRequest,
                 AuthorizationMiddleware.authorizeRequest,
                 useragent.express()
             );
             self.setupControllers();
-        });*/
+        });
 
-        self.setupControllers();
-    }
-
-    public stopServer(cb) {
-        this.server.close(cb);
+        this.app.get('/*', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'), (err) => {
+                if (err) {
+                    res.status(500).send(err);
+                }
+            });
+        });
     }
 
     private setupControllers() {
@@ -80,11 +86,11 @@ export class ExpressConfig {
         const listen = this.getListener();
 
         // Start Webserver
-        this.server = this.app.listen(listen, () => {
+        server = this.app.listen(listen, () => {
             if (/\.sock$/.exec(listen)) {
                 logger.info(`
                     ------------
-                    Server Started!
+                    MyBelongings Server Started!
 
                     Socket: ${listen}
                     Health: /ping
@@ -101,7 +107,7 @@ export class ExpressConfig {
             } else {
                 logger.info(`
                     ------------
-                    Server Started!
+                    MyBelongings Server Started!
 
                     Http: http://localhost:${listen}
                     Health: http://localhost:${listen}/ping
@@ -113,8 +119,8 @@ export class ExpressConfig {
             this.eventDispatcher.dispatch('server:started');
         });
 
-        // Start Notification Manager
-        Container.get(NotificationManager);
+        // NPM library that will gracefully shutdown the server
+        stoppable(server, 2000);
     }
 
     private getListener(): string {

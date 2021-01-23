@@ -1,0 +1,16 @@
+version: "2.1"
+
+services:
+  db:
+    image: mariadb:10.1
+    ports:
+      - 3308:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=toor
+      - MYSQL_USER=mybelongings
+      - MYSQL_DATABASE=mybelongings
+      - MYSQL_PASSWORD=my_secret_password
+    volumes:
+      - ./package/template/conf.d/dbcore/mybelongings_db.create:/docker-entrypoint-initdb.d/001-mybelongings_db.sql
+      - ./.mariadb:/var/lib/mysql
+      - ./config/test/mariadb.conf:/etc/mysql/conf.d/config-file.cnf

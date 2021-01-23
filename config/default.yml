@@ -5,11 +5,35 @@ ports:
 logging:
   loglevel: debug
 
+db:
+  port: 3306
+  host: 'localhost'
+  database: 'mybelongings'
+  user: 'mybelongings'
+  password: 'bXlfc2VjcmV0X3Bhc3N3b3Jk'
+  connectionLimit: 5
+
 jwt:
   auth:
     # Public key for validating JWTs created by separate Auth Service
     secret: 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFtQ1R2bUNLUW5PNkZwc3FaQWNVUgpZcWcyTDU5cm45M0lOUmJKOW1vcVc0K000MkdaM2E3OGpEaUJGQjBnVEZIN2hEdmlEdGdmaUgzdVA5cDhVOVVKCjB3OVgrb3YwRGNZYnR4TlQ0cG1YQmZ5RnRKcHZtWDU5Lzh0U01hYXlQbVBkbEw3R1RkellBMllJWEFNaUJkcUoKWFpsUXM2dHZLQWpxSWMzSEN2TExqaU5GYlJGRUdCZmw3bVptdnZNU3BuSnFDQXBJSmZobjE5ZlA0Z09ra2xsTwp5Z0xxa3UrWkF6cysxOC96cW1udVNnWXVuRTlQbjZmYUt0dG5va05tRU9qQzQzTzdoSEVRYWRZWWpEa05OTC91CjRoZGVoakFFS2I1UUZ1RExERFJrNWVkdmxmT01CTlZDMnZ4K0J0aDBicGxrcmxqaDZXN1RDc3k1amFqa2dPS2sKblFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg'
   server:
-    issuer: 'marketplace.panasonic.aero'
-    # HAC secret for JWTs created by BoB airside service
-    secret: 'MTIzNDU2Nzg='
+    issuer: 'mybelongings.com'
+    secret: 'MTIzNDU2Nzg=' # HAC secret for JWTs
+    token:
+      access:
+        expiration: 300 # 5 minutes in seconds
+      refresh:
+        expiration: 1800 #  30 minutes in seconds
+
+hash:
+  bcrypt:
+    saltRounds: 10
+
+api:
+  vehicles:
+    nhtsa:
+      listSource: 'local' # local or api
+      listFormat: 'json'
+      mfrUrl: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
+      mfrModelsUrl: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'

@@ -1,0 +1,14 @@
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+source /etc/sysconfig/plugin_info
+source $PLUGIN_CFG_DIR/marketplace.cfg
+
+PATH=$MARKETPLACE_DIR/bin:$PATH
+
+logfile="${PLUGIN_LOG_DIR}/`basename $0`.log"
+
+log()
+{
+    echo "(`date`): ${1}" >> $logfile
+}

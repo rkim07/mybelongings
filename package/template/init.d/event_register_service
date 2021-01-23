@@ -1,0 +1,78 @@
+#!/bin/bash
+# chkconfig: 45 80 1
+# description: Event Register init.d script
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+source /etc/sysconfig/plugin_info
+source $PLUGIN_CFG_DIR/marketplace.cfg
+source $MARKETPLACE_DIR/bin/marketplace_base
+
+export PLUGIN_INFO=${PLUGIN_INFO-/etc/sysconfig/plugin_info}
+if [ -f ${PLUGIN_INFO} ]; then
+    . ${PLUGIN_INFO}
+fi
+
+if [ -f $PLUGIN_CFG_DIR/inflight_sdk ]; then
+   . $PLUGIN_CFG_DIR/inflight_sdk
+fi
+
+if [ -f $PLUGIN_CFG_DIR/w3serv.cfg ]; then
+   . $PLUGIN_CFG_DIR/w3serv.cfg
+fi
+
+[ -f ${PLUGIN_CFG_DIR}/dbutils ] && source ${PLUGIN_CFG_DIR}/dbutils
+[ -z “${EDIT_DISPATCH}” ] && EDIT_DISPATCH=${DBUTILS_BIN}/edit_dispatch_cfg.sh
+
+
+logfile="${PLUGIN_LOG_DIR}/`basename $0`.log"
+
+log()
+{
+    echo "(`date`): ${1}" >> $logfile
+}
+
+case "$1" in
+        start)
+            log "Starting"
+            $MARKETPLACE_DIR/bin/handlers/service_stage_start_handler.sh
+
+            # Register for OPEN_FLIGHT
+            log "=> Registering for OPEN_FLIGHT event"
+            $PHP_BIN $INFLIGHT_SDK_DIR/bin/event_subscribe_scripthook.php \
+                core.route_control.open_flight_requested \
+                $MARKETPLACE_DIR/bin/handlers/flight_stage_open_handler.sh
+
+            # Register for CLOSE_FLIGHT
+            log "=> Registering for CLOSE_FLIGHT event"
+            $PHP_BIN $INFLIGHT_SDK_DIR/bin/event_subscribe_scripthook.php \
+                core.route_control.close_flight_requested \
+                $MARKETPLACE_DIR/bin/handlers/flight_stage_close_handler.sh
+
+            log "Started"
+
+            ;;
+
+        stop)
+            log "Stopping"
+            $MARKETPLACE_DIR/bin/handlers/service_stage_stop_handler.sh
+            log "Stopped"
+            ;;
+
+        restart)
+                log "init.d: triggering restart"
+                date; echo $0;
+                $0 stop
+                sleep 1
+                $0 start
+
+                log "restart"
+                ;;
+
+        *)
+                echo "Usage $0 {start|stop|restart}" >&0
+                exit 1
+                ;;
+
+esac
