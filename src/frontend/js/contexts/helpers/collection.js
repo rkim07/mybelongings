@@ -30,11 +30,11 @@ export function addUpdateCollection(obj, collection) {
  * @returns {unknown[]}
  */
 export function removeFromCollection(obj, collection) {
-	const index = _.findIndex(collection, (idx) => {
+	_.remove(collection, (idx) => {
 		return idx.key === obj.key
 	});
 
-	return _.pullAt(collection, index);
+	return collection;
 }
 
 /**

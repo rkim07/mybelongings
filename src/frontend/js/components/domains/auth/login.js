@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
 import { withRouter } from 'react-router-dom';
@@ -180,7 +179,7 @@ class Login extends React.Component
 										type='submit'
 										fullWidth
 										variant='contained'
-										color='primary'
+										color='default'
 										className={classes.submit}>
 										Log in
 									</Button>
@@ -192,9 +191,5 @@ class Login extends React.Component
 		)
 	}
 }
-
-Login.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withRouter(withStyles(styles)(Login)));

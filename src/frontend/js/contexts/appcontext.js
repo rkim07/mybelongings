@@ -1,6 +1,6 @@
 import React from 'react';
 import { login, register} from "./auth";
-import { uploadFile } from './file';
+import { uploadFile } from './upload';
 import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
 import { getUserProperties } from './properties';
 import { getUserVehicles, addVehicle, updateVehicle, deleteVehicle } from './vehicles';

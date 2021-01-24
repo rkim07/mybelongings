@@ -16,17 +16,15 @@ export default function Notifier(props) {
 	const horizontal = 'center';
 
 	return (
-		<div className="">
-			<Snackbar
-				open={ open }
-				onClose={ onHandleCloseNotifier }
-				key={ 'top' + 'center' }
-				anchorOrigin={{ vertical, horizontal }}
-			>
-				<Alert onClose={ onHandleCloseNotifier } severity={ notifierType }>
-					{ notifierMsg }
-				</Alert>
-			</Snackbar>
-		</div>
+		<Snackbar
+			open={ open }
+			onClose={ onHandleCloseNotifier }
+			key={ 'top' + 'center' }
+			anchorOrigin={{ vertical, horizontal }}
+		>
+			<Alert onClose={ onHandleCloseNotifier } severity={ notifierType }>
+				{ notifierMsg }
+			</Alert>
+		</Snackbar>
 	);
 }

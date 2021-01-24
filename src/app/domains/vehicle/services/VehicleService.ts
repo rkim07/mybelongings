@@ -1,21 +1,20 @@
 import * as _ from 'lodash';
 import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
+import { HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { VehicleApiService } from './VehicleApiService';
 import { VehicleCollectionService } from './VehicleCollectionService';
-import { HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
-import { ImageHelper } from "../../shared/helpers/ImageHelper";
-import { FileService } from "../../shared/services/FileService";
 
-export enum VEHICLE_ERRORS {
-    VEHICLE_NOT_FOUND = 'VEHICLE_ERRORS.VEHICLE_NOT_FOUND',
-    VEHICLES_NOT_FOUND = 'VEHICLE_ERRORS.VEHICLES_NOT_FOUND',
-    VEHICLE_NOT_ADDED = 'VEHICLE_ERRORS.VEHICLE_NOT_ADDED',
-    VEHICLE_NOT_UPDATED = 'VEHICLE_ERRORS.VEHICLE_NOT_UPDATED',
-    VIN_ALREADY_EXISTS = 'VEHICLE_ERRORS.VIN_ALREADY_EXISTS',
-    VEHICLE_KEY_EMPTY = 'VEHICLE_ERRORS.VEHICLE_KEY_EMPTY',
-    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_ERRORS.EMPTY_NEW_VEHICLE_INFO',
-    USER_KEY_EMPTY = 'VEHICLE_ERRORS.USER_KEY_EMPTY'
+export enum VEHICLE_SERVICE_ERRORS {
+    VEHICLE_NOT_FOUND = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND',
+    VEHICLES_NOT_FOUND = 'VEHICLE_SERVICE_ERRORS.VEHICLES_NOT_FOUND',
+    VEHICLE_NOT_ADDED = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_ADDED',
+    VEHICLE_NOT_UPDATED = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_UPDATED',
+    VIN_ALREADY_EXISTS = 'VEHICLE_SERVICE_ERRORS.VIN_ALREADY_EXISTS',
+    VEHICLE_KEY_EMPTY = 'VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY',
+    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_ERRORS.EMPTY_NEW_VEHICLE_INFO',
+    USER_KEY_EMPTY = 'VEHICLE_SERVICE_ERRORS.USER_KEY_EMPTY'
 }
 
 @Service()
@@ -28,23 +27,23 @@ export class VehicleService {
     private vehicleApiService: VehicleApiService = Container.get(VehicleApiService);
 
     @Inject()
-    private fileService: FileService = Container.get(FileService);
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
 
     /**
      * Get vehicle by key
      *
-     * @param key
+     * @param vehicleKey
      * @param origin
      */
-    public async getVehicle(key: Key, origin?: string): Promise<any> {
-        if (!key) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+    public async getVehicle(vehicleKey: Key, origin?: string): Promise<any> {
+        if (!vehicleKey) {
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
         }
 
-        const vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: key }});
+        const vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: vehicleKey }});
 
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND);
         }
 
         return await this.addDependencies(origin, vehicle);
@@ -59,7 +58,7 @@ export class VehicleService {
         const vehicles = await this.vehicleCollectionService.getVehicles();
 
         if (vehicles.length === 0) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
+            return [];
         }
 
         return await Promise.all(vehicles.map(async (vehicle) => {
@@ -75,13 +74,13 @@ export class VehicleService {
      */
     public async getUserVehicles(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
 
         const vehicles = await this.vehicleCollectionService.find({ userKey: { $eq: userKey }});
 
         if (vehicles.length === 0) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
+            return [];
         }
 
         const results = await Promise.all(vehicles.map(async (vehicle) => {
@@ -94,25 +93,26 @@ export class VehicleService {
     /**
      * Add vehicle
      *
+     * @param userKey
      * @param origin
      * @param vehicle
      */
-    public async addVehicle(origin: string, vehicle: any): Promise<any> {
+    public async addVehicle(userKey: Key, origin: string, vehicle: any): Promise<any> {
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.EMPTY_NEW_VEHICLE_INFO);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.EMPTY_NEW_VEHICLE_INFO);
         }
-
-        const existingVehicleWithVin = await this.vehicleCollectionService.findByField('vin', vehicle.vin, 1);
 
         // Make sure VIN numbers are unique
-        if (existingVehicleWithVin) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VIN_ALREADY_EXISTS);
+        const vinExists = await this.vehicleCollectionService.findOne({ vin: {$eq: vehicle.vin} });
+
+        if (vinExists) {
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VIN_ALREADY_EXISTS);
         }
 
-        const results = await this.vehicleCollectionService.updateVehicle(vehicle);
+        const results = await this.vehicleCollectionService.addVehicle(userKey, vehicle);
 
         if (!results) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_ADDED);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_ADDED);
         }
 
         return await this.addDependencies(origin, results);
@@ -121,26 +121,20 @@ export class VehicleService {
     /**
      * Update vehicle
      *
+     * @param userKey
+     * @param vehicleKey
      * @param origin
      * @param vehicle
-     * @param key
      */
-    public async updateVehicle(origin: string, vehicle: any, key: Key): Promise<any> {
-        if (!key) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+    public async updateVehicle(userKey: Key, vehicleKey: Key, origin: string, vehicle: any): Promise<any> {
+        if (!vehicleKey) {
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
         }
 
-        const existingVehicleWithVin = await this.vehicleCollectionService.findByField('vin', vehicle.vin, 1);
-
-        // Make sure VIN numbers are unique
-        if (existingVehicleWithVin.key !== vehicle.key) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VIN_ALREADY_EXISTS);
-        }
-
-        const results = await this.vehicleCollectionService.updateVehicle(vehicle, key);
+        const results = await this.vehicleCollectionService.updateVehicle(userKey, vehicleKey, vehicle);
 
         if (!results) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_UPDATED);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_UPDATED);
         }
 
         return await this.addDependencies(origin, results);
@@ -149,20 +143,29 @@ export class VehicleService {
     /**
      * Deletes a vehicle given an associated vehicle key
      *
-     * @param key
+     * @param userKey
+     * @param vehicleKey
      */
-    public async deleteVehicle(key: Key): Promise<any> {
-        if (!key) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_KEY_EMPTY);
+    public async deleteVehicle(userKey: Key, vehicleKey: Key): Promise<any> {
+        if (!vehicleKey) {
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
         }
-        const vehicle: Vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: key }});
+
+        const query = {
+            $and: [
+                { key: { $eq: vehicleKey } },
+                { userKey: { $eq: userKey } }
+            ]
+        };
+
+        const vehicle: Vehicle = await this.vehicleCollectionService.findOne(query);
 
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLES_NOT_FOUND);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLES_NOT_FOUND);
         }
 
-        await this.vehicleCollectionService.removeByFieldValue('key', vehicle.key);
-        await this.fileService.removeFile(vehicle.image);
+        await this.vehicleCollectionService.removeByFieldValue('key', vehicleKey);
+        await this.fileUploadService.removeFile(vehicle.image);
 
         return vehicle;
     }
@@ -172,14 +175,15 @@ export class VehicleService {
      *
      * @param origin
      * @param vehicle
+     * @private
      */
-    private async addDependencies(origin, vehicle) {
+    private async addDependencies(origin, vehicle): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
 
         vehicle['mfrName'] = mfr.mfrName;
         vehicle['model'] = model.model;
-        vehicle['image_path'] = ImageHelper.getImagePath(origin, vehicle.image);
+        vehicle['image_path'] = this.fileUploadService.setImagePath(origin, vehicle.image, 'vehicle');
 
         return vehicle;
     }

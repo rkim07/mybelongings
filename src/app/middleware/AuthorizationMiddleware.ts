@@ -1,5 +1,4 @@
 import { NextFunction, Response } from 'express';
-import { HttpError } from 'routing-controllers';
 import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
 import { logger } from '../common/logging';
@@ -52,7 +51,8 @@ export namespace AuthorizationMiddleware {
                     await authorizeUserRoles();
                     await authorizeUser();
                 } catch (err) {
-                    return handleUnauthorizedUser(err);
+                    logger.error(err);
+                    return handleUnauthorizedUser();
                 }
             }
         }
@@ -113,14 +113,15 @@ export namespace AuthorizationMiddleware {
             req.requestor.jwt = token;
             req.requestor.jwtDecoded = decodedJwt;
             req.requestor.userKey = decodedJwt.userKey;
-            req.requestor.origin = `${req.protocol}://${req.get('host')}`
+            req.requestor.origin = `${req.protocol}://${req.get('host')}`;
+
             authorizedRequest = true;
         }
 
         /**
-         * If the user is unathorized, catch and store the error message
+         * If the user is unauthorized, catch and store the error message
          */
-        function handleUnauthorizedUser(err?: any) {
+        function handleUnauthorizedUser() {
             res.status(401).json({ error: 'Unauthorized'});
         }
     }

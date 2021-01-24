@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { NhtsaApiVehicleMfr, NhtsaApiVehicleModel } from '../../shared/models/models';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
+import { NhtsaApiVehicleMfr } from '../../shared/models/models';
 import { Datetime } from '../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionService {
@@ -16,7 +16,7 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
     /**
      * Get all API manufacturers
      */
-    public async getApiMfrs(): Promise<NhtsaApiVehicleMfr[]> {
+    public async getApiMfrs(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()

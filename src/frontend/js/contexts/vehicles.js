@@ -1,14 +1,17 @@
 import React from 'react';
 import axios from 'axios';
 import { addUpdateCollection, removeFromCollection } from './helpers/collection';
-import { addStatusType, refreshToken, setAuthenticationHeader } from './helpers/exchange';
+import { parseResponse, refreshToken, setAuthenticationHeader } from './helpers/exchange';
 
 const vehiclesAxios = axios.create();
 
 // Request interceptor
-vehiclesAxios.interceptors.request.use((config) => {
+vehiclesAxios.interceptors.request.use(config => {
 	return setAuthenticationHeader(config);
-}, (error) => Promise.reject(error));
+}, (error) => {
+	Promise.reject(error)
+});
+
 
 // Response interceptor
 // Is the marker being refreshed?
@@ -16,13 +19,13 @@ let isRefreshing = false
 // Retry queue, each item will be a function to be executed
 let requests = []
 
-vehiclesAxios.interceptors.response.use((response) => {
-	return addStatusType(response);
-}, (err) => {
+vehiclesAxios.interceptors.response.use(response => {
+	return parseResponse(response);
+}, err => {
 	return refreshToken(vehiclesAxios, err, requests, isRefreshing);
 }, (error) => {
 	return Promise.reject(error)
-})
+});
 
 /**
  * Get vehicle by ID
@@ -74,7 +77,6 @@ export function getVehicles() {
 /**
  * Get vehicles by user key
  *
- * @param userKey
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
 export function getUserVehicles() {
@@ -187,6 +189,7 @@ function prepareSubmitData(vehicle, key = null) {
 	vehicle.year = parseInt(vehicle.year);
 
 	if (key) {
+		vehicle.year = parseInt(vehicle.year);
 		delete (vehicle.mfrName);
 		delete (vehicle.model);
 		delete (vehicle.image_path);

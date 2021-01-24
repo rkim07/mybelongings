@@ -1,9 +1,10 @@
-import { Body, HttpCode, JsonController, Get, Post, Req } from 'routing-controllers';
+import { Body, Get, HttpCode, JsonController, Post, Req } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
-import {HandleUpstreamError, ResponseError} from '../../shared/models/models';
-import {AUTH_ERRORS, AuthService} from '../services/AuthService';
-import {AuthorisedRequest} from "../../shared/interfaces/AuthorisedRequest";
-import {VEHICLE_ERRORS} from "../../vehicle/services/VehicleService";
+import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
+import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
+import { AUTH_SERVICE_ERRORS, AuthService } from '../services/AuthService';
+
+import { logger } from '../../../common/logging';
 
 const DEFAULT_AUTH_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
 
@@ -60,16 +61,16 @@ export class AuthController {
                 accessToken: login.accessToken,
                 refreshToken: login.refreshToken,
                 message: 'User logged in.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_ERRORS.UNREGISTERED_USER:
+                    case AUTH_SERVICE_ERRORS.UNREGISTERED_USER:
                         return new ResponseError(404, err.key, 'Unregistered user.');
-                    case AUTH_ERRORS.INVALID_CREDENTIALS:
+                    case AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS:
                         return new ResponseError(401, err.key, 'Invalid credentials.');
-                    case AUTH_ERRORS.TOKENS_NOT_CREATED:
-                        console.error('An unexpected error occurred while creating the tokens.');
+                    case AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED:
+                        logger.error('An unexpected error occurred while creating the tokens.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
@@ -113,15 +114,15 @@ export class AuthController {
 
             return {
                 message: 'Logout success.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_ERRORS.USER_KEY_EMPTY:
-                        console.error('User key not found.');
+                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
+                        logger.error('User key not found.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_ERRORS.USER_NOT_FOUND:
-                        console.error('User not found.');
+                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
+                        logger.error('User not found.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
@@ -175,18 +176,18 @@ export class AuthController {
                 accessToken: refresh.accessToken,
                 refreshToken: refresh.refreshToken,
                 message: 'Token refreshed.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_ERRORS.USER_KEY_EMPTY:
-                        console.error('User key not found.');
+                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
+                        logger.error('User key not found.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_ERRORS.USER_NOT_FOUND:
-                        console.error('User not found.');
+                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
+                        logger.error('User not found.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_ERRORS.TOKEN_NOT_CREATED:
-                        console.error('An unexpected error occurred while creating the token.');
+                    case AUTH_SERVICE_ERRORS.TOKEN_NOT_CREATED:
+                        logger.error('An unexpected error occurred while creating the token.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
@@ -232,11 +233,11 @@ export class AuthController {
             return {
                 user: registration.user,
                 message: 'User successfully registered.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_ERRORS.USER_ALREADY_REGISTERED:
+                    case AUTH_SERVICE_ERRORS.USER_ALREADY_REGISTERED:
                         return new ResponseError(409, err.key, 'User already registered.');
                     default:
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);

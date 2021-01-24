@@ -79,7 +79,6 @@
     "react-text-mask": "^5.4.3",
     "reflect-metadata": "^0.1.10",
     "request": "^2.81.0",
-    "request-promise": "^4.2.1",
     "route-parser": "0.0.5",
     "routing-controllers": "^0.6.11",
     "socket.io": "^1.7.3",

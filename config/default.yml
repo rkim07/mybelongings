@@ -1,5 +1,5 @@
 ports:
-  http: 3030
+  http: 80
   debug: 5858
 
 logging:
@@ -22,9 +22,9 @@ jwt:
     secret: 'MTIzNDU2Nzg=' # HAC secret for JWTs
     token:
       access:
-        expiration: 300 # 5 minutes in seconds
+        expiration: 900 # 5 minutes in seconds
       refresh:
-        expiration: 1800 #  30 minutes in seconds
+        expiration: 3600 #  30 minutes in seconds
 
 hash:
   bcrypt:
@@ -35,5 +35,5 @@ api:
     nhtsa:
       listSource: 'local' # local or api
       listFormat: 'json'
-      mfrUrl: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
-      mfrModelsUrl: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'
+      mfrEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
+      mfrModelsEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'

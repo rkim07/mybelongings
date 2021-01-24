@@ -11,7 +11,7 @@ export class UserCollectionService extends DatabaseCollectionService {
     /**
      * Get all users
      */
-    public async getUsers(): Promise<User[]> {
+    public async getUsers(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()

@@ -1,5 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom'
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../contexts/appcontext';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,9 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Link } from 'react-router-dom'
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
+import {RecentActors} from "@material-ui/icons";
 
 const styles = theme => ({
 	root: {
@@ -86,11 +86,10 @@ class Header extends React.Component
 
 		const desktopSection =
 			<div className={classes.sectionDesktop}>
-				{ !this.props.accessToken && (
-					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>)
-				}
-				{ this.props.accessToken && (
-					<div>
+				{ !this.props.accessToken ? (
+					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>
+				) : (
+					<React.Fragment>
 						<Button component={Link} to='/properties'>Properties</Button>
 						<Button component={Link} to='/vehicles'>Vehicles</Button>
 						<IconButton
@@ -100,23 +99,22 @@ class Header extends React.Component
 							color='inherit'>
 							<AccountCircle />
 						</IconButton>
-					</div>)
-				}
+					</React.Fragment>
+				)}
 			</div>;
 
 		const mobileSection =
 			<div className={classes.sectionMobile}>
-				{ !this.props.accessToken && (
-					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>)
-				}
-				{ this.props.accessToken && (
+				{ !this.props.accessToken ? (
+					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>
+				) : (
 					<IconButton aria-haspopup='true' onClick={this.onHandleMobileMenuOpen} color='inherit'>
 						<MoreIcon/>
-					</IconButton>)
-				}
+					</IconButton>
+				)}
 			</div>;
 
-		const renderMenu =
+		const renderDesktopMenu =
 			<Menu
 				anchorEl={anchor}
 				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -140,21 +138,18 @@ class Header extends React.Component
 				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 				transformOrigin={{ vertical: 'top', horizontal: 'right' }}
 				open={isMobileMenuOpen}
-				onClose={this.onHandleMenuClose}>
+				onClose={this.onHandleMobileMenuClose}>
 				<MenuItem onClick={this.onHandleMobileMenuClose}>
 					<Button component={Link} to='/properties/dashboard'>Properties</Button>
 				</MenuItem>
 				<MenuItem onClick={this.onHandleMobileMenuClose}>
 					<Button component={Link} to='/vehicles'>Vehicles</Button>
 				</MenuItem>
-				<MenuItem onClick={this.onHandleMobileMenuOpen}>
-					<IconButton
-						aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-						aria-haspopup='true'
-						onClick={this.onHandleProfileMenuOpen}
-						color='inherit'>
-						<AccountCircle />
-					</IconButton>
+				<MenuItem onClick={this.onHandleMobileMenuClose}>
+					<Button component={Link} to='/profile'>Profile</Button>
+				</MenuItem>
+				<MenuItem onClick={this.onHandleMobileMenuClose}>
+					<Button component={Link} to='/logount'>Logount</Button>
 				</MenuItem>
 			</Menu>;
 
@@ -169,15 +164,11 @@ class Header extends React.Component
 					</Toolbar>
 				</AppBar>
 
-				{ renderMenu }
+				{ renderDesktopMenu }
 				{ renderMobileMenu }
 			</React.Fragment>
 		)
 	}
 }
-
-Header.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Header));
