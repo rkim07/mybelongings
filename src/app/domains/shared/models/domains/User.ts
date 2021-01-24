@@ -1,5 +1,5 @@
-import { Hash } from "../utilities/Hash";
 import { Datetime } from '../utilities/Datetime';
+import { Hash } from '../utilities/Hash';
 import { Key } from '../utilities/Key';
 
 export class User {
@@ -20,6 +20,7 @@ export class User {
      * @param data
      */
     constructor(data: {
+        authorities: Array<string>,
         firstName: string,
         lastName: string,
         email: string,
@@ -27,15 +28,13 @@ export class User {
         password: string,
         refreshToken: string
     }) {
-        const userKey = Key.generate()
-
-        this.key = userKey;
-        this.authorities = ['ROLE_USER'];
+        this.key = Key.generate();
+        this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.email = data.email;
         this.username = data.username;
-        this.password = Hash.hash(userKey + data.password);
+        this.password = Hash.bcryptHash(data.password);
         this.refreshToken = data.refreshToken;
         this.modified = this.created = Datetime.getNow();
     }

@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
 import { Container, Inject, Service } from 'typedi';
 import { AddressService } from '../../address/services/AddressService';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { PropertyCollectionService } from './PropertyCollectionService';
 import { PropertyAreaService } from "./propertyAreaService";
 import { HandleUpstreamError, Key, Property } from '../../shared/models/models';
-import { ImageHelper } from "../../shared/helpers/ImageHelper";
 
-export enum PROPERTY_ERRORS {
-    PROPERTY_NOT_FOUND = 'PROPERTY_ERRORS.PROPERTY_NOT_FOUND',
-    USER_KEY_EMPTY = 'PROPERTY_ERRORS.USER_KEY_EMPTY'
+export enum PROPERTY_SERVICE_ERRORS {
+    PROPERTY_NOT_FOUND = 'PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND',
+    USER_KEY_EMPTY = 'PROPERTY_SERVICE_ERRORS.USER_KEY_EMPTY'
 }
 
 @Service()
@@ -23,6 +23,9 @@ export class PropertyService {
     @Inject()
     private propertyAreaService: PropertyAreaService = Container.get(PropertyAreaService);
 
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
+
     /**
      * Get property by key
      */
@@ -30,7 +33,7 @@ export class PropertyService {
         const property = await this.propertyCollectionService.findOne({ key: { $eq: key }});
 
         if (!property) {
-            throw new HandleUpstreamError(PROPERTY_ERRORS.PROPERTY_NOT_FOUND);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND);
         }
 
         return await this.addDependencies(origin, property);
@@ -57,13 +60,13 @@ export class PropertyService {
      */
     public async getUserProperties(userKey: Key, origin: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(PROPERTY_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
 
         const results = await this.propertyCollectionService.find({ userKey: { $eq: userKey }});
 
         if (!results) {
-            throw new HandleUpstreamError(PROPERTY_ERRORS.PROPERTY_NOT_FOUND);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND);
         }
 
         const properties = await Promise.all(results.map(async (property) => {
@@ -91,7 +94,7 @@ export class PropertyService {
      * @param property
      */
     private async addDependencies(origin, property) {
-        property['image_path'] = ImageHelper.getImagePath(origin, property.image);
+        property['image_path'] = this.fileUploadService.setImagePath(origin, property.image, 'property');
         property['address'] = await this.addressService.getAddress(property.addressKey);
         property['areas'] = await this.propertyAreaService.getAreasByPropertyKey(property.key, origin);
 

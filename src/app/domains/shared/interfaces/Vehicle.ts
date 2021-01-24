@@ -1,15 +1,15 @@
 import { Key } from '../models/models';
 
 export interface Vehicle {
-    userKey: Key,
-    mfrKey: Key,
-    modelKey: Key,
-    image: string,
-    year: number,
-    color: string,
-    vin: string,
-    plate: string,
-    condition: string
+    userKey: Key;
+    mfrKey: Key;
+    modelKey: Key;
+    image: string;
+    year: number;
+    color: string;
+    vin: string;
+    plate: string;
+    condition: string;
 }
 
 export interface NhtsaApiVehicleMfrInterface {

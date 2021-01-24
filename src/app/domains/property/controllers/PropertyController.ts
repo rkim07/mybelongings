@@ -1,7 +1,7 @@
 import { Body, Get, HttpCode, JsonController, Param, Post, Req } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { HandleUpstreamError, Property, PropertyArea, ResponseError } from '../../shared/models/models';
-import { PROPERTY_ERRORS, PropertyService } from '../services/PropertyService';
+import { PROPERTY_SERVICE_ERRORS, PropertyService } from '../services/PropertyService';
 import { PropertyAreaService } from '../services/PropertyAreaService';
 
 @JsonController('/property-svc')
@@ -107,9 +107,9 @@ export class PropertyController {
         } catch (error) {
             if (error instanceof HandleUpstreamError) {
                 switch(error.key) {
-                    case PROPERTY_ERRORS.USER_KEY_EMPTY:
+                    case PROPERTY_SERVICE_ERRORS.USER_KEY_EMPTY:
                         throw new ResponseError(500, error.key, 'Empty user key provided in order to get property.');
-                    case PROPERTY_ERRORS.PROPERTY_NOT_FOUND:
+                    case PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND:
                         throw new ResponseError(404, error.key, 'No property was found for the user key provided.');
                     default:
                         throw new ResponseError(500, error.key, 'An unexpected error occurred in the property service.');

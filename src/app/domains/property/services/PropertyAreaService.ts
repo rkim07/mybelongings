@@ -1,8 +1,8 @@
 import { Container, Inject, Service } from 'typedi';
 import { PaintService} from "../../paint/services/PaintService";
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { PropertyAreaCollectionService } from "./PropertyAreaCollectionService";
 import { Key, Property, PropertyArea } from '../../shared/models/models';
-import { ImageHelper } from "../../shared/helpers/ImageHelper";
 
 @Service()
 export class PropertyAreaService {
@@ -12,6 +12,9 @@ export class PropertyAreaService {
 
     @Inject()
     private paintService: PaintService = Container.get(PaintService);
+
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
 
     /**
      * Get all property areas
@@ -58,7 +61,7 @@ export class PropertyAreaService {
      * @param area
      */
     private async addDependencies(origin, area) {
-        area['image_path'] = ImageHelper.getImagePath(origin, area.image);
+        area['image_path'] = this.fileUploadService.setImagePath(origin, area.image, 'area');
         area['paint'] = await this.paintService.getPaintByKey(area.paintKey, origin);
         return area;
     }

@@ -2,7 +2,7 @@ import { Container, Inject, Service } from 'typedi';
 import { AddressService } from '../../address/services/AddressService';
 import { StoreCollectionService } from './StoreCollectionService';
 import {HandleUpstreamError, Key, Store, Vehicle} from '../../shared/models/models';
-import {VEHICLE_ERRORS} from "../../vehicle/services/VehicleService";
+import {VEHICLE_SERVICE_ERRORS} from "../../vehicle/services/VehicleService";
 
 @Service()
 export class StoreService {
@@ -23,7 +23,7 @@ export class StoreService {
         const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
 
         if (!store) {
-            throw new HandleUpstreamError(VEHICLE_ERRORS.VEHICLE_NOT_FOUND);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND);
         }
 
         return await this.addDependencies(origin, store);

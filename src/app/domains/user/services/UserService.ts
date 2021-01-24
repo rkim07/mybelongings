@@ -1,9 +1,9 @@
 import { Container, Inject, Service } from 'typedi';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { UserCollectionService } from './UserCollectionService';
-import {HandleUpstreamError, Key, User, Vehicle} from '../../shared/models/models';
-import { ImageHelper } from "../../shared/helpers/ImageHelper";
+import { HandleUpstreamError, Key, User, Vehicle } from '../../shared/models/models';
 
-export enum USER_ERRORS {
+export enum USER_SERVICE_ERRORS {
     USER_NOT_FOUND = 'USER_NOT_FOUND'
 }
 
@@ -16,6 +16,9 @@ export class UserService {
     @Inject()
     private userCollectionService: UserCollectionService = Container.get(UserCollectionService);
 
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
+
     /**
      * Get user by key
      *
@@ -26,7 +29,7 @@ export class UserService {
         const user = await this.userCollectionService.findOne({ key: { $eq: key }});
 
         if (!user) {
-            throw new HandleUpstreamError(USER_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
         return await this.addDependencies(origin, user);
@@ -52,7 +55,7 @@ export class UserService {
      * @param user
      */
     private async addDependencies(origin, user) {
-        user['image_path'] = ImageHelper.getImagePath(origin, user.image);
+        user['image_path'] = this.fileUploadService.setImagePath(origin, user.image, 'user');
         return user;
     }
 }

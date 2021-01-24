@@ -1,5 +1,5 @@
-import * as config from 'config';
 import * as bluebird from 'bluebird';
+import * as config from 'config';
 import * as jwt from 'jsonwebtoken';
 import * as models from '../models/models';
 
@@ -17,11 +17,6 @@ const jwtServerToken = {
         expiration: JWT_SERVER_TOKEN_REFRESH_EXPIRATION
     }
 };
-
-enum TokenTypes {
-    access,
-    refresh
-}
 
 class JWTHelperImpl {
     private verify = bluebird.Promise.promisify(jwt.verify);

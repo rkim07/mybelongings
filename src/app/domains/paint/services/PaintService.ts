@@ -1,11 +1,11 @@
 import { Container, Inject, Service } from 'typedi';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { StoreService } from '../../store/services/StoreService';
 import { PaintCollectionService } from './PaintCollectionService';
-import {HandleUpstreamError, Key, Paint} from '../../shared/models/models';
-import { ImageHelper } from "../../shared/helpers/ImageHelper";
+import { HandleUpstreamError, Key, Paint } from '../../shared/models/models';
 
-export enum PAINT_ERRORS {
-    PAINT_NOT_FOUND = 'PAINT_ERRORS.PAINT_NOT_FOUND'
+export enum PAINT_SERVICE_ERRORS {
+    PAINT_NOT_FOUND = 'PAINT_SERVICE_ERRORS.PAINT_NOT_FOUND'
 }
 
 @Service()
@@ -17,6 +17,9 @@ export class PaintService {
     @Inject()
     private storeService: StoreService = Container.get(StoreService);
 
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
+
     /**
      * Get paint by key
      *
@@ -27,7 +30,7 @@ export class PaintService {
         const paint = await this.paintCollectionService.findOne({ key: { $eq: key }});
 
         if (!paint) {
-            throw new HandleUpstreamError(PAINT_ERRORS.PAINT_NOT_FOUND);
+            throw new HandleUpstreamError(PAINT_SERVICE_ERRORS.PAINT_NOT_FOUND);
         }
 
         return await this.addDependencies(origin, paint);
@@ -75,7 +78,7 @@ export class PaintService {
      * @param paint
      */
     private async addDependencies(origin, paint) {
-        paint['image_path'] = ImageHelper.getImagePath(origin, paint.image);
+        paint['image_path'] = this.fileUploadService.setImagePath(origin, paint.image, 'paint');
         paint['store'] = paint.storeKey ? await this.storeService.getStoreByKey(paint.storeKey, origin) : {};
         return paint;
     }

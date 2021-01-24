@@ -1,12 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
 import { sectionToggler } from '../../helpers/section';
+import Dialogger from '../../shared/dialogger';
+import Notifier from '../../shared/notifier';
 import List from './list';
 import Page from './page';
-import Notifier from '../../shared/notifier';
-import AlertDialog from '../../shared/alertdialog';
 import { currentYear } from '../../helpers/date';
 import Container from '@material-ui/core/Container';
 
@@ -28,12 +27,14 @@ class Dashboard extends React.Component
 		this.state = {
 			section: 'list',
 			vehicle: {},
+			vehicles: [],
 			file: [],
 			openNotifier: false,
-			openAlert: false,
 			notifierType: '',
 			notifierMsg: '',
-			vehicles: []
+			openDialog: false,
+			dialogType: '',
+			loading: true
 		}
 
 		this.onHandleChange = this.onHandleChange.bind(this);
@@ -41,14 +42,16 @@ class Dashboard extends React.Component
 		this.onHandleDelete = this.onHandleDelete.bind(this);
 		this.onHandleSubmit = this.onHandleSubmit.bind(this);
 		this.onHandleGoBack = this.onHandleGoBack.bind(this);
-		this.onHandleToggleAlert = this.onHandleToggleAlert.bind(this);
+		this.onHandleOpenDialog = this.onHandleOpenDialog.bind(this);
+		this.onHandleCloseDialog = this.onHandleCloseDialog.bind(this);
 		this.onHandleCloseNotifier = this.onHandleCloseNotifier.bind(this);
 	}
 
 	componentDidMount() {
 		this.props.getUserVehicles().then(response => {
 			this.setState({
-				vehicles: response.vehicles
+				vehicles: response.vehicles,
+				loading: false
 			});
 		});
 	}
@@ -90,30 +93,35 @@ class Dashboard extends React.Component
 		});
 	}
 
-	onHandleDelete = async(key) => {
+	onHandleDelete = async(e, key) => {
+		e.preventDefault();
 		const { section, vehicles } = this.state;
 
 		const response = await this.props.deleteVehicle(key, vehicles);
 
-		this.setState({
-			section: sectionToggler(response.statusType, section),
-			openNotifier: true,
-			openAlert: false,
-			notifierType: response.statusType,
-			notifierMsg: response.message,
-			vehicles: response.vehicles
-		});
+		if (response.status) {
+			this.setState({
+				section: sectionToggler(response.statusType, section),
+				openNotifier: true,
+				openDialog: false,
+				notifierType: response.statusType,
+				notifierMsg: response.message,
+				vehicles: response.vehicles
+			});
+		}
 	}
 
-	onHandleSubmit = async (e) => {
+	onHandleSubmit = async(e) => {
 		e.preventDefault();
 
-		const { section, file, vehicle, vehicles } = this.state;
+		const {section, file, vehicle, vehicles} = this.state;
 
-		// Upload file first
+		// Upload file first if any
 		if (file.length) {
-			const uploadedResponse = await this.props.uploadFile(file[0]);
-			vehicle.image = uploadedResponse.data.fileName;
+			const upload = await this.props.uploadFile(file[0]);
+			if (upload.status) {
+				vehicle.image = upload.fileName;
+			}
 		}
 
 		// Update if there's existing key otherwise add
@@ -122,13 +130,15 @@ class Dashboard extends React.Component
 			:
 			await this.props.addVehicle(vehicle, vehicles);
 
-		this.setState({
-			section: sectionToggler(response.statusType, section),
-			openNotifier: true,
-			notifierType: response.statusType,
-			notifierMsg: response.message,
-			vehicles: response.vehicles
-		});
+		if (response.status) {
+			this.setState({
+				section: sectionToggler(response.statusType, section),
+				openNotifier: true,
+				notifierType: response.statusType,
+				notifierMsg: response.message,
+				vehicles: response.vehicles
+			});
+		}
 	}
 
 	onHandleImageChange = (file) => {
@@ -145,9 +155,17 @@ class Dashboard extends React.Component
 		});
 	}
 
-	onHandleToggleAlert = () => {
+	onHandleOpenDialog = (type, vehicle) => {
 		this.setState({
-			openAlert: !this.state.openAlert
+			dialogType: type,
+			vehicle: vehicle,
+			openDialog: true
+		});
+	}
+
+	onHandleCloseDialog = () => {
+		this.setState({
+			openDialog: false
 		});
 	}
 
@@ -168,10 +186,12 @@ class Dashboard extends React.Component
 	render() {
 		const { classes } = this.props;
 		const {
+			loading,
 			section,
 			vehicle,
 			vehicles,
-			openAlert,
+			dialogType,
+			openDialog,
 			openNotifier,
 			notifierMsg,
 			notifierType
@@ -185,44 +205,39 @@ class Dashboard extends React.Component
 						notifierType={ notifierType }
 						notifierMsg={ notifierMsg }
 						onHandleCloseNotifier={ this.onHandleCloseNotifier }
-					/>)
-				}
-				{ openAlert && (
-					<AlertDialog
-						open={ openAlert }
-						onHandleToggleAlert={ this.onHandleToggleAlert  }
+					/>
+				)}
+				{ openDialog && (
+					<Dialogger
+						open={ openDialog }
+						dialogType={ dialogType }
+						vehicle={ vehicle }
 						onHandleDelete={ this.onHandleDelete }
-					/>)
-				}
-				{
-					section === 'list' && (
-						<List
-							vehicles={ vehicles }
-							onHandleClick={this.onHandleClick}
-							onHandleDelete={ this.onHandleToggleAlert }
-						/>
-					)
-				}
-				{
-					section !== 'list' && (
-						<Page
-							section={ section }
-							vehicle={ vehicle }
-							onHandleChange={ this.onHandleChange }
-							onHandleImageChange={ this.onHandleImageChange }
-							onHandleGoBack={ this.onHandleGoBack }
-							onHandleDelete={ this.onHandleToggleAlert }
-							onHandleSubmit={ this.onHandleSubmit }
-						/>
-					)
-				}
+						onHandleCloseDialog={ this.onHandleCloseDialog }
+					/>
+				)}
+				{ section === 'list' && (
+					<List
+						loading={ loading }
+						vehicles={ vehicles }
+						onHandleClick={this.onHandleClick}
+						onHandleOpenDialog={ this.onHandleOpenDialog }
+					/>
+				)}
+				{ section !== 'list' && (
+					<Page
+						section={ section }
+						vehicle={ vehicle }
+						onHandleChange={ this.onHandleChange }
+						onHandleImageChange={ this.onHandleImageChange }
+						onHandleOpenDialog={ this.onHandleOpenDialog }
+						onHandleGoBack={ this.onHandleGoBack }
+						onHandleSubmit={ this.onHandleSubmit }
+					/>
+				)}
 			</Container>
 		)
 	}
 }
-
-Dashboard.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Dashboard));

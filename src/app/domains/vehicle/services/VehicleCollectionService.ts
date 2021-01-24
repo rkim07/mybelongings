@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { Key, Vehicle } from '../../shared/models/models';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 import { Datetime } from '../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class VehicleCollectionService extends DatabaseCollectionService {
@@ -16,7 +16,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     /**
      * Get all vehicles
      */
-    public async getVehicles(): Promise<Vehicle[]> {
+    public async getVehicles(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -26,36 +26,15 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update vehicle
+     * Add vehicle
      *
+     * @param userKey
      * @param vehicle
-     * @param key
      */
-    public async updateVehicle(vehicle: any, key?: Key) {
-        await this.loadCollection();
-
-        const existingVehicle = await this.findOne({ key: { $eq: key }});
-
-        if (existingVehicle && existingVehicle.mfrKey) {
-            return await this.updateManyFields({
-            userKey: vehicle.userKey,
-                uniqueField: 'key',
-                uniqueFieldValue: existingVehicle.key,
-                updateFields: {
-                mfrKey: vehicle.mfrKey,
-                modelKey: vehicle.modelKey,
-                image: vehicle.image,
-                year: vehicle.year,
-                color: vehicle.color,
-                vin: vehicle.vin,
-                plate: vehicle.plate,
-                condition: vehicle.condition,
-                modified: Datetime.getNow()
-    }
-            });
-        } else {
-            return await this.addOne(new Vehicle({
-                userKey: vehicle.userKey,
+    public async addVehicle(userKey: Key, vehicle: any) {
+        return await this.addOne(
+            new Vehicle({
+                userKey: userKey,
                 mfrKey: vehicle.mfrKey,
                 modelKey: vehicle.modelKey,
                 image: vehicle.image,
@@ -64,7 +43,44 @@ export class VehicleCollectionService extends DatabaseCollectionService {
                 vin: vehicle.vin,
                 plate: vehicle.plate,
                 condition: vehicle.condition
-            }));
+            })
+        );
+    }
+
+    /**
+     * Update vehicle
+     *
+     * @param userKey
+     * @param vehicle
+     * @param vehicleKey
+     */
+    public async updateVehicle(userKey: Key, vehicleKey: Key, vehicle: any) {
+        await this.loadCollection();
+
+        const query = {
+            $and: [
+                { key: { $eq: vehicleKey } },
+                { userKey: { $eq: userKey } }
+            ]
+        };
+
+        const existingVehicle = await this.findOne(query);
+
+        // For existing vehicle, user, manufacturer, model, and vin
+        // are restricted from being updated
+        if (existingVehicle) {
+            return await this.updateManyFields({
+                uniqueField: 'key',
+                uniqueFieldValue: existingVehicle.key,
+                updateFields: {
+                    image: vehicle.image,
+                    year: vehicle.year,
+                    color: vehicle.color,
+                    plate: vehicle.plate,
+                    condition: vehicle.condition,
+                    modified: Datetime.getNow()
+                }
+            });
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { NhtsaApiVehicleModel, Key } from '../../shared/models/models';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
+import { Key, NhtsaApiVehicleModel } from '../../shared/models/models';
 import { Datetime } from '../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionService {
@@ -16,7 +16,7 @@ export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionSer
     /**
      * Get all API models
      */
-    public async getApiModels(): Promise<NhtsaApiVehicleModel[]> {
+    public async getApiModels(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -30,7 +30,7 @@ export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionSer
      *
      * @param mfrKey
      */
-    public async getApiModelsByMfrKey(mfrKey: Key): Promise<NhtsaApiVehicleModel[]> {
+    public async getApiModelsByMfrKey(mfrKey: Key): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()

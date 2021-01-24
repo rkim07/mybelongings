@@ -1,6 +1,6 @@
 import { Get, JsonController, Param } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
-import { HandleUpstreamError, NhtsaApiVehicleMfr, NhtsaApiVehicleModel, ResponseError } from '../../shared/models/models';
+import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
 import { VEHICLE_API_ERRORS, VehicleApiService } from '../services/VehicleApiService';
 
 @JsonController('/vehicle-api-svc')
@@ -33,7 +33,7 @@ export class VehicleApiController {
                 mfrs: mfrs,
                 statusCode: 200,
                 message: 'Successfully synced all vehicles from NHTSA API.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
@@ -74,7 +74,7 @@ export class VehicleApiController {
                 mfrs: mfrs,
                 statusCode: 200,
                 message: 'Successfully retrieved all manufactures.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
@@ -105,6 +105,10 @@ export class VehicleApiController {
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
+     *         404:
+     *           description: No vehicles found for user key provided.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
@@ -119,7 +123,7 @@ export class VehicleApiController {
                 models: models,
                 statusCode: 200,
                 message: 'Successfully retrieved all models for a particular manufacturer.'
-            }
+            };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {

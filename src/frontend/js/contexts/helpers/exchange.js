@@ -77,16 +77,27 @@ export function refreshToken(interceptor, err, requests, isRefreshing) {
  * @param response
  * @returns {*}
  */
-export function addStatusType(response) {
+export function parseResponse(response) {
+	if (!response.data) {
+		response.data = {
+			statusType: 'error',
+			message: 'An unexpected error occurred in the application.'
+		}
+
+		return response;
+	}
+
 	const statusCodeTypes = {
 		200: 'success',
 		201: 'success',
 		204: 'success',
 		400: 'error',
 		404: 'warning',
+		422: 'warning',
 		500: 'error'
 	};
 
+	response.data['status'] = response.status;
 	response.data['statusType'] = statusCodeTypes[response.data.statusCode];
 	return response;
 }

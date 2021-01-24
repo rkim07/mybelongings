@@ -5,15 +5,12 @@ import { Database } from '../../../common/Database';
 import { logger } from '../../../common/logging';
 import { Datetime } from '../models/models';
 
-/**
- * Abstracts common collection-related code away from domain-specific collection services. Extended by any Collection Service.
- */
 export abstract class DatabaseCollectionService {
 
     protected collectionName: string;
     protected collection: CollectionWrapper;
 
-    constructor(collectionName: string) {
+    protected constructor(collectionName: string) {
         this.collectionName = collectionName;
         this.loadCollection();
     }
@@ -30,7 +27,6 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Get all items in a collection
-     * @return {Promise}
      */
     public async getAll(): Promise<any> {
         await this.loadCollection();
@@ -40,8 +36,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Insert one record into the collection
-     * @param  {any}
-     * @return {Promise<any>}
+     *
+     * @param item
      */
     public async addOne(item: any): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -52,8 +48,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Inserts many records into the collection
-     * @param  {[type]}
-     * @return {Promise<any>}
+     *
+     * @param items
      */
     public async addMany(items: Array<any>): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -71,8 +67,10 @@ export abstract class DatabaseCollectionService {
     }
 
     /**
-     * Adds an item to the database if the an associated item is not found in the collection. Field to use for comparison is passed as an argument
-     * @return {Promise<any>}
+     * Adds an item to the database if the an associated item is not found in the collection.
+     * Field to use for comparison is passed as an argument
+     * @param item
+     * @param field
      */
     public async upsert(item: any, field): Promise<any> {
 
@@ -104,7 +102,7 @@ export abstract class DatabaseCollectionService {
     }
 
     /**
-     * Upserts an array of items
+     * Upsert an array of items
      *
      * @param items
      * @param field
@@ -114,7 +112,7 @@ export abstract class DatabaseCollectionService {
         // Wait for the database to connect and the collection to load
         await this.loadCollection();
 
-        // Upserts each item atomically
+        // Upsert each item atomically
         for (const item of items) {
             await this.upsert(item, field);
         }
@@ -122,8 +120,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Finds documents in the collection for provided query
-     * @param  {[type]}       query [description]
-     * @return {Promise<any>}       [description]
+     *
+     * @param query
      */
     public async find(query?: any): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -134,8 +132,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Find a single document in the collection for the provided query
-     * @param  {[type]}       query [description]
-     * @return {Promise<any>}       [description]
+     *
+     * @param query
      */
     public async findOne(query): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -145,8 +143,8 @@ export abstract class DatabaseCollectionService {
     }
 
     /**
-     * A simple query helper to retrieve those records within the collection whose field is matched by specified value.
-     * Optionally, indicate whether 1 or many items is required
+     * A simple query helper to retrieve those records within the collection whose field
+     * is matched by specified value.  Optionally, indicate whether 1 or many items is required
      *
      * @param field
      * @param values
@@ -178,7 +176,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Retrieves and updates a single document given supplied date
-     * @param {any    }} data [description]
+     *
+     * @param data
      */
     public async updateOne(data: {
         uniqueField: string,
@@ -197,6 +196,12 @@ export abstract class DatabaseCollectionService {
         });
     }
 
+    /**
+     * Remove field by value
+     *
+     * @param field
+     * @param value
+     */
     public async removeByFieldValue(field: string, value: any) {
 
         // Wait for the database to connect and the collection to load
@@ -219,8 +224,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Saves a provided document to the Database
-     * @param  {any} document The document to save back to the Database
-     * @return {Promise<any>} A promise containing the updated document
+     *
+     * @param document
      */
     public async save(document: any): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -234,9 +239,11 @@ export abstract class DatabaseCollectionService {
     }
 
     /**
-     * Update the modified field of the associated ShoppingBasket
-     * @param  {models.Key}                     basketKey [description]
-     * @return {Promise<models.ShoppingBasket>}           [description]
+     * Update the modified field of the associated object
+     *
+     * @param uniqueField
+     * @param uniqueFieldValue
+     * @param modifiedField
      */
     public async updateModified(uniqueField: string, uniqueFieldValue: any, modifiedField: string = 'modified'): Promise<any> {
         // Wait for the database to connect and the collection to load
@@ -252,7 +259,8 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Loads the collection and stores locally for future use
-     * @return {Promise<Collection<any>>}
+     *
+     * @protected
      */
     protected async loadCollection(): Promise<any> {
         try {
@@ -268,7 +276,9 @@ export abstract class DatabaseCollectionService {
 
     /**
      * Retrieves and updates a single document's fields given supplied data
-     * @param {any}} data [description]
+     *
+     * @param data
+     * @protected
      */
     protected async updateManyFields(data: {
         uniqueField: string,
@@ -288,8 +298,7 @@ export abstract class DatabaseCollectionService {
 
         // Updated the required field
         for (const key in data.updateFields) {
-            const value = data.updateFields[key];
-            document[key] = value;
+            document[key] = data.updateFields[key];
         }
         // Update the document in the database and return the document
         return this.collection.update(document);

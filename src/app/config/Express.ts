@@ -1,16 +1,17 @@
-import * as config from 'config';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
+import * as config from 'config';
 import * as cors from 'cors';
+import { EventDispatcher } from 'event-dispatch';
 import * as express from 'express';
 import * as useragent from 'express-useragent';
-import * as stoppable from 'stoppable';
+import * as fs from 'fs';
+import * as path from 'path';
 import { useContainer, useExpressServer } from 'routing-controllers';
+import * as stoppable from 'stoppable';
 import { Container } from 'typedi';
-import { EventDispatcher } from 'event-dispatch';
 import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
 import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
+
 import { logger } from '../common/logging';
 
 const swaggerUi = require('swagger-ui-express');
@@ -30,7 +31,7 @@ export class ExpressConfig {
         useContainer(Container);
         const self = this;
 
-        // Only allow swagger api endpoing if using development branch
+        // Only allow swagger api endpoint if using development branch
         // const versionService = Container.get(VersionService);
         // if (versionService.getVersion().version == 'development') {
         this.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -47,7 +48,7 @@ export class ExpressConfig {
         this.app.use(bodyParser.urlencoded({ extended: false }));
 
         // Hide system specs from outside viewing
-        this.app.use('/ping', (req, res, next) => {
+        this.app.use('/ping', (req, res) => {
             res.sendStatus(200);
         });
 
@@ -63,15 +64,14 @@ export class ExpressConfig {
             self.setupControllers();
         });
 
-        this.app.get('/*', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'), (err) => {
-                if (err) {
-                    res.status(500).send(err);
-                }
-            });
-        });
+        self.resolveReactRouters();
     }
 
+    /**
+     * Set up controllers for routing-controllers module
+     *
+     * @private
+     */
     private setupControllers() {
         const controllersPath = path.resolve('**', 'app', 'domains', '**', 'controllers', '*.js');
         const middlewaresPath = path.resolve('**', 'app', 'middleware', '*.js');
@@ -123,7 +123,29 @@ export class ExpressConfig {
         stoppable(server, 2000);
     }
 
+    /**
+     * Get listener
+     */
     private getListener(): string {
         return config.get('ports.http');
+    }
+
+    /**
+     * Trap all the react routing due to browser reloads or direct path entering
+     *
+     * @private
+     */
+    private resolveReactRouters() {
+        this.app.get('/login', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
+        this.app.get('/vehicles', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
+        this.app.get('/properties', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
     }
 }

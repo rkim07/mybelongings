@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
 import { getVehicleColors } from '../../helpers/list';
@@ -55,17 +54,17 @@ function Page(props) {
 		classes,
 		section,
 		vehicle,
-		onHandleImageChange,
-		onHandleChange,
-		onHandleDelete,
-		onHandleGoBack,
-		onHandleSubmit,
+		getApiModelsByMfrKey,
 		getApiMfrs,
-		getApiModelsByMfrKey
+		onHandleImageChange,
+		onHandleOpenDialog,
+		onHandleChange,
+		onHandleGoBack,
+		onHandleSubmit
 	} = props;
 
 	// Manufacturers use effect
-	const [manufacturers, setManufacturers] = useState('');
+	const [manufacturers, setManufacturers] = useState();
 	useEffect(() => {
 		getApiMfrs().then(response => {
 			setManufacturers(response.data.mfrs);
@@ -75,7 +74,7 @@ function Page(props) {
 	}, []);
 
 	// Models use effect
-	const [models, setModels] = useState('');
+	const [models, setModels] = useState();
 	useEffect(() => {
 		if (vehicle.mfrKey) {
 			getApiModelsByMfrKey(vehicle.mfrKey).then(response => {
@@ -87,7 +86,7 @@ function Page(props) {
 	}, [vehicle.mfrKey]);
 
 	// Years use effect
-	const [years, setYears] = useState('');
+	const [years, setYears] = useState();
 	useEffect(() => {
 		setYears(getYearsRange(1950, 2022));
 
@@ -95,7 +94,7 @@ function Page(props) {
 	}, []);
 
 	// Colors use effect
-	const [colors, setColors] = useState('');
+	const [colors, setColors] = useState();
 	useEffect(() => {
 		setColors(getVehicleColors());
 
@@ -104,7 +103,8 @@ function Page(props) {
 
 	return (
 		<ValidatorForm
-			onSubmit={ (event) => onHandleSubmit(event) }
+			instantValidate={false}
+			onSubmit={ (e) => onHandleSubmit(e) }
 		>
 			<Grid container spacing={4}>
 				<Grid item xs={12}>
@@ -139,9 +139,8 @@ function Page(props) {
 									readOnly: section === 'view'
 								}}
 								validators={["required"]}
-								errorMessages={["This field is required"]}
+								errorMessages={["Condition is required"]}
 							>
-								<MenuItem aria-label="None" value="" />
 								<MenuItem value="new">New</MenuItem>
 								<MenuItem value="used">Used</MenuItem>
 							</SelectValidator>
@@ -163,9 +162,8 @@ function Page(props) {
 										readOnly: section === 'view'
 									}}
 									validators={["required"]}
-									errorMessages={["This field is required"]}
+									errorMessages={["Year is required"]}
 								>
-									<MenuItem aria-label="None" value="" />
 									{ years.map((year) => (
 										<MenuItem key={ year.value } value={ year.value }>{ year.label }</MenuItem>
 									))}
@@ -176,30 +174,31 @@ function Page(props) {
 					</Grid>
 				)}
 				{ manufacturers && (
-				<Grid item xs={12}>
-					<FormControl className={classes.formControl}>
-						<ThemeProvider theme={theme}>
-							<SelectValidator
-								label="Manufacturer *"
-								value={ vehicle.mfrKey }
-								onChange={ (event) => onHandleChange(event) }
-								inputProps={{
-									name: "mfrKey",
-									id:   "mfrKey",
-									readOnly: section === 'view'
-								}}
-								validators={["required"]}
-								errorMessages={["This field is required"]}
-							>
-								<MenuItem aria-label="None" value="" />
-								{ manufacturers.map((mfr) => (
-									<MenuItem key={ mfr.key } value={ mfr.key }>{ mfr.mfrName }</MenuItem>
-								))}
-							</SelectValidator>
-						</ThemeProvider>
-						<FormHelperText>Choose a manufacturer to show all the models below</FormHelperText>
-					</FormControl>
-				</Grid>
+					<Grid item xs={12}>
+						<FormControl className={classes.formControl}>
+							<ThemeProvider theme={theme}>
+								<SelectValidator
+									label="Manufacturer *"
+									value={ vehicle.mfrKey }
+									onChange={ (event) => onHandleChange(event) }
+									inputProps={{
+										name: "mfrKey",
+										id:   "mfrKey",
+										readOnly: section === 'view',
+										disabled: section === 'update'
+									}}
+									validators={["required"]}
+									errorMessages={["Manufacturer is required"]}
+								>
+									<MenuItem aria-label="None" value="" />
+									{ manufacturers.map((mfr) => (
+										<MenuItem key={ mfr.key } value={ mfr.key }>{ mfr.mfrName }</MenuItem>
+									))}
+								</SelectValidator>
+							</ThemeProvider>
+							<FormHelperText>Choose a manufacturer to show all the models below</FormHelperText>
+						</FormControl>
+					</Grid>
 				)}
 				{ models && (
 					<Grid item xs={12}>
@@ -212,10 +211,11 @@ function Page(props) {
 									inputProps={{
 										name: "modelKey",
 										id:   "modelKey",
-										readOnly: section === 'view'
+										readOnly: section === 'view',
+										disabled: section === 'update'
 									}}
 									validators={["required"]}
-									errorMessages={["This field is required"]}
+									errorMessages={["Model is required"]}
 								>
 									<MenuItem aria-label="None" value="" />
 									{ models.map((model) => (
@@ -241,9 +241,8 @@ function Page(props) {
 										readOnly: section === 'view'
 									}}
 									validators={["required"]}
-									errorMessages={["This field is required"]}
+									errorMessages={["Color is required"]}
 								>
-									<MenuItem aria-label="None" value="" />
 									{ colors.map((color) => (
 										<MenuItem key={ color.value } value={ color.value }>{ color.label }</MenuItem>
 									))}
@@ -258,12 +257,13 @@ function Page(props) {
 						label="VIN *"
 						value={ vehicle.vin }
 						onChange={ (event) => onHandleChange(event) }
-						validators={["required"]}
-						errorMessages={["This field is required"]}
+						validators={['required']}
+						errorMessages={['VIN is required']}
 						inputProps={{
 							name: "vin",
 							id:   "vin",
-							readOnly: section === 'view'
+							readOnly: section === 'view',
+							disabled: section === 'update'
 						}}
 					/>
 					<FormHelperText>Vehicle identifier number</FormHelperText>
@@ -273,7 +273,6 @@ function Page(props) {
 					<FormControl className={classes.formControl}>
 					<TextValidator
 						label="Plate"
-						margin="normal"
 						value={ vehicle.plate }
 						onChange={ (event) => onHandleChange(event) }
 						inputProps={{
@@ -285,29 +284,29 @@ function Page(props) {
 					</FormControl>
 				</Grid>
 				<Grid item xs={12}>
-					{ section !== 'view' &&
-					<Button
-						type="submit"
-						variant="contained"
-						color="default"
-						className={classes.button}
-						startIcon={<SaveIcon/>}
-					>
-						{ section === 'add' ? 'Add' : 'Update' }
-					</Button>
-					}
-					{ section === 'view' &&
-					<Button
-						type="button"
-						variant="contained"
-						color="default"
-						className={classes.button}
-						startIcon={<DeleteIcon />}
-						onClick={ (event) => onHandleDelete(vehicle.key) }
-					>
-						Delete
-					</Button>
-					}
+					{ section !== 'view' && (
+						<Button
+							type="submit"
+							variant="contained"
+							color="default"
+							className={classes.button}
+							startIcon={<SaveIcon/>}
+						>
+							{ section === 'add' ? 'Add' : 'Update' }
+						</Button>
+					)}
+					{ section === 'view' && (
+						<Button
+							type="button"
+							variant="contained"
+							color="default"
+							className={classes.button}
+							startIcon={<DeleteIcon />}
+							onClick={ () => onHandleOpenDialog('delete', vehicle) }
+						>
+							Delete
+						</Button>
+					)}
 					<Button
 						type="button"
 						variant="contained"
@@ -323,9 +322,5 @@ function Page(props) {
 		</ValidatorForm>
 	)
 }
-
-Page.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Page));

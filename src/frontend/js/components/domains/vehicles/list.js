@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +13,8 @@ import AddIcon from '@material-ui/icons/Add';
 import DirectionsCar from '@material-ui/icons/DirectionsCar';
 import Edit from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Skeleton from '@material-ui/lab/Skeleton';
+import Pagination from '@material-ui/lab/Pagination';
 
 const styles = theme => ({
 	card: {
@@ -34,7 +35,8 @@ function List(props) {
 		classes,
 		vehicles,
 		onHandleClick,
-		onHandleDelete
+		onHandleOpenDialog,
+		loading
 	} = props;
 
 	return (
@@ -51,16 +53,23 @@ function List(props) {
 					Add
 				</Button>
 			</Grid>
-			{ vehicles &&
-				vehicles.map((vehicle) => (
-					<Grid item key={ vehicle.key } xs={ 12 } sm={ 6 } md={ 4 }>
-						<Card className={ classes.card }>
+			{ (loading ? Array.from(new Array(1)) : vehicles).map((vehicle, index) => (
+				<Grid item key={ index } xs={ 12 } sm={ 6 } md={ 4 }>
+					<Card className={ classes.card }>
+						{ vehicle ? (
 							<CardContent className={ classes.cardContent }>
 								<Image src={ vehicle.image_path } />
 								<Typography gutterBottom variant="h5" component="h4">
 									{ vehicle.year } { vehicle.mfrName } { vehicle.model }
 								</Typography>
 							</CardContent>
+						) : (
+							<CardContent className={ classes.cardContent }>
+								<Skeleton variant="rect" width={210} height={118} />
+								<Skeleton width={210} />
+							</CardContent>
+						)}
+						{ vehicle ? (
 							<CardActions>
 								<IconButton
 									aria-label="view"
@@ -82,21 +91,24 @@ function List(props) {
 									aria-label="delete"
 									color="default"
 									className={classes.button}
-									onClick={ () => onHandleDelete(vehicle.key) }
+									onClick={ () => onHandleOpenDialog('delete', vehicle) }
 								>
 									<DeleteIcon />
 								</IconButton>
 							</CardActions>
-						</Card>
-					</Grid>
-				))
-			}
+						) : (
+							<CardActions>
+								<Skeleton width={100} />
+							</CardActions>
+						)}
+					</Card>
+				</Grid>
+			))}
+			<Grid item xs={12}>
+				<Pagination count={vehicles.length} variant="outlined" shape="rounded" />
+			</Grid>
 		</Grid>
 	);
 }
-
-List.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(List));

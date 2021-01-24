@@ -1,7 +1,7 @@
 import * as config from 'config';
 const bcrypt = require('bcrypt');
 
-const SALT_ROUNDS = config.get('hash.bcrypt.saltRounds').toString();
+const SALT_ROUNDS = config.get('hash.bcrypt.saltRounds');
 
 export class Hash {
 
@@ -10,7 +10,7 @@ export class Hash {
      *
      * @param text
      */
-    static hash(text) {
+    static bcryptHash(text) {
         return bcrypt.hashSync(text, SALT_ROUNDS);
     }
 
@@ -21,7 +21,7 @@ export class Hash {
      * @param plainText
      * @param hashedText
      */
-    static compare(plainText, hashedText) {
-        return bcrypt.compareSync(plainText, hashedText)
+    static bcryptCompare(plainText, hashedText) {
+        return bcrypt.compareSync(plainText, hashedText);
     }
 }
