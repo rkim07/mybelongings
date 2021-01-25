@@ -8,7 +8,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Image from "material-ui-image";
+import Image from 'material-ui-image';
 import AddIcon from '@material-ui/icons/Add';
 import DirectionsCar from '@material-ui/icons/DirectionsCar';
 import Edit from '@material-ui/icons/Edit';

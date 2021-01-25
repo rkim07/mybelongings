@@ -1,9 +1,8 @@
 import React from 'react';
-import { withRouter } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import { withStyles }  from '@material-ui/core/styles';
 import Header from './components/structure/default/header';
 import Footer from './components/structure/default/footer';
-import {Route, Switch} from 'react-router-dom';
 import LandingPage from './components/structure/default/landing';
 import Login from './components/domains/auth/login';
 import CreateLogin from './components/domains/auth/registration';
@@ -46,18 +45,15 @@ function App(props) {
 	return (
 		<div className={classes.root}>
 			<Header {...props} />
-			<Switch>
-				<Route exact path='/' render={(routeProps) => <LandingPage {...routeProps} />}/>
-				<Route path='/login' render={(routeProps) => <Login {...routeProps} redirectUrl='/vehicles' />}/>
-				<Route exact path='/registration/email/:accessToken/:email' render={(routeProps) => <CreateLogin {...routeProps} {...other} />}/>
-				<ProtectedRoute path='/profile' component={ Profile } />
-				<ProtectedRoute path='/properties' component={ PropertiesDashboard } />
-				<ProtectedRoute path='/vehicles' component={ VehiclesDashboard } />
-				<Route path='*' component={ NotFound } />
-			</Switch>
+			<Routes>
+				<Route path='/' element={<LandingPage />}/>
+				<Route path='/login' element={ <Login redirectUrl='/vehicles' />}/>
+				<ProtectedRoute path='/vehicles/*' element={ <VehiclesDashboard/> } />
+				<Route path='*' element={<NotFound/> } />
+			</Routes>
 			<Footer />
 		</div>
 	)
 }
 
-export default withRouter(withStyles(styles)(App));
+export default withStyles(styles)(App);

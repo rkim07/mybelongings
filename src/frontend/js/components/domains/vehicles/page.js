@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { getVehicleColors } from '../../helpers/list';
 import { getYearsRange } from '../../helpers/date';
 import Grid from '@material-ui/core/Grid';
@@ -14,7 +15,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { DropzoneArea } from 'material-ui-dropzone';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 const styles = (theme) => ({
 	formControl: {
@@ -132,7 +132,7 @@ function Page(props) {
 							<SelectValidator
 								label="Condition *"
 								value={ vehicle.condition }
-								onChange={ (event) => onHandleChange(event) }
+								onChange={ (e) => onHandleChange(e) }
 								inputProps={{
 									name: "condition",
 									id:   "condition",
@@ -155,7 +155,7 @@ function Page(props) {
 								<SelectValidator
 									label="Year *"
 									value={ vehicle.year }
-									onChange={ (event) => onHandleChange(event) }
+									onChange={ (e) => onHandleChange(e) }
 									inputProps={{
 										name: "year",
 										id:   "year",
@@ -180,7 +180,7 @@ function Page(props) {
 								<SelectValidator
 									label="Manufacturer *"
 									value={ vehicle.mfrKey }
-									onChange={ (event) => onHandleChange(event) }
+									onChange={ (e) => onHandleChange(e) }
 									inputProps={{
 										name: "mfrKey",
 										id:   "mfrKey",
@@ -207,7 +207,7 @@ function Page(props) {
 								<SelectValidator
 									label="Model *"
 									value={ vehicle.modelKey }
-									onChange={ (event) => onHandleChange(event) }
+									onChange={ (e) => onHandleChange(e) }
 									inputProps={{
 										name: "modelKey",
 										id:   "modelKey",
@@ -234,7 +234,7 @@ function Page(props) {
 								<SelectValidator
 									label="Color *"
 									value={ vehicle.color }
-									onChange={ (event) => onHandleChange(event) }
+									onChange={ (e) => onHandleChange(e) }
 									inputProps={{
 										name: "color",
 										id:   "color",
@@ -256,7 +256,7 @@ function Page(props) {
 					<TextValidator
 						label="VIN *"
 						value={ vehicle.vin }
-						onChange={ (event) => onHandleChange(event) }
+						onChange={ (e) => onHandleChange(e) }
 						validators={['required']}
 						errorMessages={['VIN is required']}
 						inputProps={{
@@ -274,7 +274,7 @@ function Page(props) {
 					<TextValidator
 						label="Plate"
 						value={ vehicle.plate }
-						onChange={ (event) => onHandleChange(event) }
+						onChange={ (e) => onHandleChange(e) }
 						inputProps={{
 							name: "plate",
 							id:   "plate",

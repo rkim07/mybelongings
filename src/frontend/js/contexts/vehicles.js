@@ -1,13 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import { addUpdateCollection, removeFromCollection } from './helpers/collection';
-import { parseResponse, refreshToken, setAuthenticationHeader } from './helpers/exchange';
+import { parseResponse, refreshToken, getHeaderAuthorization } from './helpers/exchange';
 
 const vehiclesAxios = axios.create();
 
 // Request interceptor
 vehiclesAxios.interceptors.request.use(config => {
-	return setAuthenticationHeader(config);
+	config.headers.Authorization = getHeaderAuthorization(config);
+	return config;
 }, (error) => {
 	Promise.reject(error)
 });

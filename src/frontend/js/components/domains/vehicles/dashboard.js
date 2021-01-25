@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../contexts/appcontext';
 import { sectionToggler } from '../../helpers/section';
+import { Routes, Route } from 'react-router-dom';
 import Dialogger from '../../shared/dialogger';
 import Notifier from '../../shared/notifier';
 import List from './list';
@@ -216,25 +217,27 @@ class Dashboard extends React.Component
 						onHandleCloseDialog={ this.onHandleCloseDialog }
 					/>
 				)}
-				{ section === 'list' && (
-					<List
-						loading={ loading }
-						vehicles={ vehicles }
-						onHandleClick={this.onHandleClick}
-						onHandleOpenDialog={ this.onHandleOpenDialog }
+				<Routes>
+					<Route path="/" element={
+						<List
+							loading={ loading }
+							vehicles={ vehicles }
+							onHandleClick={this.onHandleClick}
+							onHandleOpenDialog={ this.onHandleOpenDialog }
+						/>}
 					/>
-				)}
-				{ section !== 'list' && (
-					<Page
-						section={ section }
-						vehicle={ vehicle }
-						onHandleChange={ this.onHandleChange }
-						onHandleImageChange={ this.onHandleImageChange }
-						onHandleOpenDialog={ this.onHandleOpenDialog }
-						onHandleGoBack={ this.onHandleGoBack }
-						onHandleSubmit={ this.onHandleSubmit }
+					<Route path=":id" element={
+						<Page
+							section={ section }
+							vehicle={ vehicle }
+							onHandleChange={ this.onHandleChange }
+							onHandleImageChange={ this.onHandleImageChange }
+							onHandleOpenDialog={ this.onHandleOpenDialog }
+							onHandleGoBack={ this.onHandleGoBack }
+							onHandleSubmit={ this.onHandleSubmit }
+						/>}
 					/>
-				)}
+				</Routes>
 			</Container>
 		)
 	}

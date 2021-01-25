@@ -1,8 +1,10 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { withContext } from '../../../contexts/appcontext';
-import { withRouter } from 'react-router-dom';
-import Notifier from "../../shared/notifier";
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
+import Notifier from '../../shared/notifier';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
@@ -11,8 +13,6 @@ import FormControl from '@material-ui/core/FormControl';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 
 const styles = theme => ({
 	root: {
@@ -23,7 +23,7 @@ const styles = theme => ({
 		[theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
 			width: 400,
 			marginLeft: 'auto',
-			marginRight: 'auto',
+			marginRight: 'auto'
 		},
 	},
 	paper: {
@@ -31,18 +31,18 @@ const styles = theme => ({
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
-		padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
+		padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
 	},
 	avatar: {
 		margin: theme.spacing(),
-		backgroundColor: theme.palette.secondary.main,
+		backgroundColor: theme.palette.secondary.main
 	},
 	form: {
 		width: '100%', // Fix IE 11 issue.
-		marginTop: theme.spacing(),
+		marginTop: theme.spacing()
 	},
 	submit: {
-		marginTop: theme.spacing(3),
+		marginTop: theme.spacing(3)
 	}
 });
 
@@ -67,129 +67,106 @@ const theme = createMuiTheme({
 	}
 });
 
-class Login extends React.Component
-{
-	// Constructor
-	constructor(props) {
-		super(props);
+function Login(props) {
+	const navigate = useNavigate();
 
-		this.state = {
-			username: '',
-			password: '',
-			redirectUrl: props.redirectUrl,
-			openNotifier: false,
-			notifierType: '',
-			notifierMsg: '',
-		}
+	const { classes } = props;
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const [openNotifier, setOpenNotifier] = useState(false);
+	const [notifierType, setNotifierType] = useState('');
+	const [notifierMsg, setNotifierMsg] = useState('');
 
-		this.onHandleChange = this.onHandleChange.bind(this);
-		this.onHandleSubmit = this.onHandleSubmit.bind(this);
-	}
-
-	onHandleChange = (e) => {
-		const { name, value } = e.target
-
-		this.setState({
-			[name]: value
-		})
-	}
-
-	onHandleSubmit = (e) => {
+	const onHandleSubmit = (e) => {
 		e.preventDefault();
 
-		this.props.login(this.state)
+		const credentials = {
+			username: username,
+			password: password
+		}
+
+		props.login(credentials)
 			.then((response) => {
 				if (response.redirect) {
-					this.props.history.push(this.state.redirectUrl)
+					navigate(props.redirectUrl);
 				} else if (response.status !== 200) {
-					this.setState({
-						openNotifier: true
-					});
+					setOpenNotifier(true);
 				}
 			});
 	}
 
-	clearInputs = () => {
-		this.setState({
-			username: '',
-			password: ''
-		})
+	const onHandleCloseNotifier = () => {
+		setOpenNotifier(false);
+		setNotifierMsg('');
+		setNotifierType('');
 	}
 
-	render() {
-		const { classes } = this.props;
-		const {
-			username,
-			password,
-			openNotifier,
-			notifierType,
-			notifierMsg
-		} = this.state;
-
-		return (
-			<Container className={classes.root} maxWidth="md">
-				{ openNotifier && (
-					<Notifier
-						open={ openNotifier }
-						notifierType={ notifierType }
-						notifierMsg={ notifierMsg }
-						onHandleCloseNotifier={ this.onHandleCloseNotifier }
-					/>)
-				}
-				<ValidatorForm
-					onSubmit={ (event) => this.onHandleSubmit(event) }
-				>
-					<Grid container justify='center'>
-						<Grid item xs={12} sm={12} md={12}>
-							<Paper className={classes.paper}>
-								<Avatar className={classes.avatar}>
-									<LockOutlinedIcon />
-								</Avatar>
-								<Typography component='h1' variant='h5'>
+	return (
+		<Container className={classes.root} maxWidth="md">
+			{ openNotifier && (
+				<Notifier
+					open={ openNotifier }
+					notifierType={ notifierType }
+					notifierMsg={ notifierMsg }
+					onHandleCloseNotifier={ onHandleCloseNotifier }
+				/>)
+			}
+			<ValidatorForm
+				onSubmit={ e => { onHandleSubmit(e) } }
+			>
+				<Grid container justify='center'>
+					<Grid item xs={12} sm={12} md={12}>
+						<Paper className={classes.paper}>
+							<Avatar className={classes.avatar}>
+								<LockOutlinedIcon />
+							</Avatar>
+							<Typography component='h1' variant='h5'>
+								Log in
+							</Typography>
+							<Grid item xs={12}>
+								<FormControl margin='normal' required fullWidth>
+									<ThemeProvider theme={theme}>
+										<TextValidator
+											label='Username'
+											value={ username }
+											onChange={ e => setUsername(e.target.value) }
+											validators={['required']}
+											errorMessages={['This field is required']}
+										/>
+									</ThemeProvider>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<FormControl margin='normal' required fullWidth>
+									<ThemeProvider theme={theme}>
+										<TextValidator
+											type='password'
+											label='Password'
+											value={ password }
+											onChange={ e => setPassword(e.target.value) }
+											validators={['required']}
+											errorMessages={['This field is required']}
+										/>
+									</ThemeProvider>
+								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<Button
+									type='submit'
+									variant='contained'
+									color='default'
+									className={classes.submit}
+									fullWidth
+								>
 									Log in
-								</Typography>
-									<FormControl margin='normal' required fullWidth>
-										<ThemeProvider theme={theme}>
-											<TextValidator
-												label='Username'
-												onChange={ this.onHandleChange }
-												name='username'
-												value={ username}
-												validators={['required']}
-												errorMessages={['This field is required']}
-											/>
-										</ThemeProvider>
-									</FormControl>
-									<br/>
-									<FormControl margin='normal' required fullWidth>
-										<ThemeProvider theme={theme}>
-											<TextValidator
-												label='Password'
-												onChange={ this.onHandleChange }
-												name='password'
-												type='password'
-												value={ password }
-												validators={['required']}
-												errorMessages={['This field is required']}
-											/>
-										</ThemeProvider>
-									</FormControl>
-									<br/>
-									<Button
-										type='submit'
-										fullWidth
-										variant='contained'
-										color='default'
-										className={classes.submit}>
-										Log in
-									</Button>
-							</Paper>
-						</Grid>
+								</Button>
+							</Grid>
+						</Paper>
 					</Grid>
-				</ValidatorForm>
-			</Container>
-		)
-	}
+				</Grid>
+			</ValidatorForm>
+		</Container>
+	)
 }
 
-export default withContext(withRouter(withStyles(styles)(Login)));
+export default withContext(withStyles(styles)(Login));

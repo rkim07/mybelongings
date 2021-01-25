@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { getHeaderAuthorization } from './helpers/exchange';
 
 /**
  * Login
@@ -21,11 +22,6 @@ export function login(credentials) {
 
 					response.redirect = true;
 
-					this.setState({
-						accessToken: accessToken,
-						refreshToken: refreshToken
-					});
-
 					return response;
 				} else if (error) {
 					return status;
@@ -38,13 +34,30 @@ export function login(credentials) {
 }
 
 /**
- * Logout
+ * Logout user.  Remove refresh token saved in DB.
+ * Remove both access and refresh token from local
+ * storage
  *
  * @returns {*}
  */
 export function logout() {
 	return axios
-		.get('/auth-svc/logout');
+		.get('/auth-svc/logout',{
+			headers: {
+				Authorization: getHeaderAuthorization()
+			}
+		})
+		.then((response) => {
+			const { data, status, error } = response;
+
+			if (status === 200) {
+				localStorage.removeItem('accessToken');
+				localStorage.removeItem('refreshToken');
+			}
+		})
+		.catch((err) => {
+			return err;
+		});
 }
 
 /**
@@ -59,7 +72,7 @@ export function refreshAccessToken() {
 	return axios
 		.get('/auth-svc/refresh', {
 			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+				Authorization: getHeaderAuthorization()
 			}
 		});
 }
@@ -87,4 +100,14 @@ export function register(credentials) {
 		.catch((err) => {
 			return err;
 		});
+}
+
+/**
+ * Check if token has been set after login
+ *
+ * @returns {boolean}
+ */
+export function isLoggedIn() {
+	const token = localStorage.getItem('accessToken');
+	return token ? true : false;
 }

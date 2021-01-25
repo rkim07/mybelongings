@@ -1,72 +1,38 @@
 import React from 'react';
-import { login, register} from "./auth";
+import { isLoggedIn, login, logout, register } from "./auth";
 import { uploadFile } from './upload';
+import { getUserVehicles, addVehicle, updateVehicle, deleteVehicle } from './vehicles';
 import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
 import { getUserProperties } from './properties';
-import { getUserVehicles, addVehicle, updateVehicle, deleteVehicle } from './vehicles';
 
 const AppContext = React.createContext('');
 
 export class AppContextProvider extends React.Component
 {
-	/**
-	 * Constructor
-	 *
-	 * @param props
-	 */
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			accessToken: localStorage.getItem('accessToken') !== undefined ? localStorage.getItem('accessToken') : '',
-			refreshToken: localStorage.getItem('refreshToken') !== undefined ? localStorage.getItem('refreshToken') : ''
-		};
-
-		this.register = register.bind(this);
-		this.login = login.bind(this);
-		this.uploadFile = uploadFile.bind(this);
-		this.getApiMfrs = getApiMfrs.bind(this);
-		this.getApiModelsByMfrKey = getApiModelsByMfrKey.bind(this);
-		this.getUserProperties = getUserProperties.bind(this);
-		this.getUserVehicles = getUserVehicles.bind(this);
-		this.addVehicle = addVehicle.bind(this);
-		this.updateVehicle = updateVehicle.bind(this);
-		this.deleteVehicle = deleteVehicle.bind(this);
-	}
-
-	/**
-	 * Logout
-	 */
-	logout = () => {
-		localStorage.removeItem('accessToken');
-		localStorage.removeItem('refreshToken');
-
-		this.setState({
-			accessToken: '',
-			refreshToken: ''
-		});
 	}
 
 	render() {
+		const { children } = this.props;
+
 		return (
 			<AppContext.Provider
 				value={{
-					register: this.register,
-					login: this.login,
-					logout: this.logout,
-					uploadFile: this.uploadFile,
-					getApiMfrs: this.getApiMfrs,
-					getApiModelsByMfrKey: this.getApiModelsByMfrKey,
-					getUserProperties: this.getUserProperties,
-					getUserVehicles: this.getUserVehicles,
-					addVehicle: this.addVehicle,
-					updateVehicle: this.updateVehicle,
-					deleteVehicle: this.deleteVehicle,
-					...this.state
+					register: register.bind(this),
+					login: login.bind(this),
+					logout: logout.bind(this),
+					isLoggedIn: isLoggedIn.bind(this),
+					uploadFile: uploadFile.bind(this),
+					getApiMfrs: getApiMfrs.bind(this),
+					getApiModelsByMfrKey: getApiModelsByMfrKey.bind(this),
+					getUserProperties: getUserProperties.bind(this),
+					getUserVehicles: getUserVehicles.bind(this),
+					addVehicle: addVehicle.bind(this),
+					updateVehicle: updateVehicle.bind(this),
+					deleteVehicle: deleteVehicle.bind(this)
 				}}>
-
-				{ this.props.children }
-
+				{ children }
 			</AppContext.Provider>
 		)
 	}

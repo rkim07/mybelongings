@@ -60,6 +60,7 @@ export class AuthController {
             return {
                 accessToken: login.accessToken,
                 refreshToken: login.refreshToken,
+                statusCode: 201,
                 message: 'User logged in.'
             };
         } catch (err) {
@@ -113,6 +114,7 @@ export class AuthController {
             await this.authService.logout(userKey);
 
             return {
+                statusCode: 200,
                 message: 'Logout success.'
             };
         } catch (err) {
@@ -174,7 +176,7 @@ export class AuthController {
 
             return {
                 accessToken: refresh.accessToken,
-                refreshToken: refresh.refreshToken,
+                statusCode: 200,
                 message: 'Token refreshed.'
             };
         } catch (err) {
@@ -232,6 +234,7 @@ export class AuthController {
 
             return {
                 user: registration.user,
+                statusCode: 201,
                 message: 'User successfully registered.'
             };
         } catch (err) {

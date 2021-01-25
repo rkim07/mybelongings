@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 
 const styles = theme => ({
 	footer: {
@@ -54,10 +53,5 @@ function Footer(props) {
 		</footer>
 	)
 }
-
-Footer.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
-
 
 export default withStyles(styles)(Footer);

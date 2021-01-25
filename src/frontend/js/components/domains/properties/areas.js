@@ -136,7 +136,7 @@ class Areas extends React.Component
 								</TableCell>
 								<TableCell style={{ width: 80 }} align="right">
 									<Link
-										component="button"
+										as="button"
 										variant="body2"
 										onClick={ this.onHandleClickOpen }>
 										Details

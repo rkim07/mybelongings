@@ -9,9 +9,8 @@ import { logout, refreshAccessToken } from "../auth";
  * @param config - object from Axios request interceptor
  * @returns {string}
  */
-export function setAuthenticationHeader(config) {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
-	return config;
+export function getHeaderAuthorization() {
+	return `Bearer ${localStorage.getItem('accessToken')}`;
 }
 
 /**
