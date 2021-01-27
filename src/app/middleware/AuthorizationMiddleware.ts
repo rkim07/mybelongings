@@ -8,7 +8,9 @@ import { AuthorisedRequest, JwtDecoded } from '../domains/shared/interfaces/inte
 export namespace AuthorizationMiddleware {
 
     /**
-     * Retrieve and verify the JWT from a request (if necessary), authorise the user and decorate the request with a new User
+     * Retrieve and verify the JWT from a request (if necessary), authorise
+     * the user and decorate the request with a new user
+     *
      * 403 - Forbidden
      * 401 - Failure
      *

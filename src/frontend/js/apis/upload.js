@@ -1,6 +1,4 @@
-import React from 'react';
 import axios from 'axios';
-import { removeFromCollection } from './helpers/collection';
 import { parseResponse, refreshToken, getHeaderAuthorization } from './helpers/exchange';
 
 const filesAxios = axios.create();
@@ -40,13 +38,7 @@ export function uploadFile(file) {
 	return filesAxios
 		.post('/file-upload-svc/upload', fd)
 		.then(response => {
-			const { data, status,  error } = response;
-
-			if (data.statusCode < 400) {
-				return data;
-			} else if (error) {
-				return status;
-			}
+			return response.data;
 		})
 		.catch((err) => {
 			return err;

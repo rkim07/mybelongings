@@ -52,25 +52,27 @@ export * from './utilities/CustomError';
  *         $ref: "#/definitions/Key"
  *       firstName:
  *         type: string
- *         minLength: 4
+ *         minLength: 2
  *       lastName:
  *         type: string
- *         minLength: 2
+ *         minLength: 1
  *       email:
  *         type: string
  *         minLength: 5
  *       username:
  *         type: string
- *         minLength: 5
+ *         minLength: 1
  *       password:
  *         type: string
- *         minLength: 4
+ *         minLength: 1
+ *       active:
+ *         type: boolean
+ *       refreshToken:
+ *         type: string
  *       authorities:
  *         type: array
  *         items:
  *           type: string
- *       refreshToken:
- *         type: string
  *       created:
  *         $ref: "#/definitions/Datetime"
  *       modified:
@@ -300,4 +302,24 @@ export * from './utilities/CustomError';
  *       - zip
  *       - country
  *       - type
+ *
+ *   Email:
+ *     type: object
+ *     properties:
+ *       to:
+ *         type: string
+ *         minLength: 2
+ *       subject:
+ *         type: string
+ *         minLength: 1
+ *       text:
+ *         type: string
+ *         minLength: 1
+ *       html:
+ *         type: string
+ *
+ *     required:
+ *       - to
+ *       - subject
+ *       - text
  */

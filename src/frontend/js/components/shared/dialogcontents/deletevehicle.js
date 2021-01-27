@@ -9,7 +9,7 @@ export default function DeleteVehicle(props) {
 	const {
 		vehicleKey,
 		onHandleCloseDialog,
-		onHandleDelete
+		onDelete
 	} = props;
 
 	return (
@@ -21,7 +21,7 @@ export default function DeleteVehicle(props) {
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={ (e) => onHandleDelete(e, vehicleKey) } color="primary">
+				<Button onClick={ () => onDelete('delete', vehicleKey) } color="primary">
 					Yes
 				</Button>
 				<Button onClick={ onHandleCloseDialog } color="primary" autoFocus>

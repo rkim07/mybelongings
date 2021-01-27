@@ -1,6 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
-import PropTypes from 'prop-types';
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,8 +9,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = {};
 
@@ -152,9 +151,5 @@ function HomeFacts(props) {
 		</React.Fragment>
 	)
 }
-
-HomeFacts.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(HomeFacts));

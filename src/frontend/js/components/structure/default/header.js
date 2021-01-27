@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
+import { withContext } from '../../../appcontext';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -45,8 +45,8 @@ function Header(props) {
 	const navigate = useNavigate();
 	const { classes, isLoggedIn, logout } = props;
 
-	const [anchor, setAnchor] = useState();
-	const [mobileAnchor, setMobileAnchor] = useState();
+	const [anchor, setAnchor] = useState(null);
+	const [mobileAnchor, setMobileAnchor] = useState(null);
 
 	const isMenuOpen = Boolean(anchor);
 	const isMobileMenuOpen = Boolean(mobileAnchor);

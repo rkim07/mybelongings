@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withContext } from '../../../contexts/appcontext';
+import { withStyles } from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import { prepareLoginData } from '../../helpers/ajax';
 import Notifier from '../../shared/notifier';
 import Button from '@material-ui/core/Button';
@@ -8,7 +8,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 
 const styles = theme => ({
@@ -183,9 +182,5 @@ class Registration extends React.Component
 		}
 	}
 }
-
-Registration.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Registration));

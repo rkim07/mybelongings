@@ -1,6 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
-import PropTypes from 'prop-types';
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,8 +9,6 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Image from "material-ui-image";
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = {
 	card: {
@@ -57,9 +56,5 @@ function List(props) {
 		</Grid>
 	);
 }
-
-List.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(List));

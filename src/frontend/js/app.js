@@ -49,7 +49,8 @@ function App(props) {
 				<Route path='/' element={<LandingPage />}/>
 				<Route path='/login' element={ <Login redirectUrl='/vehicles' />}/>
 				<ProtectedRoute path='/vehicles/*' element={ <VehiclesDashboard/> } />
-				<Route path='*' element={<NotFound/> } />
+				<ProtectedRoute path='/properties/*' element={ <PropertiesDashboard/> } />
+				<Route path='/*' element={<NotFound/> } />
 			</Routes>
 			<Footer />
 		</div>

@@ -44,7 +44,7 @@ export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionSer
      *
      * @param mfrModel
      */
-    public async updateModel(mfrModel: any) {
+    public async updateModel(mfrModel: any): Promise<any> {
         await this.loadCollection();
 
         const existingModel = await this.findOne({ key: { $eq: mfrModel.key }});

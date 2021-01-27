@@ -1,4 +1,3 @@
-import React from 'react';
 import * as _ from 'lodash';
 
 /**
@@ -8,7 +7,7 @@ import * as _ from 'lodash';
  * @param collection
  * @returns {*}
  */
-export function addUpdateCollection(obj, collection) {
+export function addOrUpdateCollection(obj, collection) {
 	const index = _.findIndex(collection, (idx) => {
 		return idx.key === obj.key
 	});
@@ -25,13 +24,13 @@ export function addUpdateCollection(obj, collection) {
 /**
  * Remove object from collection
  *
- * @param obj
+ * @param key
  * @param collection
  * @returns {unknown[]}
  */
-export function removeFromCollection(obj, collection) {
+export function removeFromCollection(key, collection) {
 	_.remove(collection, (idx) => {
-		return idx.key === obj.key
+		return idx.key === key
 	});
 
 	return collection;

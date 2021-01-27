@@ -12,10 +12,10 @@ import { NhtsaApiVehicleModelCollectionService } from './NhtsaApiVehicleModelCol
 
 const path = require('path');
 
-const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource');
-const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint');
-const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint');
-const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat');
+const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource').toString();
+const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint').toString();
+const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint').toString();
+const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat').toString();
 
 export enum VEHICLE_API_ERRORS {
     VEHICLE_MFR_NOT_FOUND = 'VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND',

@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import List from './list';
 import View from './view';
 import Container from '@material-ui/core/Container';
-import { withStyles } from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = theme => ({
 	root: {
@@ -73,9 +72,5 @@ class Dashboard extends React.Component
 		)
 	}
 }
-
-Dashboard.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Dashboard));

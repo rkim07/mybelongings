@@ -1,14 +1,28 @@
-import React from 'react';
 import axios from 'axios';
-// import { setNotifierExceptionMsg, setNotifierMsg } from '../helpers/messages';
+import { parseResponse, refreshToken, getHeaderAuthorization } from './helpers/exchange';
 
 const propertiesAxios = axios.create();
 
+// Request interceptor
 propertiesAxios.interceptors.request.use((config) => {
 	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
 
 	return config;
 });
+
+// Response interceptor
+// Is the marker being refreshed?
+let isRefreshing = false
+// Retry queue, each item will be a function to be executed
+let requests = []
+
+/*propertiesAxios.interceptors.response.use(response => {
+	return parseResponse(response);
+}, err => {
+	return refreshToken(propertiesAxios, err, requests, isRefreshing);
+}, (error) => {
+	return Promise.reject(error)
+});*/
 
 /**
  * Get property by ID

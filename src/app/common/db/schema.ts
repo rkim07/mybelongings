@@ -7,13 +7,14 @@ export const schema: Array<TableSchema> = [
         isBlob: false,
         columns: [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'authorities', type: 'CHAR', shouldParse: true, hasPersistentColumn: false },
             { name: 'firstName', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'lastName', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'email', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'username', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'password', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'active', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'refreshToken', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'authorities', type: 'CHAR', shouldParse: true, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
         ]

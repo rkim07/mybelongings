@@ -120,7 +120,7 @@ export class AuthService {
         }
 
         // Add new user
-        const newUser = await this.userCollectionService.updateUser(data);
+        const newUser = await this.userCollectionService.adddUser(data);
 
         return {
             user: {

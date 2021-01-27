@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AppContextProvider } from './contexts/appcontext';
+import { AppContextProvider } from './appcontext';
 import App from './app';
 
 const root = document.getElementById('root');

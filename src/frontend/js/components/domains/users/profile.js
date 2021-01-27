@@ -1,5 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import { getStates } from '../../helpers/list';
 import { formatPhoneNumber, textMaskCustom } from '../../helpers/utils';
 import { prepareProfileData } from '../../helpers/ajax';
@@ -16,8 +17,6 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = theme => ({
 	root: {
@@ -299,9 +298,5 @@ class Profile extends React.Component
 		)
 	}
 }
-
-Profile.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default withContext(withStyles(styles)(Profile));

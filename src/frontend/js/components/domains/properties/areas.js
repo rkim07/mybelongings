@@ -1,5 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import PaintDetailsDialog from "./paintdetailsdialog";
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,8 +14,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -35,12 +34,6 @@ function TabPanel(props) {
 		</div>
 	);
 }
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.any.isRequired,
-	value: PropTypes.any.isRequired,
-};
 
 function tabAttrs(index) {
 	return {
@@ -174,9 +167,5 @@ class Areas extends React.Component
 		)
 	}
 }
-
-Areas.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(Areas));

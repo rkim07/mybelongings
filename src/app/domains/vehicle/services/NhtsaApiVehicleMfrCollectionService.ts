@@ -30,7 +30,7 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
      *
      * @param mfr
      */
-    public async updateMfrs(mfr: any) {
+    public async updateMfrs(mfr: any): Promise<any> {
         await this.loadCollection();
 
         const existingMfr = await this.findOne({ key: { $eq: mfr.key }});

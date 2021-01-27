@@ -22,9 +22,9 @@ jwt:
     secret: 'MTIzNDU2Nzg=' # HAC secret for JWTs
     token:
       access:
-        expiration: 900 # 5 minutes in seconds
+        expiration: 1200 # 20 minutes in seconds
       refresh:
-        expiration: 3600 #  30 minutes in seconds
+        expiration: 3600 # 1 hour in seconds
 
 hash:
   bcrypt:
@@ -37,3 +37,12 @@ api:
       listFormat: 'json'
       mfrEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
       mfrModelsEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'
+
+email:
+  config:
+    adminEmail: 'admin@mybelongings.com'
+    host: 'smtp.gmail.com'
+    port: 465
+    secure: true
+    username: 'ryankim07@gmail.com'
+    password: 'ryanKim2775!'

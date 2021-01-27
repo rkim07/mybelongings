@@ -1,6 +1,4 @@
-import React from 'react';
 import axios from 'axios';
-import { addUpdateCollection, removeFromCollection } from './helpers/collection';
 import { parseResponse, refreshToken, getHeaderAuthorization } from './helpers/exchange';
 
 const vehiclesAxios = axios.create();
@@ -12,7 +10,6 @@ vehiclesAxios.interceptors.request.use(config => {
 }, (error) => {
 	Promise.reject(error)
 });
-
 
 // Response interceptor
 // Is the marker being refreshed?
@@ -38,14 +35,11 @@ export function getVehicle(key) {
 	return vehiclesAxios
 		.get(`/vehicle-svc/vehicles/${key}`)
 		.then(response => {
-			const { data, status, error} = response;
-
-			if (data) {
-				data.vehicle = data.vehicle ? data.vehicle : [];
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 200) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err
@@ -61,14 +55,11 @@ export function getVehicles() {
 	return vehiclesAxios
 		.get('/vehicle-svc/vehicles')
 		.then((response) => {
-			const { data, status, error} = response;
-
-			if (data) {
-				data.vehicles = data.vehicles ? data.vehicles : [];
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 200) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;
@@ -84,14 +75,11 @@ export function getUserVehicles() {
 	return vehiclesAxios
 		.get(`/vehicle-svc/vehicles/by/user`)
 		.then((response) => {
-			const { data, status, error} = response;
-
-			if (data) {
-				data.vehicles = data.vehicles ? data.vehicles : [];
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 200) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;
@@ -102,23 +90,19 @@ export function getUserVehicles() {
  * Add vehicle
  *
  * @param vehicle
- * @param vehicles
  * @returns {Promise<T>}
  */
-export function addVehicle(vehicle, vehicles) {
+export function addVehicle(vehicle) {
 	vehicle = prepareSubmitData(vehicle);
 
 	return vehiclesAxios
 		.post('/vehicle-svc/vehicle', vehicle)
 		.then((response) => {
-			const { data, status, error} = response;
-
-			if (data.statusCode < 400) {
-				data['vehicles'] = addUpdateCollection(data.vehicle, vehicles);
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 201) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;
@@ -130,24 +114,20 @@ export function addVehicle(vehicle, vehicles) {
  *
  * @param key
  * @param vehicle
- * @param vehicles
  * @returns {Promise<T>}
  */
-export function updateVehicle(key, vehicle, vehicles) {
+export function updateVehicle(vehicle) {
 	// Prepare data for backend
-	vehicle = prepareSubmitData(vehicle, key);
+	vehicle = prepareSubmitData(vehicle, vehicle.key);
 
 	return vehiclesAxios
-		.put(`/vehicle-svc/vehicles/${key}`, vehicle)
+		.put(`/vehicle-svc/vehicles/${vehicle.key}`, vehicle)
 		.then((response) => {
-			const { data, status, error} = response;
-
-			if (data.statusCode < 400) {
-				data['vehicles'] = addUpdateCollection(data.vehicle, vehicles);
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 200) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;
@@ -158,21 +138,17 @@ export function updateVehicle(key, vehicle, vehicles) {
  * Delete vehicle
  *
  * @param key
- * @param vehicles
  * @returns {Promise<T>}
  */
-export function deleteVehicle(key, vehicles) {
+export function deleteVehicle(key) {
 	return vehiclesAxios
 		.delete(`/vehicle-svc/vehicles/${key}`)
 		.then((response) => {
-			const { data, status,  error } = response;
-
-			if (data.statusCode < 400) {
-				data['vehicles'] = removeFromCollection(data.vehicle, vehicles);
-				return data;
-			} else if (error) {
-				return status;
+			if (response.status === 200) {
+				return response.data;
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;

@@ -8,7 +8,7 @@ export default function Dialogger(props) {
 		vehicle,
 		dialogType,
 		onHandleCloseDialog,
-		onHandleDelete
+		onDelete
 	} = props;
 
 	return (
@@ -23,7 +23,7 @@ export default function Dialogger(props) {
 					'delete':
 						<DeleteVehicle
 							vehicleKey={ vehicle.key }
-							onHandleDelete={ onHandleDelete }
+							onDelete={ onDelete }
 							onHandleCloseDialog={ onHandleCloseDialog }
 						/>
 

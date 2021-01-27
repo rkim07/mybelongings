@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { withContext } from '../../../contexts/appcontext';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { Navigate } from "react-router-dom";
+import { withContext } from '../../../appcontext';
 import { withStyles } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 import Notifier from '../../shared/notifier';
 import Container from '@material-ui/core/Container';
@@ -68,7 +68,6 @@ const theme = createMuiTheme({
 });
 
 function Login(props) {
-	const navigate = useNavigate();
 
 	const { classes } = props;
 	const [username, setUsername] = useState('');
@@ -76,6 +75,7 @@ function Login(props) {
 	const [openNotifier, setOpenNotifier] = useState(false);
 	const [notifierType, setNotifierType] = useState('');
 	const [notifierMsg, setNotifierMsg] = useState('');
+	const [submitted, setSubmitted] = useState(false);
 
 	const onHandleSubmit = (e) => {
 		e.preventDefault();
@@ -88,9 +88,11 @@ function Login(props) {
 		props.login(credentials)
 			.then((response) => {
 				if (response.redirect) {
-					navigate(props.redirectUrl);
-				} else if (response.status !== 200) {
+					setSubmitted(true);
+				} else {
 					setOpenNotifier(true);
+					setNotifierType(response.statusType);
+					setNotifierMsg(response.message);
 				}
 			});
 	}
@@ -103,6 +105,7 @@ function Login(props) {
 
 	return (
 		<Container className={classes.root} maxWidth="md">
+			{ submitted && (<Navigate to={ props.redirectUrl } />)}
 			{ openNotifier && (
 				<Notifier
 					open={ openNotifier }

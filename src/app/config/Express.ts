@@ -144,6 +144,18 @@ export class ExpressConfig {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 
+        this.app.get(/^\/vehicles\/create$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
+
+        this.app.get(/^\/vehicles\/edit\/[0-9a-zA-Z]{1,}$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
+
         this.app.get('/properties', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });

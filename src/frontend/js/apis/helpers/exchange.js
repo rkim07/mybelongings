@@ -1,5 +1,4 @@
-import React from 'react';
-import { logout, refreshAccessToken } from "../auth";
+import { refreshAccessToken } from '../auth';
 
 /**
  * Set authentication
@@ -27,44 +26,31 @@ export function refreshToken(interceptor, err, requests, isRefreshing) {
 	const { config, response } = err;
 
 	if (response.status === 401) {
-		const originalRequest = config;
-
-		if (!isRefreshing) {
-			isRefreshing = true
-
-			return refreshAccessToken().then(res => {
-				const { data } = res;
-				const { accessToken } = data;
-
-				// Add to local storage
-				localStorage.setItem('accessToken', accessToken);
-
+		return refreshAccessToken().then(res => {
+			// Refresh token is expired as well at this point.  Force user to
+			// login again to get new access and refresh tokens
+			if (res.response.data.expiredRefreshToken) {
+				console.log('Refresh token has expired as well');
+				window.location.href = '/login'
+			} else {
 				// Replace original token with refreshed token
-				originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+				console.log('Refresshing access token.');
+				config.headers.Authorization = getHeaderAuthorization();
 
 				// Token has been refreshed to retry requests from all queues
-				requests.forEach(cb => cb(accessToken))
+				requests.forEach(cb => cb(token))
 				{
 					requests = []
-					return interceptor(config)
+					return interceptor(config);
 				}
-			}).catch(res => {
-				console.error('Refresh token error =>', res)
-				window.location.href = '/login'
-			}).finally(() => {
-				isRefreshing = false
-			})
-		} else {
-			// Token is being refreshed and a promise that resolve has not been executed is returned
-			return new Promise((resolve) => {
-				// Put resolve in the queue, save it in a function form, and execute it directly after token refreshes
-				requests.push((accessToken) => {
-					config.baseURL = ''
-					originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-					resolve(interceptor(config))
-				})
-			})
-		}
+			}
+		}).catch(res => {
+			// At this point, refresh token is expired as well.  Force use to login again.
+			console.error('An unexpected error occurred while trying to refresh the token.');
+			window.location.href = '/login'
+		}).finally(() => {
+			isRefreshing = false
+		});
 	}
 
 	return response
@@ -77,9 +63,11 @@ export function refreshToken(interceptor, err, requests, isRefreshing) {
  * @returns {*}
  */
 export function parseResponse(response) {
-	if (!response.data) {
+	if (!response.data || !response.data.statusCode) {
 		response.data = {
 			statusType: 'error',
+			statusCode: 500,
+			status: 500,
 			message: 'An unexpected error occurred in the application.'
 		}
 

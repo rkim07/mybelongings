@@ -1,6 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
-import PropTypes from 'prop-types';
+import { withStyles }  from '@material-ui/core/styles';
+import { withContext } from '../../../appcontext';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -10,8 +11,6 @@ import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = (theme, props) => ({
 	closeButton: {
@@ -90,9 +89,5 @@ function PaintDetailsDialog(props) {
 		</Dialog>
 	);
 }
-
-PaintDetailsDialog.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(PaintDetailsDialog));

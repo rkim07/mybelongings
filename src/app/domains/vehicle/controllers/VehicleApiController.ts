@@ -30,7 +30,7 @@ export class VehicleApiController {
             const mfrs = await this.apiVehicleService.syncNhtsaApi();
 
             return {
-                mfrs: mfrs,
+                payload: mfrs,
                 statusCode: 200,
                 message: 'Successfully synced all vehicles from NHTSA API.'
             };
@@ -71,7 +71,7 @@ export class VehicleApiController {
             const mfrs = await this.apiVehicleService.getApiMfrs();
 
             return {
-                mfrs: mfrs,
+                payload: mfrs,
                 statusCode: 200,
                 message: 'Successfully retrieved all manufactures.'
             };
@@ -120,7 +120,7 @@ export class VehicleApiController {
             const models = await this.apiVehicleService.getApiModelsByMfrKey(mfrKey);
 
             return {
-                models: models,
+                payload: models,
                 statusCode: 200,
                 message: 'Successfully retrieved all models for a particular manufacturer.'
             };

@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
+import { withContext } from './appcontext';
 
 const styles = theme => ({
 	formControl: {

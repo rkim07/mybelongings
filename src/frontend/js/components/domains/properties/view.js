@@ -1,6 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
-import PropTypes from 'prop-types';
+import { withContext } from '../../../appcontext';
+import { withStyles }  from '@material-ui/core/styles';
 import HomeFacts from './homefacts';
 import Areas from './areas';
 import Grid from '@material-ui/core/Grid';
@@ -9,8 +10,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
 
 const styles = {
 	card: {
@@ -51,9 +50,5 @@ function View(props) {
 		</Grid>
 	);
 }
-
-View.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
 export default withContext(withStyles(styles)(View));

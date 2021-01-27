@@ -13,6 +13,8 @@ const DEFAULT_VEHICLE_ERROR_MESSAGE = 'An unexpected error occurred in the vehic
 export class VehicleController {
 
     @Inject()
+    private vehicleService: VehicleService = Container.get(VehicleService);
+
     /**
      * @swagger
      * paths:
@@ -31,11 +33,10 @@ export class VehicleController {
      *           description: The JWT token with claims about user.
      *           type: string
      *           required: true
-     *         - in: path
-     *           name: vehicle_key
-     *           description: The vehicle key being queried.
+     *         - name: vehicle_key
+     *           in: path
+     *           description: The key associated to the desired vehicle.
      *           type: string
-     *           minimum: 5
      *           required: true
      *       responses:
      *         200:
@@ -49,17 +50,15 @@ export class VehicleController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    private vehicleService: VehicleService = Container.get(VehicleService);
-
     @Get('/vehicles/:vehicle_key')
     public async getVehicle(
         @Req() { requestor: { origin }}: AuthorisedRequest,
-        @Param('vehicle_key') vehicleKey: Key): Promise<any> {
+        @Param('vehicle_key') vehicleKey: string): Promise<any> {
         try {
             const vehicle = await this.vehicleService.getVehicle(vehicleKey, origin);
 
             return {
-                vehicle: vehicle,
+                payload: vehicle || {},
                 statusCode: 200,
                 message: 'Fetched specific vehicle.'
             };
@@ -116,7 +115,7 @@ export class VehicleController {
             const vehicles = await this.vehicleService.getVehicles(origin);
 
             return {
-                vehicles: vehicles,
+                payload: vehicles || [],
                 statusCode: 200,
                 message: vehicles.length > 0 ? 'Fetched all the vehicles.' : 'Therea are no vehicles at this time.'
             };
@@ -172,7 +171,7 @@ export class VehicleController {
             const vehicles = await this.vehicleService.getUserVehicles(userKey, origin);
 
             return {
-                vehicles: vehicles,
+                payload: vehicles || [],
                 statusCode: 200,
                 message: vehicles.length > 0 ? 'Fetched all vehicles for the user.' : 'No vehicles were found for the user.'
             };
@@ -238,7 +237,7 @@ export class VehicleController {
             const vehicle = await this.vehicleService.addVehicle(userKey, origin, body);
 
             return {
-                vehicle: vehicle,
+                payload: vehicle,
                 statusCode: 201,
                 message: 'Vehicle successfully added.'
             };
@@ -315,7 +314,7 @@ export class VehicleController {
             const vehicle = await this.vehicleService.updateVehicle(userKey, vehicleKey, origin, body);
 
             return {
-                vehicle: vehicle,
+                payload: vehicle,
                 statusCode: 200,
                 message: 'Vehicle successfully updated.'
             };
@@ -383,7 +382,7 @@ export class VehicleController {
 
             if (vehicle) {
                 response.send({
-                    vehicle: vehicle,
+                    payload: vehicle,
                     statusCode: 204,
                     message: 'Vehicle successfully deleted.'
                 });
