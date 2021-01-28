@@ -8,8 +8,8 @@ import Button from "@material-ui/core/Button";
 export default function DeleteVehicle(props) {
 	const {
 		vehicleKey,
-		onHandleDialog, // parent call
-		onHandleDelete // parent call
+		onHandleClose, // parent call in dialogger
+		onHandleDelete // parent call in dashboard
 	} = props;
 
 	return (
@@ -21,10 +21,13 @@ export default function DeleteVehicle(props) {
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={ () => onHandleDelete(vehicleKey) } color="primary">
+				<Button onClick={ () => {
+					onHandleClose();
+					onHandleDelete(vehicleKey);
+				} } color="primary">
 					Yes
 				</Button>
-				<Button onClick={ () => onHandleDialog() } color="primary" autoFocus>
+				<Button onClick={ () => onHandleClose() } color="primary" autoFocus>
 					No
 				</Button>
 			</DialogActions>

@@ -38,11 +38,11 @@ api:
       mfrEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
       mfrModelsEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'
 
-email:
-  config:
-    adminEmail: 'admin@mybelongings.com'
-    host: 'smtp.gmail.com'
-    port: 465
-    secure: true
-    username: 'ryankim07@gmail.com'
-    password: 'ryanKim2775!'
+# Using fake email server mailtralp.io, signed with github account
+nodemailer:
+  adminEmail: 'admin@mybelongings.com'
+  host: 'smtp.mailtrap.io'
+  port: 2525
+  secure: true
+  user: '22d82f6af4e44a'
+  pass: '2bab2a6ad87193'

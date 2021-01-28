@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
+import { Notifier } from '../../shared/feedback/notifier';
 import { currentYear } from '../../shared/helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
+import Container from '@material-ui/core/Container';
 import List from './list';
 import Manage from './manage';
 import Details from './details';
-import Dialogger from '../../shared/dialogger';
-import Notifier from '../../shared/notifier';
-import Container from '@material-ui/core/Container';
-import NotFound from '../../structure/notfound';
 
 const styles = theme => ({
 	root: {
@@ -37,8 +35,10 @@ const vehiclesReducer = (state, action) => {
 	}
 }
 
-
 function Dashboard(props) {
+	const navigate = useNavigate();
+	const notifierRef = useRef();
+
 	const {
 		classes,
 		getUserVehicles, // api call
@@ -48,22 +48,12 @@ function Dashboard(props) {
 		deleteVehicle // api call
 	} = props;
 
-	const navigate = useNavigate();
-
-	const [openNotifier, setOpenNotifier] = useState(false);
-	const [notifierType, setNotifierType] = useState('success');
-	const [notifierMsg, setNotifierMsg] = useState('');
-	const [openDialog, setOpenDialog] = useState(false);
-	const [dialogType, setDialogType] = useState();
-	const [dialogParams, setDialogParams] = useState();
 	const [loading, setLoading] = useState(true);
-
-	const [, forceUpdate] = useReducer(x => x + 1, 0);
 
 	/**
 	 * Get all user's vehicles
 	 */
-	const[vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
+	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
 	useEffect(() => {
 		getUserVehicles().then(response => {
@@ -106,9 +96,10 @@ function Dashboard(props) {
 				payload: response.payload
 			});
 
-			handleNotifier(response.statusType, response.message);
+			notifierRef.current.openNotifier(response.statusType, response.message);
 
-			// Rerender component
+			// Rerender component since a new vehicle
+			// was added to the list
 			if (isNewVehicle) {
 				navigate('/vehicles');
 			}
@@ -129,50 +120,20 @@ function Dashboard(props) {
 				type: 'delete',
 				payload: response.payload.key
 			});
-
-			handleDialog();
 		}
 
-		handleNotifier(response.statusType, response.message);
-	}
-
-	const handleDialog = (type = null, key = null) => {
-		setDialogType(type);
-		setDialogParams(key);
-		setOpenDialog(!openDialog);
-	}
-
-	const handleNotifier = (type = null, msg = null) => {
-		setOpenNotifier(!openNotifier);
-		setNotifierType(type);
-		setNotifierMsg(msg);
+		notifierRef.current.openNotifier(response.statusType, response.message);
 	}
 
 	return (
 		<Container className={classes.cardGrid} maxWidth="md">
-			{ openNotifier && (
-				<Notifier
-					open={ openNotifier }
-					type={ notifierType }
-					message={ notifierMsg }
-					onHandleNotifier={ handleNotifier }
-				/>
-			)}
-			{ openDialog && (
-				<Dialogger
-					open={ openDialog }
-					type={ dialogType }
-					params={ dialogParams }
-					onHandleDelete={ hanleDelete }
-					onHandleDialog={ handleDialog }
-				/>
-			)}
+			<Notifier ref={ notifierRef }/>
 			<Routes>
 				<Route path="/" element={
 					<List
 						loading={ loading }
 						vehicles={ vehicles }
-						onHandleDialog={ handleDialog }
+						onHandleDelete={ hanleDelete }
 					/>
 				} />
 				<Route path="/create" element={
@@ -184,7 +145,6 @@ function Dashboard(props) {
 						onHandleSubmit={ handleSubmit }
 					/>
 				} />
-				<Route path='/*' element={<NotFound/> } />
 			</Routes>
 		</Container>
 	)

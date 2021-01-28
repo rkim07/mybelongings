@@ -54,8 +54,8 @@ const colors = getVehicleColors();
 const years = getYearsRange(1950, 2022);
 
 function Manage(props) {
-	const { key } = useParams();
 	const navigate = useNavigate();
+	const { key } = useParams();
 
 	const {
 		classes,

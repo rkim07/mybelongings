@@ -12,12 +12,12 @@ export enum EMAIL_SERVICE_ERRORS {
     FAILED_TO_SEND = 'EMAIL_SERVICE_ERRORS.FAILED_TO_SEND'
 }
 
-const ADMIN_EMAIL = config.get('email.config.adminEmail').toString();
-const HOST = config.get('email.config.host').toString();
-const PORT = config.get('email.config.port');
-const SECURE = config.get('email.config.secure');
-const ADMIN_USERNAME = config.get('email.config.username').toString();
-const ADMIN_PASSWORD = config.get('email.config.password');
+const ADMIN_EMAIL = config.get('nodemailer.adminEmail').toString();
+const HOST = config.get('nodemailer.host').toString();
+const PORT = config.get('nodemailer.port');
+const SECURE = config.get('nodemailer.secure');
+const ADMIN_USERNAME = config.get('nodemailer.user').toString();
+const ADMIN_PASSWORD = config.get('nodemailer.pass');
 
 @Service()
 export class EmailService {
@@ -32,7 +32,15 @@ export class EmailService {
             throw new HandleUpstreamError(EMAIL_SERVICE_ERRORS.EMPTY_BODY);
         }
 
-        const transporter = this.getTransporter();
+        const transporter = nodemailer.createTransport({
+            port: PORT,
+            host: HOST,
+            secure: SECURE,
+            auth: {
+                user: ADMIN_USERNAME,
+                pass: ADMIN_PASSWORD
+            }
+        });
 
         const mailData = {
             from: ADMIN_EMAIL,
@@ -48,23 +56,6 @@ export class EmailService {
             }
 
             return info.messageId;
-        });
-    }
-
-    /**
-     * Set nodemailer transporter
-     *
-     * @private
-     */
-    private getTransporter() {
-        return nodemailer.createTransport({
-            port: PORT,
-            host: HOST,
-            secure: SECURE,
-            auth: {
-                user: ADMIN_USERNAME,
-                pass: ADMIN_PASSWORD
-            }
         });
     }
 }

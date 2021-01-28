@@ -4,7 +4,7 @@ import { withContext } from '../../../appcontext';
 import { withStyles } from '@material-ui/core/styles';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
-import Notifier from '../../shared/notifier';
+import { Notifier } from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';

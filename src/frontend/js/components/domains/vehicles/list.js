@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
+import { Dialogger } from '../../shared/feedback/dialogger';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -15,8 +18,7 @@ import Edit from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Pagination from '@material-ui/lab/Pagination';
-import {Link} from "react-router-dom";
-import {useNavigate} from "react-router";
+import Container from "@material-ui/core/Container";
 
 const styles = theme => ({
 	card: {
@@ -34,11 +36,13 @@ const styles = theme => ({
 
 function List(props) {
 	const navigate = useNavigate();
+	const dialoggerRef = useRef();
+
 	const {
 		classes,
 		loading,
 		vehicles,
-		onHandleDialog // parent call
+		onHandleDelete // parent call
 	} = props;
 
 	return (
@@ -95,7 +99,7 @@ function List(props) {
 									aria-label="delete"
 									color="default"
 									className={classes.button}
-									onClick={ () => onHandleDialog('delete', vehicle.key) }
+									onClick={ () => dialoggerRef.current.openDialogger('delete', { vehicleKey: vehicle.key }) }
 								>
 									<DeleteIcon />
 								</IconButton>
@@ -108,6 +112,10 @@ function List(props) {
 					</Card>
 				</Grid>
 			))}
+			<Dialogger
+				ref={ dialoggerRef }
+				{...props}
+			/>
 		</Grid>
 	);
 }

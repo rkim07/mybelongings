@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AppContextProvider } from './appcontext';
 import { withStyles }  from '@material-ui/core/styles';
 import Header from './components/structure/default/header';
 import Footer from './components/structure/default/footer';
@@ -43,17 +44,21 @@ function App(props) {
 	const { classes, ...other } = props;
 
 	return (
-		<div className={classes.root}>
-			<Header {...props} />
-			<Routes>
-				<Route path='/' element={<LandingPage />}/>
-				<Route path='/login' element={ <Login redirectUrl='/vehicles' />}/>
-				<ProtectedRoute path='/vehicles/*' element={ <VehiclesDashboard/> } />
-				<ProtectedRoute path='/properties/*' element={ <PropertiesDashboard/> } />
-				<Route path='/*' element={<NotFound/> } />
-			</Routes>
-			<Footer />
-		</div>
+		<AppContextProvider>
+			<Router>
+				<div className={classes.root}>
+					<Header {...props} />
+					<Routes>
+						<Route path='/' element={<LandingPage />}/>
+						<Route path='/login' element={ <Login redirectUrl='/vehicles' />}/>
+						<ProtectedRoute path='/vehicles/*' element={ <VehiclesDashboard/> } />
+						<ProtectedRoute path='/properties/*' element={ <PropertiesDashboard/> } />
+						<Route path='/*' element={<NotFound/> } />
+					</Routes>
+					<Footer />
+				</div>
+			</Router>
+		</AppContextProvider>
 	)
 }
 
