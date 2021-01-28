@@ -140,6 +140,12 @@ export class ExpressConfig {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 
+        this.app.get(/^\/(?!vehicle-svc)([a-z0-9]+)$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
+
         this.app.get('/vehicles', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
@@ -154,10 +160,6 @@ export class ExpressConfig {
             if (req.params[0] !== 'index.js') {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
             }
-        });
-
-        this.app.get('/properties', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
     }
 }

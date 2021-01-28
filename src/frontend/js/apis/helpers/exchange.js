@@ -26,15 +26,18 @@ export function refreshToken(interceptor, err, requests, isRefreshing) {
 	const { config, response } = err;
 
 	if (response.status === 401) {
+		console.info('Access token has expired.  Attempting to refresh the token...');
 		return refreshAccessToken().then(res => {
 			// Refresh token is expired as well at this point.  Force user to
 			// login again to get new access and refresh tokens
-			if (res.response.data.expiredRefreshToken) {
-				console.log('Refresh token has expired as well');
+			if (res.data.expiredRefreshToken) {
+				console.error('Both access and refresh tokens have expired.');
+				console.info('Redirecting user to login again.');
+				localStorage.removeItem('accessToken');
 				window.location.href = '/login'
 			} else {
 				// Replace original token with refreshed token
-				console.log('Refresshing access token.');
+				console.info('Access token has been refreshed.');
 				config.headers.Authorization = getHeaderAuthorization();
 
 				// Token has been refreshed to retry requests from all queues
@@ -45,8 +48,9 @@ export function refreshToken(interceptor, err, requests, isRefreshing) {
 				}
 			}
 		}).catch(res => {
-			// At this point, refresh token is expired as well.  Force use to login again.
+			// System crashed somehow.  Force use to login again.
 			console.error('An unexpected error occurred while trying to refresh the token.');
+			localStorage.removeItem('accessToken');
 			window.location.href = '/login'
 		}).finally(() => {
 			isRefreshing = false

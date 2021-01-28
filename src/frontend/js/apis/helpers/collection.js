@@ -7,7 +7,7 @@ import * as _ from 'lodash';
  * @param collection
  * @returns {*}
  */
-export function addOrUpdateCollection(obj, collection) {
+export function modifyState(obj, collection) {
 	const index = _.findIndex(collection, (idx) => {
 		return idx.key === obj.key
 	});
@@ -28,12 +28,10 @@ export function addOrUpdateCollection(obj, collection) {
  * @param collection
  * @returns {unknown[]}
  */
-export function removeFromCollection(key, collection) {
-	_.remove(collection, (idx) => {
-		return idx.key === key
+export function removeFromState(key, collection) {
+	return _.filter(collection, (idx) => {
+		return idx.key !== key;
 	});
-
-	return collection;
 }
 
 /**
@@ -42,7 +40,7 @@ export function removeFromCollection(key, collection) {
  * @param list
  * @returns {*}
  */
-export function chunkCollection(list) {
+export function chunk(list) {
 	const perChunk = list.length / 2;
 
 	return list.reduce((results, item, index) => {

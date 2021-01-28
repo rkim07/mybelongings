@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useParams} from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
-import { addOrUpdateCollection } from '../../../apis/helpers/collection';
-import { getVehicleColors } from '../../helpers/list';
-import { currentYear, getYearsRange } from '../../helpers/date';
+import { getVehicleColors } from '../../shared/helpers/list';
+import { currentYear, getYearsRange } from '../../shared/helpers/date';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
@@ -60,14 +59,10 @@ function Manage(props) {
 
 	const {
 		classes,
-		onHandleSubmit,
-		onHandleOpenNotifier,
-		getVehicle,
-		getApiMfrs,
-		getApiModelsByMfrKey,
-		uploadFile,
-		updateVehicle,
-		addVehicle
+		getVehicle, // api call
+		getApiMfrs, // api call
+		getApiModelsByMfrKey, // api call
+		onHandleSubmit // parent call
 	} = props;
 
 	// Initial vehicle state
@@ -98,11 +93,11 @@ function Manage(props) {
 		// It's add new vehicle page mode
 		if (mode === 'update') {
 			getVehicle(key).then(response => {
-				const { vehicle, statusCode, statusType, message } = response
+				const { payload, statusCode, statusType, message } = response
 				if (statusCode < 400) {
-					setVehicle(vehicle);
+					setVehicle(payload);
 				} else {
-					onHandleOpenNotifier(statusType, message);
+					onHandleNotifier(statusType, message);
 					navigate('/');
 				}
 
@@ -162,40 +157,10 @@ function Manage(props) {
 		}
 	}
 
-	/**
-	 * Submit
-	 *
-	 * @param e
-	 * @returns {Promise<void>}
-	 */
-	const handleSubmit = async(e) => {
-		e.preventDefault();
-
-		// Upload file first if any
-		if (file.length) {
-			const upload = await uploadFile(file[0]);
-
-			if (upload) {
-				vehicle.image = upload.payload;
-			}
-		}
-
-		// REST call and update parent state
-		const response = !vehicle.key ?
-			await addVehicle(vehicle)
-			:
-			await updateVehicle(vehicle);
-
-		if (response.statusCode < 400) {
-			const type = !vehicle.key ? 'add' : 'update'
-			onHandleSubmit(type, response.payload);
-		}
-	}
-
 	return (
 		<ValidatorForm
 			instantValidate={false}
-			onSubmit={ (e) => handleSubmit(e) }
+			onSubmit={ (e) => onHandleSubmit(e, file, vehicle) }
 		>
 			{ submitted && (<Navigate to="/vehicles" />)}
 			<Grid container spacing={4}>

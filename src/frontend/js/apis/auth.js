@@ -58,6 +58,8 @@ export function logout() {
 				localStorage.removeItem('accessToken');
 				localStorage.removeItem('refreshToken');
 			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;
@@ -80,15 +82,17 @@ export function refreshAccessToken() {
 		.then((response) => {
 			const { data } = response;
 			if (data.statusCode < 400) {
-				console.log('Access token expired, system generated new token: ', data.accessToken);
 				localStorage.setItem('accessToken', data.accessToken);
+				data['expiredRefreshToken'] = false;
+
+				return response;
 			}
 		})
 		.catch((err) => {
-			console.error('Both access and refresh tokens are expired.');
-			console.info('Redirecting user to login again.');
-			err.response.data['expiredRefreshToken'] = true;
-			return err;
+			data['expiredRefreshToken'] = true;
+			data['err'] = err;
+
+			return data;
 		});
 }
 

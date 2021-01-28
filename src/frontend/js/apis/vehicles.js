@@ -35,7 +35,7 @@ export function getVehicle(key) {
 	return vehiclesAxios
 		.get(`/vehicle-svc/vehicles/${key}`)
 		.then(response => {
-			if (response.status === 200) {
+			if (response.status < 400) {
 				return response.data;
 			}
 
@@ -55,7 +55,7 @@ export function getVehicles() {
 	return vehiclesAxios
 		.get('/vehicle-svc/vehicles')
 		.then((response) => {
-			if (response.status === 200) {
+			if (response.status < 400) {
 				return response.data;
 			}
 
@@ -75,7 +75,7 @@ export function getUserVehicles() {
 	return vehiclesAxios
 		.get(`/vehicle-svc/vehicles/by/user`)
 		.then((response) => {
-			if (response.status === 200) {
+			if (response.status < 400) {
 				return response.data;
 			}
 
@@ -98,7 +98,7 @@ export function addVehicle(vehicle) {
 	return vehiclesAxios
 		.post('/vehicle-svc/vehicle', vehicle)
 		.then((response) => {
-			if (response.status === 201) {
+			if (response.status < 400) {
 				return response.data;
 			}
 
@@ -123,7 +123,7 @@ export function updateVehicle(vehicle) {
 	return vehiclesAxios
 		.put(`/vehicle-svc/vehicles/${vehicle.key}`, vehicle)
 		.then((response) => {
-			if (response.status === 200) {
+			if (response.status < 400) {
 				return response.data;
 			}
 
@@ -144,7 +144,7 @@ export function deleteVehicle(key) {
 	return vehiclesAxios
 		.delete(`/vehicle-svc/vehicles/${key}`)
 		.then((response) => {
-			if (response.status === 200) {
+			if (response.status < 400) {
 				return response.data;
 			}
 

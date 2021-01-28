@@ -5,16 +5,16 @@ import Dialog from '@material-ui/core/Dialog';
 export default function Dialogger(props) {
 	const {
 		open,
-		vehicle,
-		dialogType,
-		onHandleCloseDialog,
-		onDelete
+		type,
+		params,
+		onHandleDelete, // parent call
+		onHandleDialog, // parent call
 	} = props;
 
 	return (
 		<Dialog
 			open={ open }
-			onClose={ onHandleCloseDialog }
+			onClose={ onHandleDialog }
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
@@ -22,12 +22,12 @@ export default function Dialogger(props) {
 				{
 					'delete':
 						<DeleteVehicle
-							vehicleKey={ vehicle.key }
-							onDelete={ onDelete }
-							onHandleCloseDialog={ onHandleCloseDialog }
+							vehicleKey={ params }
+							onHandleDelete={ onHandleDelete }
+							onHandleDialog={ onHandleDialog }
 						/>
 
-				}[dialogType]
+				}[type]
 			}
 		</Dialog>
 	);

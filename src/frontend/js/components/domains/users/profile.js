@@ -1,9 +1,9 @@
 import React from 'react';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
-import { getStates } from '../../helpers/list';
-import { formatPhoneNumber, textMaskCustom } from '../../helpers/utils';
-import { prepareProfileData } from '../../helpers/ajax';
+import { getStates } from '../../shared/helpers/list';
+import { formatPhoneNumber, textMaskCustom } from '../../shared/helpers/utils';
+import { prepareProfileData } from '../../shared/helpers/ajax';
 import Grid from '@material-ui/core/Grid';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';

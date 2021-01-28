@@ -36,9 +36,9 @@ function List(props) {
 	const navigate = useNavigate();
 	const {
 		classes,
+		loading,
 		vehicles,
-		onHandleOpenDialog,
-		loading
+		onHandleDialog // parent call
 	} = props;
 
 	return (
@@ -95,7 +95,7 @@ function List(props) {
 									aria-label="delete"
 									color="default"
 									className={classes.button}
-									onClick={ () => onHandleOpenDialog('delete') }
+									onClick={ () => onHandleDialog('delete', vehicle.key) }
 								>
 									<DeleteIcon />
 								</IconButton>

@@ -1,14 +1,16 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
-import { Routes, Route } from 'react-router-dom';
+import { currentYear } from '../../shared/helpers/date';
+import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import List from './list';
 import Manage from './manage';
 import Details from './details';
 import Dialogger from '../../shared/dialogger';
 import Notifier from '../../shared/notifier';
-import { currentYear } from '../../helpers/date';
 import Container from '@material-ui/core/Container';
+import NotFound from '../../structure/notfound';
 
 const styles = theme => ({
 	root: {
@@ -21,43 +23,42 @@ const styles = theme => ({
 });
 
 const vehiclesReducer = (state, action) => {
+	const { payload } = action;
+
 	switch(action.type) {
 		case 'add':
-			return state.concat(action.payload);
+			return state.concat(payload);
 		case 'update':
-			return this.state.map((vehicle) => {
-				if (item.key === action.payload.key) {
-					const updatedVehicle = {
-						...vehicle,
-						mfrKey: 'test'
-					};
-
-					return updatedVehicle;
-				}
-				return vehicle;
-			});
+			return modifyState(payload, state);
 		case 'delete':
-			const update = [...state];
-			update.splice(update.indexOf(action.payload), 1);
-			return update;
+			return removeFromState(payload, state);
 		default:
 			return state;
 	}
 }
 
+
 function Dashboard(props) {
 	const {
 		classes,
-		getUserVehicles,
-		deleteVehicle
+		getUserVehicles, // api call
+		uploadFile, // api call
+		addVehicle, // api call
+		updateVehicle, // api call
+		deleteVehicle // api call
 	} = props;
 
+	const navigate = useNavigate();
+
 	const [openNotifier, setOpenNotifier] = useState(false);
-	const [notifierType, setNotifierType] = useState('');
+	const [notifierType, setNotifierType] = useState('success');
 	const [notifierMsg, setNotifierMsg] = useState('');
 	const [openDialog, setOpenDialog] = useState(false);
 	const [dialogType, setDialogType] = useState();
+	const [dialogParams, setDialogParams] = useState();
 	const [loading, setLoading] = useState(true);
+
+	const [, forceUpdate] = useReducer(x => x + 1, 0);
 
 	/**
 	 * Get all user's vehicles
@@ -73,15 +74,45 @@ function Dashboard(props) {
 				});
 
 				setLoading(false);
+			} else if (response.payload.length === 0) {
+				setLoading(false);
 			}
 		});
 	}, []);
 
-	const handleSubmit = (type, payload) => {
-		dispatchVehicles({
-			type: 'type',
-			payload: payload
-		})
+	const handleSubmit = async(e, file, vehicle) => {
+		e.preventDefault();
+
+		const isNewVehicle = vehicle.key ? false : true;
+
+		// Make REST call to upload file
+		if (file.length) {
+			const upload = await uploadFile(file[0]);
+
+			if (upload) {
+				vehicle.image = upload.payload;
+			}
+		}
+
+		// Make REST call to add or update and modify state
+		const response = isNewVehicle ?
+			await addVehicle(vehicle)
+			:
+			await updateVehicle(vehicle);
+
+		if (response.statusCode < 400) {
+			dispatchVehicles({
+				type: isNewVehicle ? 'add' : 'update',
+				payload: response.payload
+			});
+
+			handleNotifier(response.statusType, response.message);
+
+			// Rerender component
+			if (isNewVehicle) {
+				navigate('/vehicles');
+			}
+		}
 	}
 
 	/**
@@ -90,39 +121,31 @@ function Dashboard(props) {
 	 * @param key
 	 * @returns {Promise<void>}
 	 */
-	/*const onHanleDelete = async(e, key) => {
-		e.preventDefault();
+	const hanleDelete = async(key) => {
 		const response = await deleteVehicle(key);
 
-		if (response.status) {
-			vehicles = removeFromCollection(key, vehicles);
+		if (response.statusCode < 400) {
+			dispatchVehicles({
+				type: 'delete',
+				payload: response.payload.key
+			});
 
-			setOpenNotifier(true);
-			setOpenDialog(false);
-			setNotifierType(response.statusType);
-			setNotifierMsg(response.message);
-			setVehicles(vehicles);
+			handleDialog();
 		}
-	}*/
 
-	const handleOpenDialog = (type) => {
+		handleNotifier(response.statusType, response.message);
+	}
+
+	const handleDialog = (type = null, key = null) => {
 		setDialogType(type);
-		setOpenDialog(true);
+		setDialogParams(key);
+		setOpenDialog(!openDialog);
 	}
 
-	const handleCloseDialog = () => {
-		setOpenDialog(false);
-	}
-
-	const handleOpenNotifier = (type, msg) => {
-		setOpenNotifier(true);
+	const handleNotifier = (type = null, msg = null) => {
+		setOpenNotifier(!openNotifier);
 		setNotifierType(type);
 		setNotifierMsg(msg);
-	}
-
-	const handleCloseNotifier = () => {
-		setOpenNotifier(!openNotifier);
-		setNotifierMsg('');
 	}
 
 	return (
@@ -130,18 +153,18 @@ function Dashboard(props) {
 			{ openNotifier && (
 				<Notifier
 					open={ openNotifier }
-					notifierType={ notifierType }
-					notifierMsg={ notifierMsg }
-					onHandleCloseNotifier={ handleCloseNotifier }
+					type={ notifierType }
+					message={ notifierMsg }
+					onHandleNotifier={ handleNotifier }
 				/>
 			)}
 			{ openDialog && (
 				<Dialogger
 					open={ openDialog }
-					dialogType={ dialogType }
-					vehicle={ vehicle }
-					onDelete={ handleSubmit }
-					onHandleCloseDialog={ handleCloseDialog }
+					type={ dialogType }
+					params={ dialogParams }
+					onHandleDelete={ hanleDelete }
+					onHandleDialog={ handleDialog }
 				/>
 			)}
 			<Routes>
@@ -149,7 +172,7 @@ function Dashboard(props) {
 					<List
 						loading={ loading }
 						vehicles={ vehicles }
-						onHandleOpenDialog={ handleOpenDialog }
+						onHandleDialog={ handleDialog }
 					/>
 				} />
 				<Route path="/create" element={
@@ -159,9 +182,9 @@ function Dashboard(props) {
 				<Route path="/edit/:key" element={
 					<Manage
 						onHandleSubmit={ handleSubmit }
-						onHandleOpenNotifier={ handleOpenNotifier }
 					/>
 				} />
+				<Route path='/*' element={<NotFound/> } />
 			</Routes>
 		</Container>
 	)

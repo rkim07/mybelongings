@@ -1,7 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
-import { prepareLoginData } from '../../helpers/ajax';
+import { prepareLoginData } from '../../shared/helpers/ajax';
 import Notifier from '../../shared/notifier';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
