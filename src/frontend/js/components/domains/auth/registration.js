@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import AppContext from '../../../appcontext';
 import { prepareLoginData } from '../../shared/helpers/ajax';
 import { Notifier } from '../../shared/feedback/notifier';
 import Button from '@material-ui/core/Button';
@@ -183,4 +183,4 @@ class Registration extends React.Component
 	}
 }
 
-export default withContext(withStyles(styles)(Registration));
+export default withStyles(styles)(Registration);

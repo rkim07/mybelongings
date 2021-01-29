@@ -1,16 +1,17 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { Route, Navigate } from 'react-router-dom';
-import { withContext } from '../../appcontext'
+import AppContext from '../../appcontext'
 
 function ProtectedRoute(props) {
-	const { path, element, isLoggedIn } = props;
+	const apis = useContext(AppContext);
+	const { path, element } = props;
 
 	return (
-		isLoggedIn() ?
+		apis.isLoggedIn() ?
 			<Route path={path} element={element} />
 			:
 			<Navigate to='/login' />
 	)
 }
 
-export default withContext(ProtectedRoute);
+export default ProtectedRoute;

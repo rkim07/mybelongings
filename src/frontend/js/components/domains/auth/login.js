@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Navigate } from "react-router-dom";
-import { withContext } from '../../../appcontext';
+import AppContext from '../../../appcontext';
 import { withStyles } from '@material-ui/core/styles';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
-import { Notifier } from '../../shared/feedback/notifier';
+import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
@@ -68,13 +68,10 @@ const theme = createMuiTheme({
 });
 
 function Login(props) {
-
+	const apis = useContext(AppContext);
 	const { classes } = props;
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [openNotifier, setOpenNotifier] = useState(false);
-	const [notifierType, setNotifierType] = useState('');
-	const [notifierMsg, setNotifierMsg] = useState('');
 	const [submitted, setSubmitted] = useState(false);
 
 	const onHandleSubmit = (e) => {
@@ -85,7 +82,7 @@ function Login(props) {
 			password: password
 		}
 
-		props.login(credentials)
+		apis.login(credentials)
 			.then((response) => {
 				if (response.redirect) {
 					setSubmitted(true);
@@ -97,23 +94,9 @@ function Login(props) {
 			});
 	}
 
-	const onHandleCloseNotifier = () => {
-		setOpenNotifier(false);
-		setNotifierMsg('');
-		setNotifierType('');
-	}
-
 	return (
 		<Container className={classes.root} maxWidth="md">
 			{ submitted && (<Navigate to={ props.redirectUrl } />)}
-			{ openNotifier && (
-				<Notifier
-					open={ openNotifier }
-					notifierType={ notifierType }
-					notifierMsg={ notifierMsg }
-					onHandleCloseNotifier={ onHandleCloseNotifier }
-				/>)
-			}
 			<ValidatorForm
 				onSubmit={ e => { onHandleSubmit(e) } }
 			>
@@ -172,4 +155,4 @@ function Login(props) {
 	)
 }
 
-export default withContext(withStyles(styles)(Login));
+export default withStyles(styles)(Login);

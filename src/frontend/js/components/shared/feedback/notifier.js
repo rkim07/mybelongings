@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useEffect, useState } from 'rea
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
-export const Notifier = forwardRef((props, ref) => {
+const Notifier = forwardRef((props, ref) => {
 	const vertical = 'top';
 	const horizontal = 'center';
 
@@ -68,3 +68,5 @@ export const Notifier = forwardRef((props, ref) => {
 		</Snackbar>
 	)
 });
+
+export default Notifier;

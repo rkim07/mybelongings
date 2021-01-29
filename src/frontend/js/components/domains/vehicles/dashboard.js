@@ -1,14 +1,20 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
-import { Notifier } from '../../shared/feedback/notifier';
+import AppContext from '../../../appcontext';
+import Notifier from '../../shared/feedback/notifier';
 import { currentYear } from '../../shared/helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import Container from '@material-ui/core/Container';
 import List from './list';
-import Manage from './manage';
-import Details from './details';
+import Modify from './modify';
+import { Info } from "@material-ui/icons";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Save";
+import ArrowBack from "@material-ui/icons/ArrowBack";
+import Grid from "@material-ui/core/Grid";
+import AddIcon from "@material-ui/icons/Add";
+import Details from "./details";
 
 const styles = theme => ({
 	root: {
@@ -35,19 +41,22 @@ const vehiclesReducer = (state, action) => {
 	}
 }
 
+/**
+ * Main component for vehicles
+ *
+ * Contains:
+ * Nested routes
+ *
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function Dashboard(props) {
 	const navigate = useNavigate();
+	const apis = useContext(AppContext);
 	const notifierRef = useRef();
 
-	const {
-		classes,
-		getUserVehicles, // api call
-		uploadFile, // api call
-		addVehicle, // api call
-		updateVehicle, // api call
-		deleteVehicle // api call
-	} = props;
-
+	const { classes } = props;
 	const [loading, setLoading] = useState(true);
 
 	/**
@@ -56,7 +65,7 @@ function Dashboard(props) {
 	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
 	useEffect(() => {
-		getUserVehicles().then(response => {
+		apis.getUserVehicles().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
 				dispatchVehicles({
 					type: 'add',
@@ -77,7 +86,7 @@ function Dashboard(props) {
 
 		// Make REST call to upload file
 		if (file.length) {
-			const upload = await uploadFile(file[0]);
+			const upload = await apis.uploadFile(file[0]);
 
 			if (upload) {
 				vehicle.image = upload.payload;
@@ -86,9 +95,9 @@ function Dashboard(props) {
 
 		// Make REST call to add or update and modify state
 		const response = isNewVehicle ?
-			await addVehicle(vehicle)
+			await apis.addVehicle(vehicle)
 			:
-			await updateVehicle(vehicle);
+			await apis.updateVehicle(vehicle);
 
 		if (response.statusCode < 400) {
 			dispatchVehicles({
@@ -113,7 +122,7 @@ function Dashboard(props) {
 	 * @returns {Promise<void>}
 	 */
 	const hanleDelete = async(key) => {
-		const response = await deleteVehicle(key);
+		const response = await apis.deleteVehicle(key);
 
 		if (response.statusCode < 400) {
 			dispatchVehicles({
@@ -136,18 +145,21 @@ function Dashboard(props) {
 						onHandleDelete={ hanleDelete }
 					/>
 				} />
-				<Route path="/create" element={
-					<Manage
+				<Route path="create" element={
+					<Modify
 						onHandleSubmit={ handleSubmit }
 					/> } />
-				<Route path="/edit/:key" element={
-					<Manage
+				<Route path="edit/:key" element={
+					<Modify
 						onHandleSubmit={ handleSubmit }
 					/>
+				} />
+				<Route path="details/:key/*" element={
+					<Details />
 				} />
 			</Routes>
 		</Container>
 	)
 }
 
-export default withContext(withStyles(styles)(Dashboard));
+export default withStyles(styles)(Dashboard);

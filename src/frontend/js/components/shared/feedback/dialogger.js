@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import DeleteVehicle from "./dialogcontents/deletevehicle";
 import Dialog from '@material-ui/core/Dialog';
 
-export const Dialogger = forwardRef((props, ref) => {
+const Dialogger = forwardRef((props, ref) => {
 	const [open, setOpen] = useState(false);
 	const [type, setType] = useState('');
 	const [params, setParams] = useState({});
@@ -43,3 +43,5 @@ export const Dialogger = forwardRef((props, ref) => {
 		</Dialog>
 	)
 });
+
+export default Dialogger;

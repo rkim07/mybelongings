@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import AppContext from '../../../appcontext';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -43,7 +43,8 @@ const styles = theme => ({
 
 function Header(props) {
 	const navigate = useNavigate();
-	const { classes, isLoggedIn, logout } = props;
+	const apis = useContext(AppContext);
+	const { classes } = props;
 
 	const [anchor, setAnchor] = useState(null);
 	const [mobileAnchor, setMobileAnchor] = useState(null);
@@ -53,7 +54,7 @@ function Header(props) {
 
 	const desktopSection =
 		<div className={classes.sectionDesktop}>
-			{ !isLoggedIn() ? (
+			{ !apis.isLoggedIn() ? (
 				<Button
 					color='primary'
 					variant='outlined'
@@ -88,7 +89,7 @@ function Header(props) {
 
 	const mobileSection =
 		<div className={classes.sectionMobile}>
-			{ !isLoggedIn() ? (
+			{ !apis.isLoggedIn() ? (
 				<Button
 					color='primary'
 					variant='outlined'
@@ -168,7 +169,7 @@ function Header(props) {
 	function onHandleLogout() {
 		setAnchor('');
 		setMobileAnchor('');
-		logout().then(response => {
+		apis.logout().then(response => {
 			navigate('/');
 		});
 	}
@@ -190,4 +191,4 @@ function Header(props) {
 	)
 }
 
-export default withContext(withStyles(styles)(Header));
+export default withStyles(styles)(Header);

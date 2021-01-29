@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams} from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
+import AppContext from '../../../appcontext';
 import { getVehicleColors } from '../../shared/helpers/list';
 import { currentYear, getYearsRange } from '../../shared/helpers/date';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -53,15 +53,13 @@ const theme = createMuiTheme({
 const colors = getVehicleColors();
 const years = getYearsRange(1950, 2022);
 
-function Manage(props) {
+function Modify(props) {
 	const navigate = useNavigate();
 	const { key } = useParams();
+	const apis = useContext(AppContext);
 
 	const {
 		classes,
-		getVehicle, // api call
-		getApiMfrs, // api call
-		getApiModelsByMfrKey, // api call
 		onHandleSubmit // parent call
 	} = props;
 
@@ -80,10 +78,6 @@ function Manage(props) {
 		plate: ''
 	});
 
-	const [mode, setMode] = useState(!key ? 'add' : 'update');
-	const [file, setFile] = useState([]);
-	const [submitted, setSubmitted] = useState(false);
-
 	/**
 	 * Fetch vehicle by key or don't do anything
 	 * when adding new vehicle
@@ -92,7 +86,7 @@ function Manage(props) {
 		// Don't run this use effect if vehicle key is not set
 		// It's add new vehicle page mode
 		if (mode === 'update') {
-			getVehicle(key).then(response => {
+			apis.getVehicle(key).then(response => {
 				const { payload, statusCode, statusType, message } = response
 				if (statusCode < 400) {
 					setVehicle(payload);
@@ -107,14 +101,17 @@ function Manage(props) {
 		return () => setVehicle('');
 	}, []);
 
-	const [imagePath, setImagePath] = useState(vehicle.image_path ? [vehicle.image_path] : [])
+	const [mode, setMode] = useState(!key ? 'add' : 'update');
+	const [file, setFile] = useState([]);
+	const [imagePath, setImagePath] = useState(vehicle.image_path !== undefined ? [vehicle.image_path] : [])
+	const [submitted, setSubmitted] = useState(false);
 
 	/**
 	 * Fetch manufacturers
 	 */
 	const [manufacturers, setManufacturers] = useState();
 	useEffect(() => {
-		getApiMfrs().then(response => {
+		apis.getApiMfrs().then(response => {
 			setManufacturers(response.payload);
 		});
 	}, []);
@@ -125,7 +122,7 @@ function Manage(props) {
 	const [models, setModels] = useState();
 	useEffect(() => {
 		if (vehicle.mfrKey) {
-			getApiModelsByMfrKey(vehicle.mfrKey).then(response => {
+			apis.getApiModelsByMfrKey(vehicle.mfrKey).then(response => {
 				setModels(response.payload);
 			});
 		}
@@ -355,4 +352,4 @@ function Manage(props) {
 	)
 }
 
-export default withContext(withStyles(styles)(Manage));
+export default withStyles(styles)(Modify);

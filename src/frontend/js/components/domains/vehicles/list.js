@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router';
 import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../appcontext';
-import { Dialogger } from '../../shared/feedback/dialogger';
+import AppContext from '../../../appcontext';
+import Dialogger from '../../shared/feedback/dialogger';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -18,7 +17,7 @@ import Edit from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Pagination from '@material-ui/lab/Pagination';
-import Container from "@material-ui/core/Container";
+import Container from '@material-ui/core/Container';
 
 const styles = theme => ({
 	card: {
@@ -35,7 +34,6 @@ const styles = theme => ({
 });
 
 function List(props) {
-	const navigate = useNavigate();
 	const dialoggerRef = useRef();
 
 	const {
@@ -54,7 +52,8 @@ function List(props) {
 					color="default"
 					className={classes.button}
 					startIcon={<AddIcon />}
-					onClick={ () => navigate('/vehicles/create') }
+					component={Link}
+					to={ '/vehicles/create' }
 				>
 					Add
 				</Button>
@@ -120,4 +119,4 @@ function List(props) {
 	);
 }
 
-export default withContext(withStyles(styles)(List));
+export default withStyles(styles)(List);

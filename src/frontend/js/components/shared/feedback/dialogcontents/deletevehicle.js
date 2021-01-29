@@ -33,5 +33,4 @@ export default function DeleteVehicle(props) {
 			</DialogActions>
 		</React.Fragment>
 	)
-
 }
