@@ -1,5 +1,26 @@
 import axios from 'axios';
-import { getHeaderAuthorization } from './helpers/exchange';
+import { getHeaderAuthorization, parseResponse, refreshToken } from './helpers/exchange';
+
+/**
+ * Signup new user
+ *
+ * @param data
+ * @returns {Promise<T>}
+ */
+export function signup(data) {
+	return axios
+		.post('/auth-svc/signup', data)
+		.then((response) => {
+			if (response.status < 400) {
+				return response.data;
+			}
+
+			return response;
+		})
+		.catch((err) => {
+			return err;
+		});
+}
 
 /**
  * Login
@@ -97,16 +118,41 @@ export function refreshAccessToken() {
 }
 
 /**
- * Register new user
+ * Reset password
  *
- * @param credentials
+ * @param data
  * @returns {Promise<T>}
  */
-export function register(credentials) {
+export function resetPassword(data) {
 	return axios
-		.post('/auth-svc/register', credentials)
+		.post('/auth-svc/account/password/reset', data)
 		.then((response) => {
-			return response.data;
+			if (response.status < 400) {
+				return response.data;
+			}
+
+			return response;
+		})
+		.catch((err) => {
+			return err;
+		});
+}
+
+/**
+ * Activate password reset
+ *
+ * @param email
+ * @returns {Promise<T>}
+ */
+export function activatePasswordReset(email) {
+	return axios
+		.post('/auth-svc/account/password/reset/activate', { email: email })
+		.then((response) => {
+			if (response.status < 400) {
+				return response.data;
+			}
+
+			return response;
 		})
 		.catch((err) => {
 			return err;

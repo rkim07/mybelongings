@@ -1,9 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { Navigate } from "react-router-dom";
-import AppContext from '../../../appcontext';
+import React, {useContext, useRef, useState} from 'react';
+import { Link, Navigate } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
+import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -13,6 +11,8 @@ import FormControl from '@material-ui/core/FormControl';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 
 const styles = theme => ({
 	root: {
@@ -69,12 +69,20 @@ const theme = createMuiTheme({
 
 function Login(props) {
 	const apis = useContext(AppContext);
+	const notifierRef = useRef();
+
 	const { classes } = props;
+
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [submitted, setSubmitted] = useState(false);
 
-	const onHandleSubmit = (e) => {
+	/**
+	 * Log in the user
+	 *
+	 * @param e
+	 */
+	const onHandleSubmit = async(e) => {
 		e.preventDefault();
 
 		const credentials = {
@@ -82,21 +90,19 @@ function Login(props) {
 			password: password
 		}
 
-		apis.login(credentials)
-			.then((response) => {
-				if (response.redirect) {
-					setSubmitted(true);
-				} else {
-					setOpenNotifier(true);
-					setNotifierType(response.statusType);
-					setNotifierMsg(response.message);
-				}
-			});
+		const response = await apis.login(credentials);
+
+		if (response.statusCode < 400 && response.redirect) {
+			setSubmitted(true);
+		} else {
+			notifierRef.current.openNotifier(response.statusType, response.message);
+		}
 	}
 
 	return (
 		<Container className={classes.root} maxWidth="md">
 			{ submitted && (<Navigate to={ props.redirectUrl } />)}
+			<Notifier ref={ notifierRef }/>
 			<ValidatorForm
 				onSubmit={ e => { onHandleSubmit(e) } }
 			>
@@ -135,6 +141,12 @@ function Login(props) {
 										/>
 									</ThemeProvider>
 								</FormControl>
+							</Grid>
+							<Grid item xs={12}>
+								<Typography className={classes.root}>
+									<Link to="/account/password/lost">Forgot password</Link>
+									<Link to="/signup">Sign up</Link>
+								</Typography>
 							</Grid>
 							<Grid item xs={12}>
 								<Button

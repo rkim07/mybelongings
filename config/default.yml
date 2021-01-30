@@ -58,4 +58,9 @@ fixtures:
 
 system:
   auth:
-    verificationPath: 'auth-svc/register/verify'
+    signup:
+      verification:
+        path: 'account/activate'
+    password:
+      reset:
+        path: 'account/password/reset'

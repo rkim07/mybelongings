@@ -161,5 +161,17 @@ export class ExpressConfig {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
             }
         });
+
+        this.app.get(/^\/account\/activate\/\S+@\S+\.\S+\/[0-9a-zA-Z-]{1,}$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
+
+        this.app.get(/^\/account\/password\/reset\/\S+@\S+\.\S+\/[0-9a-zA-Z-]{1,}$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
     }
 }

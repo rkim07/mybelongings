@@ -20,25 +20,24 @@ export class AuthController {
      * paths:
      *   /auth-svc/login:
      *     post:
-     *       summary: Login user.
      *       description: Login user
      *       tags:
      *         - Auth
      *       parameters:
      *         - in: body
      *           name: login
-     *           description: The username and password.
-     *           required: false
+     *           description: The username and password
+     *           required: true
      *           schema:
      *             type: object
      *             properties:
-     *              username:
-     *                type: string
-     *              password:
-     *                type: string
+     *               username:
+     *                 type: string
+     *               password:
+     *                 type: string
      *       responses:
      *         201:
-     *           description: Data has been posted successfully.
+     *           description: User was successfully logged in
      *         401:
      *           description: Unauthorized request
      *           schema:
@@ -48,7 +47,7 @@ export class AuthController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      *         500:
-     *           description: An unexpected error occurred in the auth service.
+     *           description: An unexpected error occurred in the auth service
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
@@ -90,8 +89,7 @@ export class AuthController {
      * paths:
      *   /auth-svc/logout:
      *     get:
-     *       summary: Logout user.
-     *       description: Logout user.
+     *       description: Logout user
      *       tags:
      *         - Auth
      *       security:
@@ -100,14 +98,14 @@ export class AuthController {
      *       parameters:
      *         - name: Authorization
      *           in: header
-     *           description: The refresh JWT token with claims about user.
+     *           description: The refresh JWT token with claims about user
      *           type: string
      *           required: true
      *       responses:
      *         200:
-     *           description: Data has been posted successfully.
+     *           description: User was successfully logged out
      *         500:
-     *           description: An unexpected error occurred in the auth service.
+     *           description: An unexpected error occurred in the auth service
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
@@ -143,8 +141,7 @@ export class AuthController {
      * paths:
      *   /auth-svc/refresh:
      *     get:
-     *       summary: Refresh access token.
-     *       description: Refresh access token with provided refresh token.
+     *       description: Refresh access token with provided refresh token
      *       tags:
      *         - Auth
      *       security:
@@ -153,12 +150,12 @@ export class AuthController {
      *       parameters:
      *         - name: Authorization
      *           in: header
-     *           description: The refresh JWT token with claims about user.
+     *           description: The refresh JWT token with claims about user
      *           type: string
      *           required: true
      *       responses:
      *         200:
-     *           description: Data has been posted successfully.
+     *           description: Token successfully refreshed
      *         401:
      *           description: Unauthorized request
      *           schema:
@@ -168,14 +165,14 @@ export class AuthController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      *         500:
-     *           description: An unexpected error occurred in the auth service.
+     *           description: An unexpected error occurred in the auth service
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/refresh')
     public async refreshToken(@Req() { requestor: { userKey, jwt }}: AuthorisedRequest): Promise<any> {
         try {
-            const refresh = await this.authService.refresh(userKey, jwt);
+            const refresh = await this.authService.refreshToken(userKey, jwt);
 
             return {
                 accessToken: refresh.accessToken,
@@ -206,44 +203,54 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/register:
+     *   /auth-svc/signup:
      *     post:
-     *       summary: Register user.
-     *       description: Register user.
+     *       description: Sign up user
      *       tags:
      *         - Auth
      *       parameters:
      *         - in: body
      *           name: request
-     *           description: The user info.
+     *           description: The user info
      *           required: true
      *           schema:
-     *             $ref: '#/definitions/User'
+     *             type: object
+     *             properties:
+     *               firstName:
+     *                 type: string
+     *               lastName:
+     *                 type: string
+     *               email:
+     *                 type: string
+     *               username:
+     *                 type: string
+     *               password:
+     *                 type: string
      *       responses:
      *         201:
-     *           description: Data has been posted successfully.
+     *           description: User was successfully signed up
      *           schema:
      *             $ref: '#/definitions/User'
      *         500:
-     *           description: An unexpected error occurred in the auth service.
+     *           description: An unexpected error occurred in the auth service
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
     @HttpCode(201)
-    @Post('/register')
-    public async register(@Body() body: any): Promise<any> {
+    @Post('/signup')
+    public async signup(@Body() body: any): Promise<any> {
         try {
-            const registration = await this.authService.register(body);
+            const registration = await this.authService.signup(body);
 
             return {
                 user: registration.user,
                 statusCode: 201,
-                message: 'User successfully registered.'
+                message: 'User successfully signed up.'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_ALREADY_REGISTERED:
+                    case AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP:
                         return new ResponseError(409, err.key, 'User already registered.');
                     default:
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
@@ -257,10 +264,9 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/register/verify/{email}/{code}:
+     *   /auth-svc/account/activate/{email}/{signupCode}:
      *     get:
-     *       summary: Verify new registration.
-     *       description: Verify new registration.
+     *       description: Activate signup
      *       tags:
      *          - Auth
      *       parameters:
@@ -270,41 +276,160 @@ export class AuthController {
      *           required: true
      *           type: string
      *         - in: path
-     *           name: code
-     *           description: The hash code to check against.
+     *           name: signupCode
+     *           description: The sign up code to check against
      *           required: true
      *           type: string
      *       responses:
      *         200:
-     *           description: Registration was checked successfully.
+     *           description: Activation successfull
      *         401:
-     *           description: Unauthorized registration.
+     *           description: Unauthorized signup
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      *         500:
-     *           description: An unexpected error occurred in the auth service.
+     *           description: An unexpected error occurred in the auth service
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/register/verify/:email/:code')
-    public async verify(
+    @Get('/account/activate/:email/:signupCode')
+    public async activateSignup(
         @Param('email') email: string,
-        @Param('code') code: string,
+        @Param('signupCode') signupCode: string,
         @Res() response: any): Promise<any> {
         try {
-            const verification = await this.authService.verify(email, code);
-            const verificationCode = verification.code;
-
-            if (!verificationCode) {
-                logger.error(`Failed to verify new registration for: ${verification.email}`);
-            }
+            await this.authService.activateSignup(email, signupCode);
 
             response.send({
-                statusCode: verificationCode ? 200 : 401,
-                message: verificationCode ? 'Successful registration.' : 'Failed to verify registration.'
+                statusCode: 200,
+                message: 'Account successfully activated.'
             });
         } catch (err) {
-            return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            if (err instanceof HandleUpstreamError) {
+                switch (err.key) {
+                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
+                        logger.error('User not found during signup activation.');
+                        return new ResponseError(401, err.key, 'Failed to activate the account.');
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /auth-svc/account/password/reset/activate:
+     *     post:
+     *       description: Send user an email to reset password
+     *       tags:
+     *          - Auth
+     *       parameters:
+     *         - in: body
+     *           name: email
+     *           description: The user email
+     *           required: true
+     *           schema:
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *       responses:
+     *         201:
+     *           description: Email was sent successfully
+     *         401:
+     *           description: Unauthorized reset
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the auth service
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Post('/account/password/reset/activate')
+    public async activatePasswordReset(
+        @Body() body: any,
+        @Res() response: any): Promise<any> {
+        try {
+            await this.authService.activatePasswordReset(body.email);
+
+            response.send({
+                statusCode: 201,
+                message: 'Successful password reset activation.'
+            });
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch (err.key) {
+                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
+                        logger.error('User not found during password reset activation.');
+                        return new ResponseError(401, err.key, 'Failed to reset the password.');
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /auth-svc/account/password/reset:
+     *     post:
+     *       description: Reset password
+     *       tags:
+     *          - Auth
+     *       parameters:
+     *         - in: body
+     *           name: request
+     *           description: The user new password
+     *           required: true
+     *           schema:
+     *             type: object
+     *             properties:
+     *               resetCode:
+     *                 type: string
+     *               password:
+     *                 type: string
+     *       responses:
+     *         201:
+     *           description: Password reset successful
+     *         401:
+     *           description: Unauthorized reset
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the auth service
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Post('/account/password/reset')
+    public async resetPassword(
+        @Body() body: any,
+        @Res() response: any): Promise<any> {
+        try {
+            await this.authService.resetPassword(body);
+
+            response.send({
+                statusCode: 201,
+                message: 'Password reset successful.'
+            });
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch (err.key) {
+                    case AUTH_SERVICE_ERRORS.INVALID_RESET_CODE:
+                        logger.error('Invalid reset code.');
+                        return new ResponseError(500, err.key, 'Failed to reset the password.');
+                    default:
+                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+            }
         }
     }
 }

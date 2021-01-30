@@ -9,18 +9,16 @@ import { Code, Key } from '../../shared/models/utilities/Key';
 import { EmailService } from '../../shared/services/EmailService';
 import { UserCollectionService } from '../../user/services/UserCollectionService';
 
-const EMAIL_HOST = config.get('email.host').toString();
-const SYSTEM_AUTH_VERIFICATION_PATH = config.get('system.auth.verificationPath').toString();
-
 export enum AUTH_SERVICE_ERRORS {
     USER_NOT_FOUND = 'AUTH_SERVICE_ERRORS.USER_NOT_FOUND',
     UNREGISTERED_USER = 'AUTH_SERVICE_ERRORS.UNREGISTERED_USER',
-    USER_ALREADY_REGISTERED = 'AUTH_SERVICE_ERRORS.USER_ALREADY_REGISTERED',
+    USER_ALREADY_SIGNED_UP = 'AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP',
     INVALID_CREDENTIALS = 'AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS',
     TOKEN_NOT_CREATED = 'AUTH_SERVICE_ERRORS.TOKEN_NOT_CREATED',
     TOKENS_NOT_CREATED = 'AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED',
     USER_KEY_EMPTY = 'AUTH_SERVICE_ERRORS.USER_KEY_EMPTY',
-    UNACTIVATED_ACCOUNT = 'AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT'
+    UNACTIVATED_ACCOUNT = 'AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT',
+    INVALID_RESET_CODE = 'AUTH_SERVICE_ERRORS.INVALID_RESET_CODE',
 }
 
 @Service()
@@ -40,7 +38,7 @@ export class AuthService {
     public async login(body: any): Promise<any> {
         let user = await this.userCollectionService.findOne({ username: { $eq: body.username }});
 
-        // User not registered
+        // User not signed up
         if (!user) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.UNREGISTERED_USER);
         }
@@ -100,7 +98,7 @@ export class AuthService {
      * @param userKey
      * @param jwt
      */
-    public async refresh(userKey, jwt): Promise<any> {
+    public async refreshToken(userKey, jwt): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
@@ -124,48 +122,23 @@ export class AuthService {
     }
 
     /**
-     * Register new user
+     * Signup new user
      *
      * @param data
      */
-    public async register(data: User): Promise<any> {
+    public async signup(data: User): Promise<any> {
         const existingUser = await this.userCollectionService.find({ email: { $eq: data.email }});
 
         if (existingUser.length) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_ALREADY_REGISTERED);
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP);
         }
 
         // Add new user
         const newUser = await this.userCollectionService.adddUser(data);
 
-        // Setup and send verification email
-        if (!_.isEmpty(newUser.email) && !_.isEmpty(newUser.code)) {
-            const htmlData = {
-                type: 'html',
-                templateName: 'registration',
-                body: {
-                    firstName: newUser.firstName,
-                    code: newUser.code,
-                    link: `${EMAIL_HOST}/${SYSTEM_AUTH_VERIFICATION_PATH}/${newUser.email}/${newUser.code}`
-                }
-            };
-
-            const textData = {
-                type: 'text',
-                templateName: 'registration',
-                body: {
-                    firstName: newUser.firstName
-                }
-            };
-
-            const data = {
-                email: newUser.email,
-                subject: 'About your MyBelongings registration',
-                html: await this.emailService.renderTemplate(htmlData),
-                text: await this.emailService.renderTemplate(textData)
-            }
-
-            await this.emailService.send(data);
+        // Send sign up confirmation email
+        if (!_.isEmpty(newUser.email) && !_.isEmpty(newUser.signupCode)) {
+            await this.emailService.sendSignupConfirmation(newUser);
         }
 
         return {
@@ -173,34 +146,86 @@ export class AuthService {
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
                 email: newUser.email,
-                code: newUser.code
+                signupCode: newUser.signupCode
             },
         };
     }
 
     /**
-     * Verify new registration link code and activate
+     * Verify new sign up link code and activate
      *
      * @param email
      * @param code
      */
-    public async verify(email: string, code: Code): Promise<any> {
+    public async activateSignup(email: string, code: Code): Promise<any> {
         const query = {
             $and: [
                 { email: { $eq: email } },
-                { code: { $eq: code } }
+                { signupCode: { $eq: code } }
             ]
         };
 
         let newUser = await this.userCollectionService.findOne(query);
 
         if (!newUser) {
-            return false;
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
         // Activate
         newUser.active = 1;
+        newUser.signupCode = '';
         return await this.userCollectionService.updateUser(newUser);
+    }
+
+    /**
+     * Prepare password reset
+     *
+     * @param email
+     */
+    public async activatePasswordReset(email: string): Promise<any> {
+        let user = await this.userCollectionService.findOne({ email: { $eq: email} });
+
+        if (!user) {
+            return false;
+        }
+
+        // Generate new password reset code and save
+        user.resetCode = Code.generate();
+        await this.userCollectionService.updateUser(user);
+
+        // Send password reset email
+        if (!_.isEmpty(user.email) && !_.isEmpty(user.resetCode)) {
+            await this.emailService.sendPasswordReset(user);
+        }
+
+        return true;
+    }
+
+    /**
+     * Reset password
+     *
+     * @param email
+     * @param newPassword
+     */
+    public async resetPassword(body: any): Promise<any> {
+        const query = {
+            $and: [
+                { email: { $eq: body.email } },
+                { resetCode: { $eq: body.resetCode } }
+            ]
+        };
+
+        let user = await this.userCollectionService.findOne(query);
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        user.password = body.password;
+        user.resetCode = '';
+        await this.userCollectionService.updateUser(user);
+
+        return true;
     }
 
     /**

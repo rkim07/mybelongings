@@ -13,7 +13,7 @@ const styles = theme => ({
 });
 
 const footers = [
-	{
+	/*{
 		title: 'Company',
 		description: ['Team', 'History', 'Contact us', 'Locations'],
 	},
@@ -28,7 +28,7 @@ const footers = [
 	{
 		title: 'Legal',
 		description: ['Privacy policy', 'Terms of use'],
-	},
+	}*/
 ];
 
 function Footer(props) {

@@ -3,7 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Service } from 'typedi';
 import { logger } from '../../../common/logging';
+import { User } from '../models/domains/User';
 import { HandleUpstreamError } from '../models/utilities/HandleUpstreamError';
+import { Code } from '../models/utilities/Key';
 
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
@@ -23,7 +25,10 @@ const PORT = config.get('nodemailer.port');
 const SECURE = config.get('nodemailer.secure');
 const ADMIN_USERNAME = config.get('nodemailer.user').toString();
 const ADMIN_PASSWORD = config.get('nodemailer.pass').toString();
+const EMAIL_HOST = config.get('email.host').toString();
 const EMAIL_TEMPLATE_PATH = config.get('email.templatePath').toString();
+const SYSTEM_AUTH_PASSWORD_RESET_PATH = config.get('system.auth.password.reset.path').toString();
+const SYSTEM_AUTH_SIGNUP_VERIFICATION_PATH = config.get('system.auth.signup.verification.path').toString();
 
 @Service()
 export class EmailService {
@@ -66,6 +71,97 @@ export class EmailService {
                 resolve(info.messageId);
             });
         });
+    }
+
+    /**
+     * Send signup confirmation email
+     *
+     * @param user
+     */
+    public async sendSignupConfirmation(user: User): Promise<any> {
+        const htmlData = {
+            type: 'html',
+            templateName: 'signup',
+            body: {
+                firstName: user.firstName,
+                code: user.signupCode,
+                link: this.generateEmailLink(user.email, user.signupCode,'signup')
+            }
+        };
+
+        const textData = {
+            type: 'text',
+            templateName: 'signup',
+            body: {
+                firstName: user.firstName
+            }
+        };
+
+        const data = {
+            email: user.email,
+            subject: 'About your MyBelongings sign up',
+            html: await this.renderTemplate(htmlData),
+            text: await this.renderTemplate(textData)
+        }
+
+        await this.send(data);
+    }
+
+    /**
+     * Send password reset email
+     *
+     * @param user
+     */
+    public async sendPasswordReset(user: User): Promise<any> {
+        const htmlData = {
+            type: 'html',
+            templateName: 'password_reset',
+            body: {
+                firstName: user.firstName,
+                code: user.signupCode,
+                link: this.generateEmailLink(user.email, user.resetCode, 'password-reset')
+            }
+        };
+
+        const textData = {
+            type: 'text',
+            templateName: 'password_reset',
+            body: {
+                firstName: user.firstName
+            }
+        };
+
+        const data = {
+            email: user.email,
+            subject: 'MyBelongings password reset',
+            html: await this.renderTemplate(htmlData),
+            text: await this.renderTemplate(textData)
+        }
+
+        await this.send(data);
+    }
+
+    /**
+     * Generate email links
+     *
+     * @param email
+     * @param code
+     * @param type
+     * @private
+     */
+    private generateEmailLink(email: string, code: Code, type: string): string {
+        let path;
+
+        switch(type) {
+            case 'signup':
+                path = SYSTEM_AUTH_SIGNUP_VERIFICATION_PATH
+                break;
+            case 'password-reset':
+                path = SYSTEM_AUTH_PASSWORD_RESET_PATH
+                break;
+        }
+
+        return `${EMAIL_HOST}/${path}/${email}/${code}`;
     }
 
     /**

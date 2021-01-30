@@ -38,7 +38,7 @@ const styles = theme => ({
 	}
 });
 
-class Registration extends React.Component
+class Signup extends React.Component
 {
 	/**
 	 * Constructor
@@ -183,4 +183,4 @@ class Registration extends React.Component
 	}
 }
 
-export default withStyles(styles)(Registration);
+export default withStyles(styles)(Signup);

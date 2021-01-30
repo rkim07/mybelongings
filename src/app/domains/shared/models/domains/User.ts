@@ -10,7 +10,8 @@ export class User {
     username: string;
     password: string;
     active: number;
-    code: Code;
+    signupCode: Code;
+    resetCode: Code;
     refreshToken: Key;
     authorities: Array<string>;
     created: string;
@@ -28,7 +29,8 @@ export class User {
         username: string,
         password: string,
         active: number,
-        code: Code,
+        signupCode: Code,
+        resetCode: Code,
         refreshToken: Key,
         authorities: Array<string>
     }) {
@@ -38,8 +40,9 @@ export class User {
         this.email = data.email;
         this.username = data.username;
         this.password = Hash.bcryptHash(data.password);
-        this.active = 0;
-        this.code = Code.generate();
+        this.active = data.active;
+        this.signupCode = Code.generate();
+        this.resetCode = data.resetCode;
         this.refreshToken = data.refreshToken;
         this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.modified = this.created = Datetime.getNow();
