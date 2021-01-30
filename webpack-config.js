@@ -9,7 +9,14 @@ module.exports = {
 		filename: "./index.js"
 	},
 	resolve: {
-		extensions: ['.Webpack.js', '.web.js', '.ts', '.js', '.jsx', '.tsx']
+		extensions: [
+			'.Webpack.js',
+			'.web.js',
+			'.ts',
+			'.js',
+			'.jsx',
+			'.tsx'
+		]
 	},
 	module: {
 		rules: [

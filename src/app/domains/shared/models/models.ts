@@ -306,20 +306,21 @@ export * from './utilities/CustomError';
  *   Email:
  *     type: object
  *     properties:
- *       to:
+ *       firstName:
  *         type: string
  *         minLength: 2
- *       subject:
+ *       email:
  *         type: string
  *         minLength: 1
- *       text:
+ *       type:
  *         type: string
  *         minLength: 1
- *       html:
+ *       content:
  *         type: string
  *
  *     required:
- *       - to
- *       - subject
- *       - text
+ *       - firstName
+ *       - email
+ *       - type
+ *       - content
  */

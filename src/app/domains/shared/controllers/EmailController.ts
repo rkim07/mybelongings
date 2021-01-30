@@ -20,15 +20,7 @@ export class EmailController {
      *     post:
      *       summary: Send email.
      *       description: Send email.
-     *       security:
-     *         - OauthSecurity:
-     *           - ROLE_USER
      *       parameters:
-     *         - name: Authorization
-     *           in: header
-     *           description: The JWT token with claims about user.
-     *           type: string
-     *           required: true
      *         - in: body
      *           name: data
      *           description: Email information.
@@ -61,11 +53,20 @@ export class EmailController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case EMAIL_SERVICE_ERRORS.EMPTY_BODY:
-                        return new ResponseError(404, err.key, 'Email body returned empty.');
+                    case EMAIL_SERVICE_ERRORS.EMPTY_DATA:
+                        return new ResponseError(404, err.key, 'Email data returned empty.');
+                    case EMAIL_SERVICE_ERRORS.FAILED_TO_RENDER_TEMPLATE:
+                        logger.error('Failed to render template');
+                        return new ResponseError(500, err.key, DEFAULT_EMAIL_SERVICE_ERROR_MESSAGE);
+                    case EMAIL_SERVICE_ERRORS.EMAIL_TEMPLATE_NAME_NOT_DEFINED:
+                        logger.error('Missing email template namne.');
+                        return new ResponseError(500, err.key, DEFAULT_EMAIL_SERVICE_ERROR_MESSAGE);
+                    case EMAIL_SERVICE_ERRORS.EMAIL_TEMPLATE_TYPE_NOT_DEFINED:
+                        logger.error('Missing email template type.');
+                        return new ResponseError(500, err.key, DEFAULT_EMAIL_SERVICE_ERROR_MESSAGE);
                     case EMAIL_SERVICE_ERRORS.FAILED_TO_SEND:
                         logger.error(err);
-                        return new ResponseError(500, err.key, DEFAULT_EMAIL_SERVICE_ERROR_MESSAGE);
+                        return new ResponseError(500, err.key, 'Failed to send.');
                     default:
                         return new ResponseError(500, err.key, DEFAULT_EMAIL_SERVICE_ERROR_MESSAGE);
                 }

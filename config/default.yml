@@ -38,11 +38,24 @@ api:
       mfrEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
       mfrModelsEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'
 
-# Using fake email server mailtralp.io, signed with github account
+# Setup mail server
 nodemailer:
   adminEmail: 'admin@mybelongings.com'
-  host: 'smtp.mailtrap.io'
+  host: ''
   port: 2525
   secure: true
-  user: '22d82f6af4e44a'
-  pass: '2bab2a6ad87193'
+  user: ''
+  pass: ''
+
+email:
+  host: 'http://www.mybelongings.com'
+  templatePath: '../../../../assets/templates/email'
+
+fixtures:
+  api:
+    blacklistedVehicleMfrs: './assets/fixtures/blacklistedVehicleMfrs.json'
+    whitelistedVehicleMfrs: './assets/fixtures/whitelistedVehicleMfrs.json'
+
+system:
+  auth:
+    verificationPath: 'auth-svc/register/verify'

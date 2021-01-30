@@ -70,7 +70,7 @@ function Modify(props) {
 		modelKey: '',
 		model: '',
 		image: '',
-		image_path: '',
+		image_path: [],
 		condition: 'new',
 		year: currentYear(),
 		color: '',
@@ -103,7 +103,6 @@ function Modify(props) {
 
 	const [mode, setMode] = useState(!key ? 'add' : 'update');
 	const [file, setFile] = useState([]);
-	const [imagePath, setImagePath] = useState(vehicle.image_path !== undefined ? [vehicle.image_path] : [])
 	const [submitted, setSubmitted] = useState(false);
 
 	/**
@@ -166,7 +165,7 @@ function Modify(props) {
 						<ThemeProvider theme={theme}>
 							<DropzoneArea
 								role='form'
-								initialFiles={ imagePath }
+								initialFiles={ vehicle.image_path }
 								filesLimit={1}
 								showPreviews={false}
 								showPreviewsInDropzone={true}

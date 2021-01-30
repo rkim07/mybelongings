@@ -67,6 +67,12 @@ function Details(props) {
 
 	const [value, setValue] = useState(0);
 
+	/**
+	 * Hand tab changes
+	 *
+	 * @param event
+	 * @param newValue
+	 */
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
 	};
@@ -92,6 +98,7 @@ function Details(props) {
 						onChange={handleChange}
 					>
 						<Tab label="Info" icon={<DirectionsCarIcon />} component={Link} to="info" />
+						<Tab label="Upgrades" icon={<BeachAccessIcon />} component={Link} to="upgrades" />
 						<Tab label="Insurance" icon={<BeachAccessIcon />} component={Link} to="insurance" />
 					</Tabs>
 				</AppBar>
@@ -100,6 +107,9 @@ function Details(props) {
 						<Route path="info" element={ <Info key={ key } /> } />
 					</TabPanel>
 					<TabPanel value={value} index={1} >
+
+					</TabPanel>
+					<TabPanel value={value} index={2} >
 						<Route path="insurance" element={ <Insurance key={ key } /> } />
 					</TabPanel>
 				</Routes>

@@ -33,6 +33,7 @@ export class UserCollectionService extends DatabaseCollectionService {
             username: user.username,
             password: user.password,
             active: user.active,
+            code: user.code,
             refreshToken: user.refreshToken,
             authorities: user.authorities
         }));
@@ -56,6 +57,7 @@ export class UserCollectionService extends DatabaseCollectionService {
                 username: user.username,
                 password: user.password,
                 active: user.active,
+                code: user.code,
                 refreshToken: user.refreshToken,
                 authorities: user.authorities,
                 modified: Datetime.getNow()

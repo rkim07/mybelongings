@@ -16,6 +16,8 @@ const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource').to
 const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint').toString();
 const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint').toString();
 const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat').toString();
+const BLACKLISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.blacklistedVehicleMfrs').toString();
+const WHITELISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.whitelistedVehicleMfrs').toString();
 
 export enum VEHICLE_API_ERRORS {
     VEHICLE_MFR_NOT_FOUND = 'VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND',
@@ -189,7 +191,7 @@ export class VehicleApiService {
      */
     private async getNhtsaMfrs(listSource): Promise<any> {
         if (listSource === NHTSA_LIST_SOURCE) {
-            return JSON.parse(readFileSync(path.resolve(__dirname, '../../shared/fixtures/whitelistedCarMfrs.json'), 'utf8'));
+            return JSON.parse(readFileSync(path.resolve(__dirname, WHITELISTED_VEHICLE_MFRS_FIXTURE), 'utf8'));
         }
 
         const apiList = await axios.get(`${NHTSA_MFR_ENDPOINT}?format=${LIST_FORMAT}`)
@@ -200,9 +202,9 @@ export class VehicleApiService {
                 logger.error('Failed to sync manufacturers list with NHTSA API.');
             });
 
-        const blacklistedCarMfrs = JSON.parse(readFileSync(path.resolve(__dirname, '../../shared/fixtures/blacklistedCarMfrs.json'), 'utf8'));
+        const blackListed = JSON.parse(readFileSync(path.resolve(__dirname, BLACKLISTED_VEHICLE_MFRS_FIXTURE), 'utf8'));
 
-        return _.difference(apiList, blacklistedCarMfrs);
+        return _.difference(apiList, blackListed);
     }
 
     /**

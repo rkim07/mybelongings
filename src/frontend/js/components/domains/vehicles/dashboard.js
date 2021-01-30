@@ -79,6 +79,14 @@ function Dashboard(props) {
 		});
 	}, []);
 
+	/**
+	 * Add or update vehicle
+	 *
+	 * @param e
+	 * @param file
+	 * @param vehicle
+	 * @returns {Promise<void>}
+	 */
 	const handleSubmit = async(e, file, vehicle) => {
 		e.preventDefault();
 

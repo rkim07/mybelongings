@@ -13,6 +13,7 @@ export const schema: Array<TableSchema> = [
             { name: 'username', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'password', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'active', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'code', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'refreshToken', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'authorities', type: 'CHAR', shouldParse: true, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },

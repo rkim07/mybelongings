@@ -1,6 +1,6 @@
 import { Datetime } from '../utilities/Datetime';
 import { Hash } from '../utilities/Hash';
-import { Key } from '../utilities/Key';
+import { Code, Key } from '../utilities/Key';
 
 export class User {
     key: Key;
@@ -9,8 +9,9 @@ export class User {
     email: string;
     username: string;
     password: string;
-    active: boolean;
-    refreshToken: string;
+    active: number;
+    code: Code;
+    refreshToken: Key;
     authorities: Array<string>;
     created: string;
     modified: string;
@@ -26,8 +27,9 @@ export class User {
         email: string,
         username: string,
         password: string,
-        active: boolean,
-        refreshToken: string,
+        active: number,
+        code: Code,
+        refreshToken: Key,
         authorities: Array<string>
     }) {
         this.key = Key.generate();
@@ -36,7 +38,8 @@ export class User {
         this.email = data.email;
         this.username = data.username;
         this.password = Hash.bcryptHash(data.password);
-        this.active = data.active;
+        this.active = 0;
+        this.code = Code.generate();
         this.refreshToken = data.refreshToken;
         this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.modified = this.created = Datetime.getNow();

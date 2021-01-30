@@ -342,8 +342,8 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     delete:
-     *       summary: Delete  vehicle.
-     *       description: Remove  vehicle.
+     *       summary: Delete vehicle.
+     *       description: Delete vehicle.
      *       tags:
      *          - Vehicle
      *       security:
@@ -376,7 +376,8 @@ export class VehicleController {
     @Delete('/vehicles/:vehicle_key')
     public async deleteVehicle(
         @Req() { requestor: { userKey }}: AuthorisedRequest,
-        @Param('vehicle_key') vehicleKey: string, @Res() response: any): Promise<any> {
+        @Param('vehicle_key') vehicleKey: string,
+        @Res() response: any): Promise<any> {
         try {
             const vehicle = await this.vehicleService.deleteVehicle(userKey, vehicleKey);
 

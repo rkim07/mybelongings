@@ -1,7 +1,8 @@
-import { Body, Get, HttpCode, JsonController, Post, Req } from 'routing-controllers';
+import { Body, Get, HttpCode, JsonController, Param, Post, Req, Res } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
 import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
+import { VEHICLE_SERVICE_ERRORS } from '../../vehicle/services/VehicleService';
 import { AUTH_SERVICE_ERRORS, AuthService } from '../services/AuthService';
 
 import { logger } from '../../../common/logging';
@@ -70,6 +71,8 @@ export class AuthController {
                         return new ResponseError(404, err.key, 'Unregistered user.');
                     case AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS:
                         return new ResponseError(401, err.key, 'Invalid credentials.');
+                    case AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT:
+                        return new ResponseError(401, err.key, 'Account has not been activated.');
                     case AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED:
                         logger.error('An unexpected error occurred while creating the tokens.');
                         return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
@@ -248,6 +251,60 @@ export class AuthController {
             } else {
                 return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
             }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /auth-svc/register/verify/{email}/{code}:
+     *     get:
+     *       summary: Verify new registration.
+     *       description: Verify new registration.
+     *       tags:
+     *          - Auth
+     *       parameters:
+     *         - in: path
+     *           name: email
+     *           description: User email
+     *           required: true
+     *           type: string
+     *         - in: path
+     *           name: code
+     *           description: The hash code to check against.
+     *           required: true
+     *           type: string
+     *       responses:
+     *         200:
+     *           description: Registration was checked successfully.
+     *         401:
+     *           description: Unauthorized registration.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the auth service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Get('/register/verify/:email/:code')
+    public async verify(
+        @Param('email') email: string,
+        @Param('code') code: string,
+        @Res() response: any): Promise<any> {
+        try {
+            const verification = await this.authService.verify(email, code);
+            const verificationCode = verification.code;
+
+            if (!verificationCode) {
+                logger.error(`Failed to verify new registration for: ${verification.email}`);
+            }
+
+            response.send({
+                statusCode: verificationCode ? 200 : 401,
+                message: verificationCode ? 'Successful registration.' : 'Failed to verify registration.'
+            });
+        } catch (err) {
+            return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
         }
     }
 }

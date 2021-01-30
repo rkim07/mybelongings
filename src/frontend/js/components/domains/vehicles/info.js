@@ -37,8 +37,7 @@ function Info(props) {
 	});
 
 	/**
-	 * Fetch vehicle by key or don't do anything
-	 * when adding new vehicle
+	 * Fetch vehicle by key
 	 */
 	useEffect(() => {
 		apis.getVehicle(key).then(response => {
