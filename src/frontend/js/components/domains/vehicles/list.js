@@ -47,9 +47,9 @@ function List(props) {
 		<Grid container spacing={4}>
 			<Grid item xs={12}>
 				<Button
-					type="button"
-					variant="contained"
-					color="default"
+					type='button'
+					variant='contained'
+					color='default'
 					className={classes.button}
 					startIcon={<AddIcon />}
 					component={Link}
@@ -64,21 +64,21 @@ function List(props) {
 						{ vehicle ? (
 							<CardContent className={ classes.cardContent }>
 								<Image src={ vehicle.image_path } />
-								<Typography gutterBottom variant="h5" component="h4">
+								<Typography gutterBottom variant='h5' component='h4'>
 									{ vehicle.year } { vehicle.mfrName } { vehicle.model }
 								</Typography>
 							</CardContent>
 						) : (
 							<CardContent className={ classes.cardContent }>
-								<Skeleton variant="rect" width={210} height={118} />
+								<Skeleton variant='rect' width={210} height={118} />
 								<Skeleton width={210} />
 							</CardContent>
 						)}
 						{ vehicle ? (
 							<CardActions>
 								<IconButton
-									aria-label="view"
-									color="default"
+									aria-label='view'
+									color='default'
 									className={classes.button}
 									component={Link}
 									to={ `/vehicles/details/${vehicle.key}` }
@@ -86,8 +86,8 @@ function List(props) {
 									<DirectionsCar />
 								</IconButton>
 								<IconButton
-									aria-label="update"
-									color="default"
+									aria-label='update'
+									color='default'
 									className={classes.button}
 									component={Link}
 									to={ `/vehicles/edit/${vehicle.key}` }
@@ -95,8 +95,8 @@ function List(props) {
 									<Edit/>
 								</IconButton>
 								<IconButton
-									aria-label="delete"
-									color="default"
+									aria-label='delete'
+									color='default'
 									className={classes.button}
 									onClick={ () => dialoggerRef.current.openDialogger('delete', { vehicleKey: vehicle.key }) }
 								>
