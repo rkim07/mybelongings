@@ -69,7 +69,6 @@ export class StoreService {
      * @param store
      */
     private async addDependencies(origin, store) {
-        store['address'] = await this.addressService.getAddress(store.addressKey);
-        return store;
+        return { ...store, address: await this.addressService.getAddress(store.addressKey) };
     }
 }

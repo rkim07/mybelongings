@@ -19,22 +19,27 @@ function Info(props) {
 
 	const { classes } = props;
 
-	const [loading, setLoading] = useState(true);
+	const initialValues = {
+		vehicle: {
+			mfrKey: '',
+			mfrName: '',
+			modelKey: '',
+			model: '',
+			image: '',
+			imagePath: '',
+			condition: '',
+			year: '',
+			color: '',
+			vin: '',
+			plate: ''
+		},
+		resetCode: resetCode,
+		password: '',
+		repeatPassword: '',
+		loading: false
+	};
 
-	// Initial vehicle state
-	const [vehicle, setVehicle] = useState({
-		mfrKey: '',
-		mfrName: '',
-		modelKey: '',
-		model: '',
-		image: '',
-		image_path: '',
-		condition: '',
-		year: '',
-		color: '',
-		vin: '',
-		plate: ''
-	});
+	const [values, setValues] = useState(initialValues);
 
 	/**
 	 * Fetch vehicle by key
@@ -43,16 +48,19 @@ function Info(props) {
 		apis.getVehicle(key).then(response => {
 			const { payload, statusCode, statusType, message } = response
 			if (statusCode < 400) {
-				setVehicle(payload);
-				setLoading(false);
+				setValues({ ...values, vehicle: response.payload, loading: true });
+			} else {
+				onHandleNotifier(statusType, message);
+				navigate('/');
 			}
+
 		});
-	}, []);
+	}, [values.vehicle.key]);
 
 	return (
 		<React.Fragment>
 			<Grid item xs={12}>
-				{ loading ? (
+				{ values.loading ? (
 					<React.Fragment>
 						<Skeleton />
 						<Skeleton />
@@ -64,62 +72,62 @@ function Info(props) {
 					</React.Fragment>
 				) : (
 					<TableContainer>
-						<Table className={ classes.table } aria-label="custom table">
+						<Table className={ classes.table } aria-label='custom table'>
 							<TableBody>
-								<TableRow key="condition">
-									<TableCell component="th" scope="row">
+								<TableRow key='condition'>
+									<TableCell component='th' scope='row'>
 										Condition
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ _.capitalize(vehicle.condition) }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ _.capitalize(values.vehicle.condition) }
 									</TableCell>
 								</TableRow>
-								<TableRow key="year">
-									<TableCell component="th" scope="row">
+								<TableRow key='year'>
+									<TableCell component='th' scope='row'>
 										Year
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ vehicle.year }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ values.vehicle.year }
 									</TableCell>
 								</TableRow>
-								<TableRow key="mfrName">
-									<TableCell component="th" scope="row">
+								<TableRow key='mfrName'>
+									<TableCell component='th' scope='row'>
 										Manufacturer
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ _.capitalize(vehicle.mfrName) }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ _.capitalize(values.vehicle.mfrName) }
 									</TableCell>
 								</TableRow>
-								<TableRow key="model">
-									<TableCell component="th" scope="row">
+								<TableRow key='model'>
+									<TableCell component='th' scope='row'>
 										Model
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ _.capitalize(vehicle.model) }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ _.capitalize(values.vehicle.model) }
 									</TableCell>
 								</TableRow>
-								<TableRow key="color">
-									<TableCell component="th" scope="row">
+								<TableRow key='color'>
+									<TableCell component='th' scope='row'>
 										Color
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ _.capitalize(vehicle.color) }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ _.capitalize(values.vehicle.color) }
 									</TableCell>
 								</TableRow>
-								<TableRow key="vin">
-									<TableCell component="th" scope="row">
+								<TableRow key='vin'>
+									<TableCell component='th' scope='row'>
 										VIN
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ vehicle.vin }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ values.vehicle.vin }
 									</TableCell>
 								</TableRow>
-								<TableRow key="plate">
-									<TableCell component="th" scope="row">
+								<TableRow key='plate'>
+									<TableCell component='th' scope='row'>
 										Plate
 									</TableCell>
-									<TableCell style={{ width: 80 }} align="right">
-										{ vehicle.plate }
+									<TableCell style={{ width: 80 }} align='right'>
+										{ values.vehicle.plate }
 									</TableCell>
 								</TableRow>
 							</TableBody>

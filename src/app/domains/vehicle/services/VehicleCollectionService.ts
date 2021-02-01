@@ -16,7 +16,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     /**
      * Get all vehicles
      */
-    public async getVehicles(): Promise<any> {
+    public async getAll(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -31,7 +31,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
      * @param userKey
      * @param vehicle
      */
-    public async addVehicle(userKey: Key, vehicle: any): Promise<any> {
+    public async add(userKey: Key, vehicle: any): Promise<any> {
         return await this.addOne(
             new Vehicle({
                 userKey: userKey,
@@ -54,7 +54,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
      * @param vehicle
      * @param vehicleKey
      */
-    public async updateVehicle(userKey: Key, vehicleKey: Key, vehicle: any): Promise<any> {
+    public async update(userKey: Key, vehicleKey: Key, vehicle: any): Promise<any> {
         await this.loadCollection();
 
         const query = {

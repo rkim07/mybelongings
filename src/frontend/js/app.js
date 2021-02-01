@@ -1,18 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AppContext from './appcontext';
+import AppContext from "./appcontext";
+import globalApis from './apis/apis';
 import ProtectedRoute from './components/structure/protectedroute';
 import Header from './components/structure/default/header';
 import Footer from './components/structure/default/footer';
 import LandingPage from './components/structure/default/landing';
 import Login from './components/domains/auth/login';
-import LostPassword from './components/domains/auth/lostpassword';
+import Lost from './components/domains/auth/lost';
+import Reset from './components/domains/auth/reset';
 import Signup from './components/domains/auth/signup';
+import Activated from './components/domains/auth/activated';
 /*import Profile from './components/domains/users/profile';
-import PropertiesDashboard from './components/domains/properties/dashboard';*/
-import VehiclesDashboard from './components/domains/vehicles/dashboard';
+import PropertiesDashboard from './components/domains/property/dashboard';*/
+import VehiclesDashboard from './components/domains/vehicle/dashboard';
 import NotFound from './components/structure/notfound';
-import globalApis from './apis/apis';
 
 function App() {
 	return (
@@ -22,10 +24,11 @@ function App() {
 					<Header />
 					<Routes>
 						<Route path='/' element={<LandingPage />} />
-						<Route path='login' element={ <Login redirectUrl='/vehicles' />} />
-						<Route path='signup' element={ <Signup redirectUrl='login' />} />
-						<Route path='account/password/lost' element={ <LostPassword />} />
-						<Route path='account/password/reset/:email/:resetCode' element={ <LandingPage redirectUrl='login' />} />
+						<Route path='account/login' element={ <Login redirectUrl='/vehicles' />} />
+						<Route path='account/signup' element={ <Signup redirectUrl='/account/login' />} />
+						<Route path='account/activated/:firstName' element={ <Activated />} />
+						<Route path='account/password/lost' element={ <Lost />} />
+						<Route path='account/password/reset/:email/:resetCode' element={ <Reset redirectUrl='/account/login' />} />
 						<ProtectedRoute path='vehicles/*' element={ <VehiclesDashboard/> } />
 						{/*<ProtectedRoute path='properties/*' element={ <PropertiesDashboard/> } />*/}
 						<Route path='/*' element={<NotFound/> } />

@@ -8,13 +8,13 @@ import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import Container from '@material-ui/core/Container';
 import List from './list';
 import Modify from './modify';
-import { Info } from "@material-ui/icons";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
-import ArrowBack from "@material-ui/icons/ArrowBack";
-import Grid from "@material-ui/core/Grid";
-import AddIcon from "@material-ui/icons/Add";
-import Details from "./details";
+import { Info } from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+import Grid from '@material-ui/core/Grid';
+import AddIcon from '@material-ui/icons/Add';
+import Details from './details';
 
 const styles = theme => ({
 	root: {
@@ -80,6 +80,25 @@ function Dashboard(props) {
 	}, []);
 
 	/**
+	 * Delete vehicle
+	 * @param e
+	 * @param key
+	 * @returns {Promise<void>}
+	 */
+	const hanleDelete = async(key) => {
+		const response = await apis.deleteVehicle(key);
+
+		if (response.statusCode < 400) {
+			dispatchVehicles({
+				type: 'delete',
+				payload: response.payload.key
+			});
+		}
+
+		handleNotifier(response.statusType, response.message);
+	}
+
+	/**
 	 * Add or update vehicle
 	 *
 	 * @param e
@@ -93,6 +112,7 @@ function Dashboard(props) {
 		const isNewVehicle = vehicle.key ? false : true;
 
 		// Make REST call to upload file
+		vehicle = { ...vehicle, image: ""};
 		if (file.length) {
 			const upload = await apis.uploadFile(file[0]);
 
@@ -113,56 +133,51 @@ function Dashboard(props) {
 				payload: response.payload
 			});
 
-			notifierRef.current.openNotifier(response.statusType, response.message);
+			handleNotifier(response.statusType, response.message)
 
 			// Rerender component since a new vehicle
 			// was added to the list
 			if (isNewVehicle) {
 				navigate('/vehicles');
 			}
+		} else {
+			handleNotifier(response.statusType, response.message)
 		}
 	}
 
 	/**
-	 * Delete vehicle
-	 * @param e
-	 * @param key
-	 * @returns {Promise<void>}
+	 * Notifier
+	 *
+	 * @param statusType
+	 * @param message
 	 */
-	const hanleDelete = async(key) => {
-		const response = await apis.deleteVehicle(key);
-
-		if (response.statusCode < 400) {
-			dispatchVehicles({
-				type: 'delete',
-				payload: response.payload.key
-			});
-		}
-
-		notifierRef.current.openNotifier(response.statusType, response.message);
+	const handleNotifier = (statusType, message) => {
+		notifierRef.current.openNotifier(statusType, message);
 	}
 
 	return (
-		<Container className={classes.cardGrid} maxWidth="md">
+		<Container className={classes.cardGrid} maxWidth='md'>
 			<Notifier ref={ notifierRef }/>
 			<Routes>
-				<Route path="/" element={
+				<Route path='/' element={
 					<List
 						loading={ loading }
 						vehicles={ vehicles }
 						onHandleDelete={ hanleDelete }
 					/>
 				} />
-				<Route path="create" element={
+				<Route path='create' element={
 					<Modify
 						onHandleSubmit={ handleSubmit }
+						onHandleNotifier={ handleNotifier }
 					/> } />
-				<Route path="edit/:key" element={
+				<Route path='edit/:key' element={
 					<Modify
 						onHandleSubmit={ handleSubmit }
+						onHandleNotifier={ handleNotifier }
 					/>
 				} />
-				<Route path="details/:key/*" element={
+				<Route path='details/:key/*' element={
 					<Details />
 				} />
 			</Routes>

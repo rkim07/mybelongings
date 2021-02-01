@@ -14,8 +14,16 @@ export class VehicleApiController {
      * paths:
      *   /vehicle-api-svc/sync/nhtsa:
      *     get:
-     *       summary: Retrieve API manufacturers list maintained by NHTSA API
-     *       description: Retrieve API manufacturers list maintained by NHTSA API
+     *       description: Sync with NHTSA API
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
@@ -55,8 +63,16 @@ export class VehicleApiController {
      * paths:
      *   /vehicle-api-svc/manufacturers:
      *     get:
-     *       summary: Retrieve API manufacturer's models list maintained by NHTSA API
-     *       description: Retrieve vehicle list from DB
+     *       description: Retrieve manufacturers
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
@@ -94,9 +110,16 @@ export class VehicleApiController {
      * paths:
      *   /vehicle-api-svc/manufacturers/{mfr_key}/models:
      *     get:
-     *       summary: Get a list of all vehicles
-     *       description: Retrieve vehicle list from DB
+     *       description: Fetch all models by manufacturer
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
      *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *         - in: path
      *           name: mfr_key
      *           description: The manufacturer ID being queried.

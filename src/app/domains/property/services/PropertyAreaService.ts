@@ -19,13 +19,13 @@ export class PropertyAreaService {
     /**
      * Get all property areas
      *
-     * @param origin
+     * @param host
      */
-    public async getAreas(origin: string): Promise<Property[]> {
+    public async getAreas(host: string): Promise<Property[]> {
         const areas = await this.propertyAreaCollectionService.getAll();
 
         return await Promise.all(areas.map(async (area) => {
-            return await this.addDependencies(origin, area);
+            return await this.addDependencies(host, area);
         }));
     }
 
@@ -33,36 +33,37 @@ export class PropertyAreaService {
      * Get areas by property key
      *
      * @param propertyKey
-     * @param origin
+     * @param host
      */
-    public async getAreasByPropertyKey(propertyKey: Key, origin: string): Promise<PropertyArea[]> {
+    public async getAreasByPropertyKey(propertyKey: Key, host: string): Promise<PropertyArea[]> {
         const areas = await this.propertyAreaCollectionService.find({ propertyKey: { $eq: propertyKey }});
 
         return await Promise.all(areas.map(async (area) => {
-            return await this.addDependencies(origin, area);
+            return await this.addDependencies(host, area);
         }));
     }
 
     /**
      * Add or update property area
      *
-     * @param origin
+     * @param host
      * @param body
      */
-    public async updatePropertyArea(origin: string, body: any): Promise<PropertyArea> {
+    public async updatePropertyArea(host: string, body: any): Promise<PropertyArea> {
         const area = await this.propertyAreaCollectionService.updateArea(body);
-        return await this.addDependencies(origin, area);
+        return await this.addDependencies(host, area);
     }
 
     /**
      * Add dependencies when returning object
      *
-     * @param origin
+     * @param host
      * @param area
      */
-    private async addDependencies(origin, area) {
-        area['image_path'] = this.fileUploadService.setImagePath(origin, area.image, 'area');
-        area['paint'] = await this.paintService.getPaintByKey(area.paintKey, origin);
+    private async addDependencies(host, area) {
+        area = { ...area, imagePath: this.fileUploadService.setImagePath(host, area.image) };
+        area = { ...area, paint: await this.paintService.getPaintByKey(area.paintKey, host) };
+
         return area;
     }
 }

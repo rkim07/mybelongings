@@ -71,7 +71,7 @@ export class FileUploadController {
             }
         }).single('file')
     )
-    public async postFile(@Req() req: any): Promise<any> {
+    public async uploadFile(@Req() req: any): Promise<any> {
         try {
             const fileName = await this.fileUploadService.uploadFile(req.files.file);
 

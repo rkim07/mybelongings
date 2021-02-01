@@ -7,7 +7,7 @@ import { HandleUpstreamError } from '../../shared/models/utilities/HandleUpstrea
 import { Hash } from '../../shared/models/utilities/Hash';
 import { Code, Key } from '../../shared/models/utilities/Key';
 import { EmailService } from '../../shared/services/EmailService';
-import { UserCollectionService } from '../../user/services/UserCollectionService';
+import { UserService } from '../../user/services/UserService';
 
 export enum AUTH_SERVICE_ERRORS {
     USER_NOT_FOUND = 'AUTH_SERVICE_ERRORS.USER_NOT_FOUND',
@@ -25,7 +25,7 @@ export enum AUTH_SERVICE_ERRORS {
 export class AuthService {
 
     @Inject()
-    private userCollectionService: UserCollectionService = Container.get(UserCollectionService);
+    private userService: UserService = Container.get(UserService);
 
     @Inject()
     private emailService: EmailService = Container.get(EmailService);
@@ -36,11 +36,10 @@ export class AuthService {
      * @param body
      */
     public async login(body: any): Promise<any> {
-        let user = await this.userCollectionService.findOne({ username: { $eq: body.username }});
+        let user = await this.userService.getUserByField('username', body.username);
 
-        // User not signed up
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.UNREGISTERED_USER);
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
         // Check if plain text password matches with hashed password
@@ -63,7 +62,7 @@ export class AuthService {
 
         // Save refresh token for later use
         user.refreshToken = refreshToken;
-        await this.userCollectionService.updateUser(user);
+        await this.userService.updateUser(user);
 
         return {
             accessToken: accessToken,
@@ -72,24 +71,78 @@ export class AuthService {
     }
 
     /**
-     * Logout user
+     * Deactivate user
      *
      * @param userKey
      */
-    public async logout(userKey): Promise<any> {
+    public async deactivate(userKey: Key): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
 
-        const user = await this.userCollectionService.findOne({ key: { $eq: userKey }});
+        let user = await this.userService.getUser(userKey);
 
         if (!user) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
-        user.accessToken = '';
-        user.refreshToken = '';
-        return await this.userCollectionService.updateUser(user);
+        // Deactivate user
+        if (user.active) {
+            user = { ...user, active: 0 } ;
+            user = { ...user, refreshToken: '' };
+        }
+
+        await this.userService.updateUser(user);
+
+        return true;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param userKey
+     */
+    public async remove(userKey: Key): Promise<any> {
+        if (!userKey) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+        }
+
+        let user = await this.userService.getUser(userKey);
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        // Deactivate user
+        if (user.active) {
+            user = { ...user, active: 0 } ;
+            user = { ...user, refreshToken: '' };
+        }
+
+        await this.userService.deleteUser(userKey);
+
+        return true;
+    }
+
+    /**
+     * Logout user
+     *
+     * @param userKey
+     */
+    public async logout(userKey: Key): Promise<any> {
+        if (!userKey) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+        }
+
+        let user = await this.userService.getUser(userKey);
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        user = { ...user, refreshToken: '' };
+
+        return await this.userService.updateUser(user);
     }
 
     /**
@@ -98,12 +151,12 @@ export class AuthService {
      * @param userKey
      * @param jwt
      */
-    public async refreshToken(userKey, jwt): Promise<any> {
+    public async refreshToken(userKey: Key, jwt: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
 
-        const user = await this.userCollectionService.findOne({ key: { $eq: userKey }});
+        const user = await this.userService.getUser(userKey);
 
         if (!user) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
@@ -124,17 +177,21 @@ export class AuthService {
     /**
      * Signup new user
      *
-     * @param data
+     * @param info
      */
-    public async signup(data: User): Promise<any> {
-        const existingUser = await this.userCollectionService.find({ email: { $eq: data.email }});
+    public async signup(info: User): Promise<any> {
+        const existingUser = await this.userService.getUserByField('email', info.email);
 
-        if (existingUser.length) {
+        if (existingUser) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP);
         }
 
         // Add new user
-        const newUser = await this.userCollectionService.adddUser(data);
+        const newUser = await this.userService.addUser(info);
+
+        if (!newUser) {
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
 
         // Send sign up confirmation email
         if (!_.isEmpty(newUser.email) && !_.isEmpty(newUser.signupCode)) {
@@ -152,29 +209,24 @@ export class AuthService {
     }
 
     /**
-     * Verify new sign up link code and activate
+     * Activate new signup by first verifying email
+     * and signup code provided in email
      *
      * @param email
-     * @param code
+     * @param signupCode
      */
-    public async activateSignup(email: string, code: Code): Promise<any> {
-        const query = {
-            $and: [
-                { email: { $eq: email } },
-                { signupCode: { $eq: code } }
-            ]
-        };
-
-        let newUser = await this.userCollectionService.findOne(query);
+    public async activateSignup(email: string, signupCode: Code): Promise<any> {
+        let newUser = await this.userService.getUserByEmailAnCode(email, signupCode, 'signupCode');
 
         if (!newUser) {
             throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
         // Activate
-        newUser.active = 1;
-        newUser.signupCode = '';
-        return await this.userCollectionService.updateUser(newUser);
+        newUser = { ...newUser, active: 1 } ;
+        newUser = { ...newUser, signupCode: '' };
+
+        return await this.userService.updateUser(newUser);
     }
 
     /**
@@ -183,15 +235,15 @@ export class AuthService {
      * @param email
      */
     public async activatePasswordReset(email: string): Promise<any> {
-        let user = await this.userCollectionService.findOne({ email: { $eq: email} });
+        let user = await this.userService.getUserByField('email', email);
 
         if (!user) {
-            return false;
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
         // Generate new password reset code and save
         user.resetCode = Code.generate();
-        await this.userCollectionService.updateUser(user);
+        await this.userService.updateUser(user);
 
         // Send password reset email
         if (!_.isEmpty(user.email) && !_.isEmpty(user.resetCode)) {
@@ -208,22 +260,15 @@ export class AuthService {
      * @param newPassword
      */
     public async resetPassword(body: any): Promise<any> {
-        const query = {
-            $and: [
-                { email: { $eq: body.email } },
-                { resetCode: { $eq: body.resetCode } }
-            ]
-        };
-
-        let user = await this.userCollectionService.findOne(query);
+        let user = await this.userService.getUserByEmailAnCode(body.email, body.resetCode, 'resetCode');
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.INVALID_RESET_CODE);
         }
 
-        user.password = body.password;
-        user.resetCode = '';
-        await this.userCollectionService.updateUser(user);
+        user = { ...user, password: body.password} ;
+        user = { ...user, resetCode: '' };
+        await this.userService.updateUser(user);
 
         return true;
     }

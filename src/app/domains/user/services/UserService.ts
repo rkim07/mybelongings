@@ -1,10 +1,10 @@
 import { Container, Inject, Service } from 'typedi';
-import { FileUploadService } from '../../shared/services/FileUploadService';
 import { UserCollectionService } from './UserCollectionService';
-import { HandleUpstreamError, Key, User, Vehicle } from '../../shared/models/models';
+import { Code, HandleUpstreamError, Key, User } from '../../shared/models/models';
 
 export enum USER_SERVICE_ERRORS {
-    USER_NOT_FOUND = 'USER_NOT_FOUND'
+    USER_NOT_FOUND = 'USER_SERVICE_ERRORS.USER_NOT_FOUND',
+    MISSING_PARAMETERS = 'USER_SERVICE_ERRORS.MISSING_PARAMETERS'
 }
 
 /**
@@ -16,46 +16,98 @@ export class UserService {
     @Inject()
     private userCollectionService: UserCollectionService = Container.get(UserCollectionService);
 
-    @Inject()
-    private fileUploadService: FileUploadService = Container.get(FileUploadService);
-
     /**
-     * Get user by key
+     * Get user
      *
-     * @param origin
      * @param key
      */
-    public async getUser(origin:string, key: Key): Promise<any> {
-        const user = await this.userCollectionService.findOne({ key: { $eq: key }});
-
-        if (!user) {
+    public async getUser(key: Key): Promise<any> {
+        if (!key) {
             throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
         }
 
-        return await this.addDependencies(origin, user);
+        return await this.userCollectionService.findOne({ key: { $eq: key }});
+    }
+
+    /**
+     * Get user by a specific column name
+     *
+     * @param fieldName
+     * @param value
+     */
+    public async getUserByField(fieldName: string, value: string) {
+        if (!fieldName || !value) {
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.MISSING_PARAMETERS);
+        }
+
+        return await this.userCollectionService.findByField(fieldName, value,  1);
+    }
+
+    /**
+     * Get user by email and code
+     *
+     * @param email
+     * @param code
+     * @param codeType
+     */
+    public async getUserByEmailAnCode(email: string, code: Code, codeType: 'resetCode' | 'signupCode') {
+        if (!email || !code || !codeType) {
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.MISSING_PARAMETERS);
+        }
+
+        const query = {
+            $and: [
+                { email: { $eq: email } },
+                { [codeType]: { $eq: code } }
+            ]
+        };
+
+        return await this.userCollectionService.findOne(query);
     }
 
     /**
      * Get all users
-     *
-     * @param origin
      */
-    public async getUsers(origin: string): Promise<any> {
-        const users = await this.userCollectionService.getUsers();
-
-        return await Promise.all(users.map(async (user) => {
-            return await this.addDependencies(origin, user);
-        }));
+    public async getUsers(): Promise<any> {
+        return await this.userCollectionService.getAll();
     }
 
     /**
-     * Add dependencies when returning object
+     * Add user
      *
-     * @param origin
      * @param user
      */
-    private async addDependencies(origin, user) {
-        user['image_path'] = this.fileUploadService.setImagePath(origin, user.image, 'user');
-        return user;
+    public async addUser(user: User) {
+        if (!user) {
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        return await this.userCollectionService.add(user);
+    }
+
+    /**
+     * Update user
+     *
+     * @param user
+     */
+    public async updateUser(user: User) {
+        if (!user.key) {
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        return await this.userCollectionService.update(user);
+    }
+
+    /**
+     * Delete user
+     *
+     * @param user
+     */
+    public async deleteUser(userKey: Key) {
+        if (!userKey) {
+            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+        }
+
+        return await this.userCollectionService.removeByFieldValue('key', userKey);
     }
 }

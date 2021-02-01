@@ -12,7 +12,7 @@ export class StoreController {
     /**
      * @swagger
      * paths:
-     *   store-svc/stores/{store_key}:
+     *   /store-svc/stores/{store_key}:
      *     get:
      *       summary: Retrieve a specific store.
      *       description: Retrieve a specific store.

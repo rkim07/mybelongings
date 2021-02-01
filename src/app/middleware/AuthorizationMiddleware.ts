@@ -115,7 +115,7 @@ export namespace AuthorizationMiddleware {
             req.requestor.jwt = token;
             req.requestor.jwtDecoded = decodedJwt;
             req.requestor.userKey = decodedJwt.userKey;
-            req.requestor.origin = `${req.protocol}://${req.get('host')}`;
+            req.requestor.host = `${req.protocol}://${req.get('host')}`;
 
             authorizedRequest = true;
         }

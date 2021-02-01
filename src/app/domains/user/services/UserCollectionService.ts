@@ -11,7 +11,7 @@ export class UserCollectionService extends DatabaseCollectionService {
     /**
      * Get all users
      */
-    public async getUsers(): Promise<any> {
+    public async getAll(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -25,11 +25,12 @@ export class UserCollectionService extends DatabaseCollectionService {
      *
      * @param user
      */
-    public async adddUser(user: any): Promise<any> {
+    public async add(user: any): Promise<any> {
         return await this.addOne(new User({
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            phone: user.phone,
             username: user.username,
             password: user.password,
             active: user.active,
@@ -45,7 +46,7 @@ export class UserCollectionService extends DatabaseCollectionService {
      *
      * @param user
      */
-    public async updateUser(user: User): Promise<any> {
+    public async update(user: User): Promise<any> {
         await this.loadCollection();
 
         return await this.updateManyFields({
@@ -55,6 +56,7 @@ export class UserCollectionService extends DatabaseCollectionService {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                phone: user.phone,
                 username: user.username,
                 password: user.password,
                 active: user.active,

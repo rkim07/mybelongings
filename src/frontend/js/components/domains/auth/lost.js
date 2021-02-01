@@ -64,41 +64,61 @@ const theme = createMuiTheme({
 	}
 });
 
-function LostPassword(props) {
+function Lost(props) {
 	const apis = useContext(AppContext);
 
 	const { classes } = props;
 
-	const [email, setEmail] = useState('');
-	const [showConfirmation, setShowConfirmation] = useState(false);
+	const initialValues = {
+		email: '',
+		submitted: false,
+		success: true
+	};
+
+	const [values, setValues] = useState(initialValues);
 
 	/**
-	 * Log in the user
+	 * Handle select and input changes
 	 *
 	 * @param e
 	 */
-	const onHandleSubmit = async(e) => {
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setValues({ ...values, [name]: value });
+	}
+
+	/**
+	 * Send reset password email
+	 *
+	 * @param e
+	 */
+	const handleSubmit = async(e) => {
 		e.preventDefault();
 
-		const response = await apis.activatePasswordReset(email);
+		const response = await apis.activatePasswordReset(values);
+		const status = response.statusCode < 400 ? true : false;
 
-		if (response.statusCode < 400) {
-			setShowConfirmation(true);
-		}
+		setValues({ ...values, submitted: status, success: status });
 	}
 
 	return (
-		<Container className={classes.root} maxWidth="md">
+		<Container className={classes.root} maxWidth='md'>
 			<ValidatorForm
-				onSubmit={ e => { onHandleSubmit(e) } }
+				onSubmit={ handleSubmit }
 			>
 				<Grid container justify='center'>
 					<Grid item xs={12} sm={12} md={12}>
-						{ showConfirmation ? (
+						{ values.submitted ? (
 							<Paper className={classes.paper}>
-								<Typography component='h1' variant='h5'>
-									Please check your email for further instuctions for resetting the password.
-								</Typography>
+								{ values.success ? (
+									<Typography component='h1' variant='h5'>
+										Please check your email for further instructions on resetting your password.
+									</Typography>
+								) : (
+									<Typography component='h1' variant='h5'>
+										We apologize but we cannot process your request at this moment.
+									</Typography>
+								)}
 							</Paper>
 						) : (
 							<Paper className={classes.paper}>
@@ -113,8 +133,9 @@ function LostPassword(props) {
 										<ThemeProvider theme={theme}>
 											<TextValidator
 												label='Email'
-												value={ email }
-												onChange={ (e) => setEmail(e.target.value) }
+												name='email'
+												value={ values.email }
+												onChange={ handleChange }
 												validators={['required', 'isEmail']}
 												errorMessages={['This field is required', 'Invalid email']}
 											/>
@@ -134,7 +155,7 @@ function LostPassword(props) {
 								</Grid>
 								<Grid item xs={12}>
 									<Typography component='h5' variant='h5'>
-										<Link to="/login">Remember your password?</Link>
+										<Link to='/account/login'>Remember your password?</Link>
 									</Typography>
 								</Grid>
 							</Paper>
@@ -146,4 +167,4 @@ function LostPassword(props) {
 	)
 }
 
-export default withStyles(styles)(LostPassword);
+export default withStyles(styles)(Lost);

@@ -1,8 +1,8 @@
-import React, {useContext, useRef, useState} from 'react';
-import { Link, Navigate } from "react-router-dom";
+import React, { useContext, useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import AppContext from '../../../appcontext';
-import Notifier from '../../shared/feedback/notifier';
+import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
@@ -69,45 +69,56 @@ const theme = createMuiTheme({
 
 function Login(props) {
 	const apis = useContext(AppContext);
-	const notifierRef = useRef();
 
-	const { classes } = props;
+	const { classes, redirectUrl } = props;
 
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [submitted, setSubmitted] = useState(false);
+	const initialValues = {
+		username: '',
+		password: '',
+		submitted: false,
+		success: true,
+		message: ''
+	};
+
+	const [values, setValues] = useState(initialValues);
+
+	/**
+	 * Handle select and input changes
+	 *
+	 * @param e
+	 */
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setValues({ ...values, [name]: value });
+	}
 
 	/**
 	 * Log in the user
 	 *
 	 * @param e
 	 */
-	const onHandleSubmit = async(e) => {
+	const handleSubmit = async(e) => {
 		e.preventDefault();
 
-		const credentials = {
-			username: username,
-			password: password
-		}
+		const response = await apis.login(values);
+		const status = response.statusCode < 400 ? true : false;
 
-		const response = await apis.login(credentials);
-
-		if (response.statusCode < 400 && response.redirect) {
-			setSubmitted(true);
-		} else {
-			notifierRef.current.openNotifier(response.statusType, response.message);
-		}
+		setValues({ ...values, submitted: status, success: status, message: response.message });
 	}
 
 	return (
-		<Container className={classes.root} maxWidth="md">
-			{ submitted && (<Navigate to={ props.redirectUrl } />)}
-			<Notifier ref={ notifierRef }/>
+		<Container className={classes.root} maxWidth='md'>
+			{ values.submitted && (<Navigate to={ redirectUrl } />)}
 			<ValidatorForm
-				onSubmit={ e => { onHandleSubmit(e) } }
+				onSubmit={ handleSubmit }
 			>
 				<Grid container justify='center'>
 					<Grid item xs={12} sm={12} md={12}>
+						{ !values.success && (
+							<Alert variant="filled" severity="error">
+								{ values.message }
+							</Alert>
+						)}
 						<Paper className={classes.paper}>
 							<Avatar className={classes.avatar}>
 								<LockOutlinedIcon />
@@ -120,8 +131,9 @@ function Login(props) {
 									<ThemeProvider theme={theme}>
 										<TextValidator
 											label='Username'
-											value={ username }
-											onChange={ e => setUsername(e.target.value) }
+											name='username'
+											value={ values.username }
+											onChange={ handleChange }
 											validators={['required']}
 											errorMessages={['This field is required']}
 										/>
@@ -132,10 +144,11 @@ function Login(props) {
 								<FormControl margin='normal' required fullWidth>
 									<ThemeProvider theme={theme}>
 										<TextValidator
-											type='password'
 											label='Password'
-											value={ password }
-											onChange={ e => setPassword(e.target.value) }
+											type='password'
+											name='password'
+											value={ values.password }
+											onChange={ handleChange }
 											validators={['required']}
 											errorMessages={['This field is required']}
 										/>
@@ -143,9 +156,13 @@ function Login(props) {
 								</FormControl>
 							</Grid>
 							<Grid item xs={12}>
-								<Typography className={classes.root}>
-									<Link to="/account/password/lost">Forgot password</Link>
-									<Link to="/signup">Sign up</Link>
+								<Typography align="center">
+									<Link to='/account/password/lost'>Forgot password</Link>
+								</Typography>
+							</Grid>
+							<Grid item xs={12}>
+								<Typography align="center">
+									<Link to='/account/signup'>Not enrolled? Sign up now</Link>
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>

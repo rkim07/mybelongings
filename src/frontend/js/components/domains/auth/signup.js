@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import AppContext from '../../../appcontext';
 import { prepareLoginData } from '../../shared/helpers/ajax';
@@ -9,6 +10,8 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import Container from '@material-ui/core/Container';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 const styles = theme => ({
 	main: {
@@ -38,149 +41,187 @@ const styles = theme => ({
 	}
 });
 
-class Signup extends React.Component
-{
-	/**
-	 * Constructor
-	 *
-	 * @param props
-	 */
-	constructor(props) {
-		super(props);
+function Signup(props) {
+	const apis = useContext(AppContext);
 
-		this.state = {
-			id:             props.userRegId || '',
-			username:       '',
-			password:       '',
-			repeatPassword: ''
-		}
-	}
+	const { classes } = props;
 
-	componentDidMount() {
-		// custom rule will have name 'isPasswordMatch'
+	const initialValues = {
+		firstName: '',
+		lastName: '',
+		email: '',
+		phone: '',
+		username: '',
+		password: '',
+		confirmPassword: '',
+		submitted: false,
+		success: true
+	};
+
+	const [values, setValues] = useState(initialValues);
+
+	useEffect(() => {
 		ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
-			if (value !== this.state.password) {
+			if (value !== values.password) {
 				return false;
 			}
 
 			return true;
 		});
-	}
+	});
 
 	/**
-	 * Handle form changes
+	 * Handle select and input changes
 	 *
 	 * @param e
 	 */
-	handleChange = (e) => {
-		const { name, value } = e.target
-
-		this.setState({
-			[name]: value
-		})
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setValues({ ...values, [name]: value });
 	}
 
-	// Submit
-	handleSubmit = () => {
-		let data = prepareLoginData(this.state);
+	/**
+	 * Reset password
+	 *
+	 * @param e
+	 */
+	const handleSubmit = async(e) => {
+		e.preventDefault();
 
-		this.props.register(data);
-		this.props.history.push('/login');
+		const response = await apis.signup(values);
+		const status = response.statusCode < 400 ? true : false;
+
+		setValues({ ...values, submitted: true, success: status });
 	}
 
-	render() {
-		const { classes, systemNoticesType, systemNoticesAdminEmail, userRegName } = this.props;
-
-		if (systemNoticesType) {
-			let message = '';
-
-			switch (systemNoticesType) {
-				case 'error':
-					message = <h3>User has already created credentials.  Please go ahead and login.</h3>;
-				break;
-
-				case 'expired':
-					message = <h3>Your registration period have expired.  Please contact the <a href={`mailto:${systemNoticesAdminEmail}`}>administrator</a> and request again.</h3>;
-				break;
-			}
-
-			return (
-				<Paper className={classes.paper}>
-					{ message }
-				</Paper>
-			)
-		} else {
-			return (
-				<main className={classes.main}>
-					{/* this.props.notifierMsg && (
-						<Notifier
-							openNotifier={ openNotifier }
-							notifierType={ notifierType }
-							notifierMsg={ notifierMsg }
-							onHandleCloseNotifier={ this.onHandleCloseNotifier }
-						/>)
-					*/}
-					<Grid container justify='center'>
-						<Grid item xs={12} sm={12} md={12}>
+	return (
+		<Container className={classes.root} maxWidth='md'>
+			<ValidatorForm
+				onSubmit={ handleSubmit }
+			>
+				<Grid container justify='center'>
+					<Grid item xs={12} sm={12} md={12}>
+						{ values.submitted ? (
+							<Paper className={classes.paper}>
+								{ values.success ? (
+									<Typography component='h1' variant='h5'>
+										You have successfully submitted all your information.
+										Please check your email in order to finish setting up your account.
+									</Typography>
+								) : (
+									<Typography component='h1' variant='h5'>
+										Something went wrong while trying to create an account.  Please contact the administrator.
+									</Typography>
+								)}
+							</Paper>
+						) : (
 							<Paper className={classes.paper}>
 								<Typography component='h1' variant='h5'>
-									Welcome {userRegName}, please enter an username and password to create your access.
+									Create your MyBelongings account
 								</Typography>
-								<ValidatorForm
-									className={classes.form}
-									ref='form'
-									onSubmit={this.handleSubmit}
-								>
+								<Grid item xs={12}>
+									<FormControl margin='normal' required fullWidth>
+										<TextValidator
+											label='First name'
+											name='firstName'
+											onChange={ handleChange }
+											value={ values.firstName }
+											validators={['required']}
+											errorMessages={['This field is required']}
+										/>
+									</FormControl>
+								</Grid>
+								<Grid item xs={12}>
+									<FormControl margin='normal' required fullWidth>
+										<TextValidator
+											label='Last name'
+											name='lastName'
+											onChange={ handleChange }
+											value={ values.lastName }
+											validators={['required']}
+											errorMessages={['This field is required']}
+										/>
+									</FormControl>
+								</Grid>
+								<Grid item xs={12}>
+									<FormControl margin='normal' required fullWidth>
+										<TextValidator
+											label='Email'
+											name='email'
+											onChange={ handleChange }
+											value={ values.email }
+											validators={['required']}
+											errorMessages={['This field is required']}
+										/>
+									</FormControl>
+								</Grid>
+								<Grid item xs={12}>
+									<FormControl margin='normal' required fullWidth>
+										<TextValidator
+											label='Phone number'
+											name='phone'
+											onChange={ handleChange }
+											value={ values.phone }
+										/>
+									</FormControl>
+								</Grid>
+								<Grid item xs={12}>
 									<FormControl margin='normal' required fullWidth>
 										<TextValidator
 											label='Username'
-											onChange={this.handleChange}
 											name='username'
-											value={this.state.username}
+											onChange={ handleChange }
+											value={ values.username }
 											validators={['required']}
 											errorMessages={['This field is required']}
 										/>
 									</FormControl>
-									<br/>
+								</Grid>
+								<Grid item xs={12}>
 									<FormControl margin='normal' required fullWidth>
 										<TextValidator
 											label='Password'
-											onChange={this.handleChange}
-											name='password'
 											type='password'
-											value={this.state.password}
+											name='password'
+											value={ values.password }
+											onChange={ handleChange }
 											validators={['required']}
 											errorMessages={['This field is required']}
 										/>
 									</FormControl>
+								</Grid>
+								<Grid item xs={12}>
 									<FormControl margin='normal' required fullWidth>
 										<TextValidator
-											label='Confirm Password'
-											onChange={this.handleChange}
-											name='repeatPassword'
+											label='Confirm password'
 											type='password'
-											value={this.state.repeatPassword}
-											validators={['isPasswordMatch', 'required']}
-											errorMessages={['Password mismatch', 'This field is required']}
+											name='confirmPassword'
+											value={ values.confirmPassword }
+											onChange={ handleChange }
+											validators={['required', 'isPasswordMatch']}
+											errorMessages={['This field is required', 'Password mismatch']}
 										/>
 									</FormControl>
-									<br/>
+								</Grid>
+								<Grid item xs={12}>
 									<Button
 										type='submit'
 										fullWidth
 										variant='contained'
 										color='primary'
-										className={classes.submit}>
-										Create
+										startIcon={ <PersonAddIcon /> }
+										className={classes.submit}
+									>
+										Signup
 									</Button>
-								</ValidatorForm>
+								</Grid>
 							</Paper>
-						</Grid>
+						)}
 					</Grid>
-				</main>
-			)
-		}
-	}
+				</Grid>
+			</ValidatorForm>
+		</Container>
+	)
 }
 
 export default withStyles(styles)(Signup);

@@ -16,7 +16,7 @@ export class PropertyController {
     /**
      * @swagger
      * paths:
-     *   property-svc/properties/{property_key}:
+     *   /property-svc/properties/{property_key}:
      *     get:
      *       summary: Retrieve a specific property.
      *       description: Retrieve a specific property.
@@ -60,7 +60,6 @@ export class PropertyController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-
     @Get('/properties')
     public async getProperties(@Req() req: any): Promise<any> {
         try {

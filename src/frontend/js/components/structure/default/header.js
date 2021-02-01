@@ -58,7 +58,7 @@ function Header(props) {
 				<Button
 					color='primary'
 					variant='outlined'
-					component={Link} to='/login'
+					component={Link} to='/account/login'
 				>
 					Login
 				</Button>
@@ -94,7 +94,7 @@ function Header(props) {
 					color='primary'
 					variant='outlined'
 					component={Link}
-					to='/login'
+					to='/account/login'
 				>
 					Login
 				</Button>

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Navigate, useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
+import * as _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
 import AppContext from '../../../appcontext';
 import { getVehicleColors } from '../../shared/helpers/list';
@@ -60,72 +61,92 @@ function Modify(props) {
 
 	const {
 		classes,
-		onHandleSubmit // parent call
+		onHandleSubmit, // parent call
+		onHandleNotifier // parent call
 	} = props;
 
-	// Initial vehicle state
-	const [vehicle, setVehicle] = useState({
-		mfrKey: '',
-		mfrName: '',
-		modelKey: '',
-		model: '',
-		image: '',
-		image_path: [],
-		condition: 'new',
-		year: currentYear(),
-		color: '',
-		vin: '',
-		plate: ''
-	});
+	const initialValues = {
+		vehicle: {
+			mfrKey: '',
+			modelKey: '',
+			mfrName: '',
+			condition: 'new',
+			year: currentYear(),
+			model: '',
+			color: '',
+			vin: '',
+			plate: '',
+			image: '',
+			imagePath: ''
+		},
+		manufacturers: '',
+		models: '',
+		file: []
+	};
+
+	const [values, setValues] = useState(initialValues);
 
 	/**
-	 * Fetch vehicle by key or don't do anything
-	 * when adding new vehicle
+	 * Fetch vehicle by key and run effect only once unless
+	 * it's a different vehicle
 	 */
 	useEffect(() => {
-		// Don't run this use effect if vehicle key is not set
-		// It's add new vehicle page mode
-		if (mode === 'update') {
+		if (key) {
 			apis.getVehicle(key).then(response => {
-				const { payload, statusCode, statusType, message } = response
+				const {payload, statusCode, statusType, message} = response
 				if (statusCode < 400) {
-					setVehicle(payload);
+					setValues(prevState => ({...prevState, vehicle: _.assign(prevState.vehicle, payload)}));
 				} else {
 					onHandleNotifier(statusType, message);
-					navigate('/');
+					navigate('/vehicles');
 				}
-
 			});
 		}
-
-		return () => setVehicle('');
 	}, []);
-
-	const [mode, setMode] = useState(!key ? 'add' : 'update');
-	const [file, setFile] = useState([]);
-	const [submitted, setSubmitted] = useState(false);
 
 	/**
 	 * Fetch manufacturers
 	 */
-	const [manufacturers, setManufacturers] = useState();
 	useEffect(() => {
 		apis.getApiMfrs().then(response => {
-			setManufacturers(response.payload);
+			setValues(prevState => ({ ...prevState, manufacturers: response.payload}));
 		});
 	}, []);
 
 	/**
-	 * Fetch models when a particular manufacturer is selected
-	 */
-	const [models, setModels] = useState();
+	* Fetch models when a particular manufacturer is selected
+	*/
 	useEffect(() => {
-		if (vehicle.mfrKey) {
-			apis.getApiModelsByMfrKey(vehicle.mfrKey).then(response => {
-				setModels(response.payload);
+		if (values.vehicle.mfrKey !== '') {
+			apis.getApiModelsByMfrKey(values.vehicle.mfrKey).then(response => {
+				setValues(prevState => ({...prevState, models: response.payload}));
 			});
 		}
-	}, [vehicle.mfrKey || '']);
+	},[values.vehicle.mfrKey]);
+
+	/**
+	 * User effect for maximum and minimum VIN length,
+	 * and maximum length for plate number
+	 */
+	useEffect(() => {
+		ValidatorForm.addValidationRule('isCorrectVinLength', (value) => {
+			if (value.length < 11 || value.length > 17) {
+				return false;
+			}
+
+			return true;
+		});
+	}, []);
+
+	useEffect(() => {
+		ValidatorForm.addValidationRule('isMaxPlateLength', (value) => {
+			if (value.length > 8) {
+				return false;
+			}
+
+			return true;
+		});
+	}, []);
 
 	/**
 	 * Handle select and input changes
@@ -136,10 +157,16 @@ function Modify(props) {
 		const { name, value } = e.target;
 
 		if (name === "mfrKey") {
-			vehicle.modelKey = '';
+			values.vehicle.modelKey = '';
 		}
 
-		setVehicle({ ...vehicle, [name]: value });
+		setValues({
+			...values,
+			vehicle: {
+				...values.vehicle,
+				[name]: value
+			}
+		});
 	}
 
 	/**
@@ -149,28 +176,27 @@ function Modify(props) {
 	 */
 	const handleImageChange = (file) => {
 		if (_.size(file) > 0) {
-			setFile(file);
+			setValues({ ...values, file: file });
 		}
 	}
 
 	return (
 		<ValidatorForm
 			instantValidate={false}
-			onSubmit={ (e) => onHandleSubmit(e, file, vehicle) }
+			onSubmit={ (e) => onHandleSubmit(e, values.file, values.vehicle) }
 		>
-			{ submitted && (<Navigate to="/vehicles" />)}
 			<Grid container spacing={4}>
 				<Grid item xs={12}>
 					<FormControl className={classes.formControl} required>
 						<ThemeProvider theme={theme}>
 							<DropzoneArea
 								role='form'
-								initialFiles={ vehicle.image_path }
+								initialFiles={ values.vehicle.imagePath ? [values.vehicle.imagePath] : [] }
 								filesLimit={1}
 								showPreviews={false}
 								showPreviewsInDropzone={true}
 								clearOnUnmount={true}
-								onChange={ (file) => handleImageChange(file) }
+								onChange={ handleImageChange }
 							/>
 						</ThemeProvider>
 					</FormControl>
@@ -180,8 +206,8 @@ function Modify(props) {
 						<ThemeProvider theme={theme}>
 							<SelectValidator
 								label='Condition *'
-								value={ vehicle.condition }
-								onChange={ (e) => handleChange(e) }
+								value={ values.vehicle.condition }
+								onChange={ handleChange }
 								inputProps={{
 									name: 'condition',
 									id:   'condition'
@@ -202,8 +228,8 @@ function Modify(props) {
 							<ThemeProvider theme={theme}>
 								<SelectValidator
 									label='Year *'
-									value={ vehicle.year }
-									onChange={ (e) => handleChange(e) }
+									value={ values.vehicle.year }
+									onChange={ handleChange }
 									inputProps={{
 										name: 'year',
 										id:   'year'
@@ -220,24 +246,24 @@ function Modify(props) {
 						</FormControl>
 					</Grid>
 				)}
-				{ manufacturers && (
+				{ values.manufacturers && (
 					<Grid item xs={12}>
 						<FormControl className={classes.formControl}>
 							<ThemeProvider theme={theme}>
 								<SelectValidator
 									label='Manufacturer *'
-									value={ vehicle.mfrKey }
-									onChange={ (e) => handleChange(e) }
+									value={ values.vehicle.mfrKey }
+									onChange={ handleChange }
 									inputProps={{
 										name: 'mfrKey',
 										id:   'mfrKey',
-										disabled: mode === 'update'
+										disabled: key ? true : false
 									}}
 									validators={['required']}
 									errorMessages={['Manufacturer is required']}
 								>
 									<MenuItem aria-label='None' value='' />
-									{ manufacturers.map((mfr) => (
+									{ values.manufacturers.map((mfr) => (
 										<MenuItem key={ mfr.key } value={ mfr.key }>{ mfr.mfrName }</MenuItem>
 									))}
 								</SelectValidator>
@@ -246,24 +272,24 @@ function Modify(props) {
 						</FormControl>
 					</Grid>
 				)}
-				{ models && (
+				{ values.models && (
 					<Grid item xs={12}>
 						<FormControl className={classes.formControl}>
 							<ThemeProvider theme={theme}>
 								<SelectValidator
 									label='Model *'
-									value={ vehicle.modelKey }
-									onChange={ (e) => handleChange(e) }
+									value={ values.vehicle.modelKey || '' }
+									onChange={ handleChange }
 									inputProps={{
 										name: 'modelKey',
 										id:   'modelKey',
-										disabled: mode === 'update'
+										disabled: key ? true : false
 									}}
 									validators={['required']}
 									errorMessages={['Model is required']}
 								>
 									<MenuItem aria-label='None' value='' />
-									{ models.map((model) => (
+									{ values.models.map((model) => (
 										<MenuItem key={ model.key } value={ model.key }>{ model.model }</MenuItem>
 									))}
 								</SelectValidator>
@@ -278,8 +304,8 @@ function Modify(props) {
 							<ThemeProvider theme={theme}>
 								<SelectValidator
 									label='Color *'
-									value={ vehicle.color }
-									onChange={ (e) => handleChange(e) }
+									value={ values.vehicle.color }
+									onChange={ handleChange }
 									inputProps={{
 										name: 'color',
 										id:   'color'
@@ -299,14 +325,19 @@ function Modify(props) {
 					<FormControl className={classes.formControl}>
 					<TextValidator
 						label='VIN *'
-						value={ vehicle.vin }
-						onChange={ (e) => handleChange(e) }
-						validators={['required']}
-						errorMessages={['VIN is required']}
+						value={ values.vehicle.vin }
+						onChange={ handleChange }
+						validators={[
+							'required',
+							'isCorrectVinLength',
+						]}
+						errorMessages={[
+							'VIN is required',
+							'VIN length must be between 11 and 17 characters'
+						]}
 						inputProps={{
 							name: 'vin',
-							id:   'vin',
-							disabled: mode === 'update'
+							id:   'vin'
 						}}
 					/>
 					<FormHelperText>Vehicle identifier number</FormHelperText>
@@ -316,12 +347,14 @@ function Modify(props) {
 					<FormControl className={classes.formControl}>
 					<TextValidator
 						label='Plate'
-						value={ vehicle.plate }
-						onChange={ (e) => handleChange(e) }
+						value={ values.vehicle.plate }
+						onChange={ handleChange }
 						inputProps={{
 							name: 'plate',
 							id:   'plate'
 						}}
+						validators={['isMaxPlateLength']}
+						errorMessages={['Plate number cannot exceed more than 8 characters']}
 					/>
 					</FormControl>
 				</Grid>
@@ -333,7 +366,7 @@ function Modify(props) {
 						className={classes.button}
 						startIcon={<SaveIcon/>}
 					>
-						{ mode === 'add' ? 'Add' : 'Update' }
+						{ key ? 'Update' : 'Add' }
 					</Button>
 					<Button
 						type='button'

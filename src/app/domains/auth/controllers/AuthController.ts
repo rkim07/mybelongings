@@ -1,8 +1,8 @@
+import path from 'path';
 import { Body, Get, HttpCode, JsonController, Param, Post, Req, Res } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
 import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
-import { VEHICLE_SERVICE_ERRORS } from '../../vehicle/services/VehicleService';
 import { AUTH_SERVICE_ERRORS, AuthService } from '../services/AuthService';
 
 import { logger } from '../../../common/logging';
@@ -18,7 +18,7 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/login:
+     *   /auth-svc/account/login:
      *     post:
      *       description: Login user
      *       tags:
@@ -52,7 +52,7 @@ export class AuthController {
      *             $ref: '#/definitions/ResponseError'
      */
     @HttpCode(201)
-    @Post('/login')
+    @Post('/account/login')
     public async login(@Body() body: any): Promise<any> {
         try {
             const login = await this.authService.login(body);
@@ -87,7 +87,7 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/logout:
+     *   /auth-svc/account/logout:
      *     get:
      *       description: Logout user
      *       tags:
@@ -109,7 +109,7 @@ export class AuthController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/logout')
+    @Get('/account/logout')
     public async logout(@Req() { requestor: { userKey }}: AuthorisedRequest): Promise<any> {
         try {
             await this.authService.logout(userKey);
@@ -139,7 +139,7 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/refresh:
+     *   /auth-svc/account/refresh:
      *     get:
      *       description: Refresh access token with provided refresh token
      *       tags:
@@ -169,7 +169,7 @@ export class AuthController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/refresh')
+    @Get('/account/refresh')
     public async refreshToken(@Req() { requestor: { userKey, jwt }}: AuthorisedRequest): Promise<any> {
         try {
             const refresh = await this.authService.refreshToken(userKey, jwt);
@@ -203,7 +203,7 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/signup:
+     *   /auth-svc/account/signup:
      *     post:
      *       description: Sign up user
      *       tags:
@@ -237,13 +237,13 @@ export class AuthController {
      *             $ref: '#/definitions/ResponseError'
      */
     @HttpCode(201)
-    @Post('/signup')
+    @Post('/account/signup')
     public async signup(@Body() body: any): Promise<any> {
         try {
-            const registration = await this.authService.signup(body);
+            const signup = await this.authService.signup(body);
 
             return {
-                user: registration.user,
+                user: signup.user,
                 statusCode: 201,
                 message: 'User successfully signed up.'
             };
@@ -298,12 +298,10 @@ export class AuthController {
         @Param('signupCode') signupCode: string,
         @Res() response: any): Promise<any> {
         try {
-            await this.authService.activateSignup(email, signupCode);
+            const user = await this.authService.activateSignup(email, signupCode);
 
-            response.send({
-                statusCode: 200,
-                message: 'Account successfully activated.'
-            });
+            // Redirect back to frontend
+            response.redirect(`/account/activated/${user.firstName}`);
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch (err.key) {

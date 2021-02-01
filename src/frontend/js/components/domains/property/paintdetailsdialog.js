@@ -55,7 +55,7 @@ function PaintDetailsDialog(props) {
 						component="img"
 						alt="Paint Details"
 						height="140"
-						image={ paint.image_path }
+						image={ paint.imagePath }
 						title="Paint Details"
 					/>
 					<CardContent>

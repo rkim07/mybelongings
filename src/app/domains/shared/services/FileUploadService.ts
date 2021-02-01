@@ -50,25 +50,17 @@ export class FileUploadService {
     }
 
     /**
-     * Set image path, if file is missing, it will set a default one
+     * Set image path, if file is missing, just return host
      *
-     * @param origin
      * @param image
+     * @param host
      * @param type
      */
-    public setImagePath(origin: string, image: string, type: string): string {
-        if (origin === '' || type === '') {
+    public setImagePath(image: string, host?: string): string {
+        if (host === '') {
             return '';
         }
 
-        const noPicImages = {
-            vehicle: 'no_pic_vehicle.jpg',
-            property: 'no_pic_property.png',
-            user: '',
-            paint: '',
-            area: ''
-        }
-
-        return image !== ''? `${origin}/${image}` : `${origin}/${noPicImages[type]}`;
+        return image !== '' ? `${host}/${image}` : `${host}`;
     }
 }

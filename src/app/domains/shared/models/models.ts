@@ -66,7 +66,7 @@ export * from './utilities/CustomError';
  *         type: string
  *         minLength: 1
  *       active:
- *         type: boolean
+ *         type: number
  *       refreshToken:
  *         type: string
  *       authorities:

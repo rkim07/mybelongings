@@ -10,7 +10,7 @@ function ProtectedRoute(props) {
 		apis.isLoggedIn() ?
 			<Route path={path} element={element} />
 			:
-			<Navigate to='/login' />
+			<Navigate to='/account/login' />
 	)
 }
 

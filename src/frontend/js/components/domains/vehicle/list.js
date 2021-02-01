@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { withStyles }  from '@material-ui/core/styles';
 import AppContext from '../../../appcontext';
 import Dialogger from '../../shared/feedback/dialogger';
+import { getImageSource } from '../../shared/helpers/images';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -58,12 +59,12 @@ function List(props) {
 					Add
 				</Button>
 			</Grid>
-			{ (loading ? Array.from(new Array(1)) : vehicles).map((vehicle, index) => (
+			{ ( loading ? Array.from(new Array(1)) : vehicles).map((vehicle, index) => (
 				<Grid item key={ index } xs={ 12 } sm={ 6 } md={ 4 }>
 					<Card className={ classes.card }>
 						{ vehicle ? (
 							<CardContent className={ classes.cardContent }>
-								<Image src={ vehicle.image_path } />
+								<Image src={ getImageSource(vehicle.image, vehicle.imagePath, 'vehicle') } />
 								<Typography gutterBottom variant='h5' component='h4'>
 									{ vehicle.year } { vehicle.mfrName } { vehicle.model }
 								</Typography>

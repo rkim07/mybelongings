@@ -1,15 +1,15 @@
 import axios from 'axios';
-import { getHeaderAuthorization, parseResponse, refreshToken } from './helpers/exchange';
+import { getHeaderAuthorization } from './helpers/interceptor';
 
 /**
  * Signup new user
  *
- * @param data
+ * @param formData
  * @returns {Promise<T>}
  */
-export function signup(data) {
+export function signup(formData) {
 	return axios
-		.post('/auth-svc/signup', data)
+		.post('/auth-svc/account/signup', formData)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;
@@ -25,10 +25,10 @@ export function signup(data) {
 /**
  * Login
  *
- * @param credentials
+ * @param formData
  * @returns {Promise<T>}
  */
-export function login(credentials) {
+export function login(formData) {
 	// Remove existing tokens.  Do not need to remove from server
 	// since it will be updated automatically with new ones
 	if (localStorage.getItem('accessToken') !== '') {
@@ -41,7 +41,7 @@ export function login(credentials) {
 
 	const refreshToken = localStorage.getItem('refreshToken');
 	return axios
-		.post('/auth-svc/login', credentials)
+		.post('/auth-svc/account/login', formData)
 		.then((response) => {
 			const { data } = response;
 			data.redirect = false;
@@ -69,11 +69,7 @@ export function login(credentials) {
  */
 export function logout() {
 	return axios
-		.get('/auth-svc/logout',{
-			headers: {
-				Authorization: getHeaderAuthorization()
-			}
-		})
+		.get('/auth-svc/account/logout')
 		.then((response) => {
 			if (response.data.statusCode < 400) {
 				localStorage.removeItem('accessToken');
@@ -95,7 +91,7 @@ export function logout() {
  */
 export function refreshAccessToken() {
 	return axios
-		.get('/auth-svc/refresh', {
+		.get('/auth-svc/account/refresh', {
 			headers: {
 				'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
 			}
@@ -104,13 +100,11 @@ export function refreshAccessToken() {
 			const { data } = response;
 			if (data.statusCode < 400) {
 				localStorage.setItem('accessToken', data.accessToken);
-				data['expiredRefreshToken'] = false;
 
 				return response;
 			}
 		})
 		.catch((err) => {
-			data['expiredRefreshToken'] = true;
 			data['err'] = err;
 
 			return data;
@@ -120,12 +114,12 @@ export function refreshAccessToken() {
 /**
  * Reset password
  *
- * @param data
+ * @param formData
  * @returns {Promise<T>}
  */
-export function resetPassword(data) {
+export function resetPassword(formData) {
 	return axios
-		.post('/auth-svc/account/password/reset', data)
+		.post('/auth-svc/account/password/reset', formData)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;
@@ -141,12 +135,12 @@ export function resetPassword(data) {
 /**
  * Activate password reset
  *
- * @param email
+ * @param formData
  * @returns {Promise<T>}
  */
-export function activatePasswordReset(email) {
+export function activatePasswordReset(formData) {
 	return axios
-		.post('/auth-svc/account/password/reset/activate', { email: email })
+		.post('/auth-svc/account/password/reset/activate', formData)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;

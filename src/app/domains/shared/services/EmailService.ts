@@ -29,6 +29,7 @@ const EMAIL_HOST = config.get('email.host').toString();
 const EMAIL_TEMPLATE_PATH = config.get('email.templatePath').toString();
 const SYSTEM_AUTH_PASSWORD_RESET_PATH = config.get('system.auth.password.reset.path').toString();
 const SYSTEM_AUTH_SIGNUP_VERIFICATION_PATH = config.get('system.auth.signup.verification.path').toString();
+const SITE_FRONT_NAME = config.get('site.frontName').toString();
 
 @Service()
 export class EmailService {
@@ -85,7 +86,8 @@ export class EmailService {
             body: {
                 firstName: user.firstName,
                 code: user.signupCode,
-                link: this.generateEmailLink(user.email, user.signupCode,'signup')
+                link: this.generateEmailLink(user.email, user.signupCode,'signup'),
+                frontName: SITE_FRONT_NAME
             }
         };
 
@@ -93,13 +95,14 @@ export class EmailService {
             type: 'text',
             templateName: 'signup',
             body: {
-                firstName: user.firstName
+                firstName: user.firstName,
+                frontName: SITE_FRONT_NAME
             }
         };
 
         const data = {
             email: user.email,
-            subject: 'About your MyBelongings sign up',
+            subject: `About your ${SITE_FRONT_NAME} sign up`,
             html: await this.renderTemplate(htmlData),
             text: await this.renderTemplate(textData)
         }
@@ -119,7 +122,8 @@ export class EmailService {
             body: {
                 firstName: user.firstName,
                 code: user.signupCode,
-                link: this.generateEmailLink(user.email, user.resetCode, 'password-reset')
+                link: this.generateEmailLink(user.email, user.resetCode, 'password-reset'),
+                frontName: SITE_FRONT_NAME
             }
         };
 
@@ -127,13 +131,14 @@ export class EmailService {
             type: 'text',
             templateName: 'password_reset',
             body: {
-                firstName: user.firstName
+                firstName: user.firstName,
+                frontName: SITE_FRONT_NAME
             }
         };
 
         const data = {
             email: user.email,
-            subject: 'MyBelongings password reset',
+            subject: `About your ${SITE_FRONT_NAME} password reset`,
             html: await this.renderTemplate(htmlData),
             text: await this.renderTemplate(textData)
         }

@@ -1,28 +1,4 @@
 import axios from 'axios';
-import { parseResponse, refreshToken, getHeaderAuthorization } from './helpers/exchange';
-
-const propertiesAxios = axios.create();
-
-// Request interceptor
-propertiesAxios.interceptors.request.use((config) => {
-	config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
-
-	return config;
-});
-
-// Response interceptor
-// Is the marker being refreshed?
-let isRefreshing = false
-// Retry queue, each item will be a function to be executed
-let requests = []
-
-/*propertiesAxios.interceptors.response.use(response => {
-	return parseResponse(response);
-}, err => {
-	return refreshToken(propertiesAxios, err, requests, isRefreshing);
-}, (error) => {
-	return Promise.reject(error)
-});*/
 
 /**
  * Get property by ID
@@ -31,7 +7,7 @@ let requests = []
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
 export function getPropertyById(id) {
-	return propertiesAxios
+	return axios
 		.get(`/property-svc/properties/${id}`)
 		.then(response => {
 			if (response) {
@@ -49,7 +25,7 @@ export function getPropertyById(id) {
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
 export function getProperties() {
-	return propertiesAxios
+	return axios
 		.get(`/property-svc/properties/user/${userKey}`)
 		.then(response => {
 			if (response) {
@@ -68,7 +44,7 @@ export function getProperties() {
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
 export function getUserProperties(userKey) {
-	return propertiesAxios
+	return axios
 		.get(`/property-svc/properties/user/${userKey}`)
 		.then(response => {
 			if (response) {

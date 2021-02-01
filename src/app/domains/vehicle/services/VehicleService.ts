@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
-import { HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
+import { Code, HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
 import { FileUploadService } from '../../shared/services/FileUploadService';
 import { VehicleApiService } from './VehicleApiService';
 import { VehicleCollectionService } from './VehicleCollectionService';
@@ -33,9 +33,9 @@ export class VehicleService {
      * Get vehicle by key
      *
      * @param vehicleKey
-     * @param origin
+     * @param host
      */
-    public async getVehicle(vehicleKey: Key, origin?: string): Promise<any> {
+    public async getVehicle(vehicleKey: Key, host?: string): Promise<any> {
         if (!vehicleKey) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
         }
@@ -46,23 +46,23 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND);
         }
 
-        return await this.addDependencies(origin, vehicle);
+        return await this.addDependencies(vehicle, host);
     }
 
     /**
      * Get all vehicles
      *
-     * @param origin
+     * @param host
      */
-    public async getVehicles(origin: string): Promise<any> {
-        const vehicles = await this.vehicleCollectionService.getVehicles();
+    public async getVehicles(host?: string): Promise<any> {
+        const vehicles = await this.vehicleCollectionService.getAll();
 
         if (vehicles.length === 0) {
             return [];
         }
 
         return await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(origin, vehicle);
+            return await this.addDependencies(vehicle, host);
         }));
     }
 
@@ -70,9 +70,9 @@ export class VehicleService {
      * Get all vehicles by user key
      *
      * @param userKey
-     * @param origin
+     * @param host
      */
-    public async getUserVehicles(userKey: Key, origin: string): Promise<any> {
+    public async getUserVehicles(userKey: Key, host?: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.USER_KEY_EMPTY);
         }
@@ -84,7 +84,7 @@ export class VehicleService {
         }
 
         const results = await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(origin, vehicle);
+            return await this.addDependencies(vehicle, host);
         }));
 
         return _.sortBy(results, o => o.model);
@@ -94,10 +94,10 @@ export class VehicleService {
      * Add vehicle
      *
      * @param userKey
-     * @param origin
+     * @param host
      * @param vehicle
      */
-    public async addVehicle(userKey: Key, origin: string, vehicle: any): Promise<any> {
+    public async addVehicle(userKey: Key, vehicle: any, host?: string): Promise<any> {
         if (!vehicle) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.EMPTY_NEW_VEHICLE_INFO);
         }
@@ -109,13 +109,13 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VIN_ALREADY_EXISTS);
         }
 
-        const results = await this.vehicleCollectionService.addVehicle(userKey, vehicle);
+        const results = await this.vehicleCollectionService.add(userKey, vehicle);
 
         if (!results) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_ADDED);
         }
 
-        return await this.addDependencies(origin, results);
+        return await this.addDependencies(results, host);
     }
 
     /**
@@ -123,21 +123,21 @@ export class VehicleService {
      *
      * @param userKey
      * @param vehicleKey
-     * @param origin
+     * @param host
      * @param vehicle
      */
-    public async updateVehicle(userKey: Key, vehicleKey: Key, origin: string, vehicle: any): Promise<any> {
+    public async updateVehicle(userKey: Key, vehicleKey: Key, vehicle: any, host?: string): Promise<any> {
         if (!vehicleKey) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
         }
 
-        const results = await this.vehicleCollectionService.updateVehicle(userKey, vehicleKey, vehicle);
+        const results = await this.vehicleCollectionService.update(userKey, vehicleKey, vehicle);
 
         if (!results) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_UPDATED);
         }
 
-        return await this.addDependencies(origin, results);
+        return await this.addDependencies(results, host);
     }
 
     /**
@@ -173,17 +173,17 @@ export class VehicleService {
     /**
      * Add dependencies when returning object
      *
-     * @param origin
+     * @param host
      * @param vehicle
      * @private
      */
-    private async addDependencies(origin, vehicle): Promise<any> {
+    private async addDependencies(vehicle: any, host?: string): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
 
-        vehicle['mfrName'] = mfr.mfrName;
-        vehicle['model'] = model.model;
-        vehicle['image_path'] = this.fileUploadService.setImagePath(origin, vehicle.image, 'vehicle');
+        vehicle = { ...vehicle, mfrName: mfr.mfrName };
+        vehicle = { ...vehicle, model: model.model };
+        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
 
         return vehicle;
     }

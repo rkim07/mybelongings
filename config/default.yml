@@ -1,3 +1,7 @@
+site:
+  domain: mybelongings.com
+  frontName: MyBelongings
+
 ports:
   http: 80
   debug: 5858
@@ -60,7 +64,7 @@ system:
   auth:
     signup:
       verification:
-        path: 'account/activate'
+        path: 'auth-svc/account/activate'  # Email link path
     password:
       reset:
-        path: 'account/password/reset'
+        path: 'account/password/reset' # Email link path

@@ -52,10 +52,10 @@ export class VehicleController {
      */
     @Get('/vehicles/:vehicle_key')
     public async getVehicle(
-        @Req() { requestor: { origin }}: AuthorisedRequest,
+        @Req() { requestor: { host }}: AuthorisedRequest,
         @Param('vehicle_key') vehicleKey: string): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.getVehicle(vehicleKey, origin);
+            const vehicle = await this.vehicleService.getVehicle(vehicleKey, host);
 
             return {
                 payload: vehicle || {},
@@ -82,7 +82,7 @@ export class VehicleController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-svc/vehicles/all:
+     *   /vehicle-svc/vehicles:
      *     get:
      *       summary: Fetch all vehicles.
      *       description: Fetch all vehicles.
@@ -109,15 +109,15 @@ export class VehicleController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/vehicles/all')
-    public async getAllVehicles(@Req() { requestor: { userKey, origin }}: AuthorisedRequest): Promise<any> {
+    @Get('/vehicles')
+    public async getAllVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
-            const vehicles = await this.vehicleService.getVehicles(origin);
+            const vehicles = await this.vehicleService.getVehicles(host);
 
             return {
                 payload: vehicles || [],
                 statusCode: 200,
-                message: vehicles.length > 0 ? 'Fetched all the vehicles.' : 'Therea are no vehicles at this time.'
+                message: vehicles.length > 0 ? 'Fetched all the vehicles.' : 'There are no vehicles at this time.'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -128,7 +128,7 @@ export class VehicleController {
                         return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                 }
             } else {
-
+                return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
             }
         }
     }
@@ -166,9 +166,9 @@ export class VehicleController {
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/vehicles/by/user')
-    public async getUserVehicles(@Req() { requestor: { userKey, origin }}: AuthorisedRequest): Promise<any> {
+    public async getUserVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
-            const vehicles = await this.vehicleService.getUserVehicles(userKey, origin);
+            const vehicles = await this.vehicleService.getUserVehicles(userKey, host);
 
             return {
                 payload: vehicles || [],
@@ -231,10 +231,10 @@ export class VehicleController {
     @HttpCode(201)
     @Post('/vehicle')
     public async addVehicle(
-        @Req() { requestor: { userKey, origin }}: AuthorisedRequest,
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
         @Body() body: any): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.addVehicle(userKey, origin, body);
+            const vehicle = await this.vehicleService.addVehicle(userKey, body, host);
 
             return {
                 payload: vehicle,
@@ -306,12 +306,12 @@ export class VehicleController {
      */
     @Put('/vehicles/:vehicle_key')
     public async putVehicle(
-        @Req() { requestor: { userKey, origin }}: AuthorisedRequest,
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
         @Param('vehicle_key') vehicleKey: string,
         @Body() body: any
     ): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.updateVehicle(userKey, vehicleKey, origin, body);
+            const vehicle = await this.vehicleService.updateVehicle(userKey, vehicleKey, body, host);
 
             return {
                 payload: vehicle,

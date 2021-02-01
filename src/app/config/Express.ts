@@ -19,6 +19,7 @@ const swaggerSpec = require(process.cwd() + '/spec.json');
 import * as SwaggerExpressMiddleware from 'swagger-express-middleware';
 
 export let server;
+const SITE_FRONT_NAME = config.get('site.frontName').toString();
 
 export class ExpressConfig {
 
@@ -90,7 +91,7 @@ export class ExpressConfig {
             if (/\.sock$/.exec(listen)) {
                 logger.info(`
                     ------------
-                    MyBelongings Server Started!
+                    ${SITE_FRONT_NAME} Server Started!
 
                     Socket: ${listen}
                     Health: /ping
@@ -107,7 +108,7 @@ export class ExpressConfig {
             } else {
                 logger.info(`
                     ------------
-                    MyBelongings Server Started!
+                    ${SITE_FRONT_NAME} Server Started!
 
                     Http: http://localhost:${listen}
                     Health: http://localhost:${listen}/ping
@@ -136,7 +137,11 @@ export class ExpressConfig {
      * @private
      */
     private resolveReactRouters() {
-        this.app.get('/login', (req, res) => {
+        this.app.get('/account/login', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
+        this.app.get('/account/signup', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 
@@ -162,7 +167,8 @@ export class ExpressConfig {
             }
         });
 
-        this.app.get(/^\/account\/activate\/\S+@\S+\.\S+\/[0-9a-zA-Z-]{1,}$/, (req, res) => {
+        // Redirect from "/account/activate/:email/:signupCode" controller
+        this.app.get(/^\/account\/activated\/[a-zA-Z]/, (req, res) => {
             if (req.params[0] !== 'index.js') {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
             }

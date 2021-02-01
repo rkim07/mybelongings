@@ -1,6 +1,9 @@
 <p>Hello <%= body.firstName %>,</p>
-<p>Welcome to MyBelongings. You are almost there...</p>
+<p>Welcome to  <%= body.frontName %>. You are almost there...</p>
 <p>To finish your registration, please click the link below:</p>
-<p><a href="<%= body.link %>">Complete my registration</a></p>
+<p><a href="<%= body.link %>">Complete my signup</a></p>
+<p>If you're having trouble clicking the signup button, copy and paste the URL below<br/>
+into your web browser.</p>
+<p><a href="<%= body.link %>"><%= body.link %></a></p>
 <p>Best Regards</p>
-<p>MyBelongings Team
+<p> <%= body.frontName %> Team

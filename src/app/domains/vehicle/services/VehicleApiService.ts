@@ -49,7 +49,7 @@ export class VehicleApiService {
             throw new HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND);
         }
 
-        mfr['mfrName'] = VehicleApiService.formatName(mfr.mfrName);
+        mfr.mfrName = VehicleApiService.formatName(mfr.mfrName);
         return mfr;
     }
 
@@ -64,7 +64,7 @@ export class VehicleApiService {
         }
 
         return await Promise.all(mfrs.map((mfr) => {
-            mfr['mfrName'] = VehicleApiService.formatName(mfr.mfrName);
+            mfr.mfrName = VehicleApiService.formatName(mfr.mfrName);
             return mfr;
         }));
     }
@@ -85,7 +85,7 @@ export class VehicleApiService {
             throw new HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MODEL_NOT_FOUND);
         }
 
-        model['model'] = VehicleApiService.formatName(mfrName, model.model);
+        model.model = VehicleApiService.formatName(mfrName, model.model);
         return model;
     }
 
@@ -96,7 +96,7 @@ export class VehicleApiService {
         const models = await this.nhtsaApiVehicleModelCollectionService.getApiModels();
 
         return await Promise.all(models.map((model) => {
-            model['model'] = VehicleApiService.formatName(null, model.model);
+            model.model = VehicleApiService.formatName(null, model.model);
             return model;
         }));
     }
@@ -119,7 +119,7 @@ export class VehicleApiService {
         const mfr = await this.getApiMfr(mfrKey);
 
         return await Promise.all(models.map((model) => {
-            model['model'] = VehicleApiService.formatName(mfr.mfrName, model.model);
+            model.model = VehicleApiService.formatName(mfr.mfrName, model.model);
             return model;
         }));
     }
@@ -161,7 +161,7 @@ export class VehicleApiService {
         // Save to API manufacturers DB
         const savedMfrs: any = await Promise.all(list.map(async (mfr) => {
             // Remove all hyphens and save as lower case
-            mfr['Make_Name'] = filterClass.formatDbMfrName(mfr.Make_Name);
+            mfr.Make_Name = filterClass.formatDbMfrName(mfr.Make_Name);
             return await this.updateApiMfrs(mfr);
         }));
 
@@ -176,8 +176,8 @@ export class VehicleApiService {
             if (apiModels) {
                 await Promise.all(apiModels.map(async (model) => {
                     // Remove all space special character and save as lower case
-                    model['Make_Name'] = filterClass.formatDbMfrName(model.Make_Name);
-                    model['Model_Name'] = filterClass.formatDbModelName(model.Model_Name);
+                    model.Make_Name = filterClass.formatDbMfrName(model.Make_Name);
+                    model.Model_Name = filterClass.formatDbModelName(model.Model_Name);
                     await this.updateApiModelsByMfrKey(mfr.key, model);
                 }));
             }

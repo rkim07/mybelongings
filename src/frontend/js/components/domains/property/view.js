@@ -31,7 +31,7 @@ function View(props) {
 				<Card className={ classes.root }>
 					<CardHeader
 						avatar={
-							<Avatar aria-label="property image" src= { property.image_path } className={ classes.avatar }>
+							<Avatar aria-label="property image" src= { property.imagePath } className={ classes.avatar }>
 								<br/>
 							</Avatar>
 						}

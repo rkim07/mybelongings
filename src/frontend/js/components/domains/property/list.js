@@ -35,7 +35,7 @@ function List(props) {
 					<Grid item key={ property.key } xs={ 12 } sm={ 6 } md={ 4 }>
 						<Card className={ classes.card }>
 							<CardContent className={ classes.cardContent }>
-								<Image src={ property.image_path } />
+								<Image src={ property.imagePath } />
 								<Typography gutterBottom variant="h5" component="h4">
 									{ _.startCase(property.address.street) } <br/>
 									{ _.startCase(property.address.city) }, { property.address.state }, { property.address.zip }

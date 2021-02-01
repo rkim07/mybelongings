@@ -13,7 +13,7 @@ export interface JwtDecoded {
 }
 
 export interface AuthorisedRequestor extends Requestor {
-    origin: string;
+    host: string;
     jwt: string;
     userKey: string;
     jwtDecoded: JwtDecoded;

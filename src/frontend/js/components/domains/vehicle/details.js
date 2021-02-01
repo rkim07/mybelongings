@@ -21,7 +21,7 @@ function TabPanel(props) {
 
 	return (
 		<div
-			role="tabpanel"
+			role='tabpanel'
 			hidden={value !== index}
 			id={`simple-tabpanel-${index}`}
 			aria-labelledby={`simple-tab-${index}`}
@@ -92,25 +92,25 @@ function Details(props) {
 				</Button>
 			</Grid>
 			<Grid item xs={12}>
-				<AppBar position="static">
+				<AppBar position='static'>
 					<Tabs
 						value={ value }
 						onChange={handleChange}
 					>
-						<Tab label="Info" icon={<DirectionsCarIcon />} component={Link} to="info" />
-						<Tab label="Upgrades" icon={<BeachAccessIcon />} component={Link} to="upgrades" />
-						<Tab label="Insurance" icon={<BeachAccessIcon />} component={Link} to="insurance" />
+						<Tab label='Info' icon={<DirectionsCarIcon />} component={Link} to='info' />
+						<Tab label='Upgrades' icon={<BeachAccessIcon />} component={Link} to='upgrades' />
+						<Tab label='Insurance' icon={<BeachAccessIcon />} component={Link} to='insurance' />
 					</Tabs>
 				</AppBar>
 				<Routes>
 					<TabPanel value={value} index={0} >
-						<Route path="info" element={ <Info key={ key } /> } />
+						<Route path='info' element={ <Info key={ key } /> } />
 					</TabPanel>
 					<TabPanel value={value} index={1} >
 
 					</TabPanel>
 					<TabPanel value={value} index={2} >
-						<Route path="insurance" element={ <Insurance key={ key } /> } />
+						<Route path='insurance' element={ <Insurance key={ key } /> } />
 					</TabPanel>
 				</Routes>
 			</Grid>
