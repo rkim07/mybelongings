@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/uimessages';
+import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import { prepareLoginData } from '../../shared/helpers/ajax';
 import { Notifier } from '../../shared/feedback/notifier';

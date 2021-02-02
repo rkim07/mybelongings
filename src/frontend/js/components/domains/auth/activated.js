@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displaySuccessMsg } from '../../shared/helpers/uimessages';
+import { displaySuccessMsg } from '../../shared/helpers/flashmessages';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';

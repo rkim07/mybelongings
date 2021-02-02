@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displayErrorMsg } from '../../shared/helpers/uimessages';
+import { displayErrorMsg } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
