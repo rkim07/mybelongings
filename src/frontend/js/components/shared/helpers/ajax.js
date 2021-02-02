@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Prepare data to be sent by ajax
 export function prepareProfileData(type, state) {
 	let data = {

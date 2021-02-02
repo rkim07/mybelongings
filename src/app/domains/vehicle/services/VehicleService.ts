@@ -6,15 +6,15 @@ import { FileUploadService } from '../../shared/services/FileUploadService';
 import { VehicleApiService } from './VehicleApiService';
 import { VehicleCollectionService } from './VehicleCollectionService';
 
-export enum VEHICLE_SERVICE_ERRORS {
-    VEHICLE_NOT_FOUND = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND',
-    VEHICLES_NOT_FOUND = 'VEHICLE_SERVICE_ERRORS.VEHICLES_NOT_FOUND',
-    VEHICLE_NOT_ADDED = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_ADDED',
-    VEHICLE_NOT_UPDATED = 'VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_UPDATED',
-    VIN_ALREADY_EXISTS = 'VEHICLE_SERVICE_ERRORS.VIN_ALREADY_EXISTS',
-    VEHICLE_KEY_EMPTY = 'VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY',
-    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_ERRORS.EMPTY_NEW_VEHICLE_INFO',
-    USER_KEY_EMPTY = 'VEHICLE_SERVICE_ERRORS.USER_KEY_EMPTY'
+export enum VEHICLE_SERVICE_MESSAGES {
+    VEHICLE_NOT_FOUND = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND',
+    VEHICLES_NOT_FOUND = 'VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND',
+    VEHICLE_NOT_ADDED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED',
+    VEHICLE_NOT_UPDATED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED',
+    EXISTING_VIN = 'VEHICLE_SERVICE_MESSAGES.EXISTING_VIN',
+    VEHICLE_KEY_EMPTY = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY',
+    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO',
+    USER_KEY_EMPTY = 'VEHICLE_SERVICE_MESSAGES.USER_KEY_EMPTY'
 }
 
 @Service()
@@ -37,13 +37,13 @@ export class VehicleService {
      */
     public async getVehicle(vehicleKey: Key, host?: string): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
         }
 
         const vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: vehicleKey }});
 
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND);
         }
 
         return await this.addDependencies(vehicle, host);
@@ -74,7 +74,7 @@ export class VehicleService {
      */
     public async getUserVehicles(userKey: Key, host?: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         const vehicles = await this.vehicleCollectionService.find({ userKey: { $eq: userKey }});
@@ -99,20 +99,20 @@ export class VehicleService {
      */
     public async addVehicle(userKey: Key, vehicle: any, host?: string): Promise<any> {
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.EMPTY_NEW_VEHICLE_INFO);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO);
         }
 
         // Make sure VIN numbers are unique
         const vinExists = await this.vehicleCollectionService.findOne({ vin: {$eq: vehicle.vin} });
 
         if (vinExists) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VIN_ALREADY_EXISTS);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EXISTING_VIN);
         }
 
         const results = await this.vehicleCollectionService.add(userKey, vehicle);
 
         if (!results) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_ADDED);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
         return await this.addDependencies(results, host);
@@ -128,13 +128,13 @@ export class VehicleService {
      */
     public async updateVehicle(userKey: Key, vehicleKey: Key, vehicle: any, host?: string): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
         }
 
         const results = await this.vehicleCollectionService.update(userKey, vehicleKey, vehicle);
 
         if (!results) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_UPDATED);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
         return await this.addDependencies(results, host);
@@ -148,7 +148,7 @@ export class VehicleService {
      */
     public async deleteVehicle(userKey: Key, vehicleKey: Key): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
         }
 
         const query = {
@@ -161,7 +161,7 @@ export class VehicleService {
         const vehicle: Vehicle = await this.vehicleCollectionService.findOne(query);
 
         if (!vehicle) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_ERRORS.VEHICLES_NOT_FOUND);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND);
         }
 
         await this.vehicleCollectionService.removeByFieldValue('key', vehicleKey);

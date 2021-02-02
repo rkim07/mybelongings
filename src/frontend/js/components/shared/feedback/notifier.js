@@ -8,20 +8,20 @@ const Notifier = forwardRef((props, ref) => {
 
 	const [snackPack, setSnackPack] = useState([]);
 	const [open, setOpen] = useState(false);
-	const [messageInfo, setMessageInfo] = useState(undefined);
+	const [message, setMessage] = useState('');
 	const [type, setType] = useState("success");
 
 	useEffect(() => {
-		if (snackPack.length && !messageInfo) {
+		if (snackPack.length && !message) {
 			// Set a new snack when we don't have an active one
-			setMessageInfo({ ...snackPack[0] });
+			setMessage({ ...snackPack[0] });
 			setSnackPack((prev) => prev.slice(1));
 			setOpen(true);
-		} else if (snackPack.length && messageInfo && open) {
+		} else if (snackPack.length && message && open) {
 			// Close an active snack when a new one is added
 			setOpen(false);
 		}
-	}, [snackPack, messageInfo, open]);
+	}, [snackPack, message, open]);
 
 	useImperativeHandle(ref, () => ({
 		isNotifierOpened() {
@@ -30,7 +30,7 @@ const Notifier = forwardRef((props, ref) => {
 
 		openNotifier(type, message) {
 			setType(type);
-			setSnackPack((prev) => [...prev, {message, key: new Date().getTime()}]);
+			setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
 		}
 	}));
 
@@ -42,12 +42,12 @@ const Notifier = forwardRef((props, ref) => {
 	};
 
 	const handleExited = () => {
-		setMessageInfo(undefined);
+		setMessage(undefined);
 	};
 
 	return (
 		<Snackbar
-			key={messageInfo ? messageInfo.key : undefined}
+			key={message ? message.key : undefined}
 			open={ open }
 			autoHideDuration={ 5000 }
 			onClose={ handleClose }
@@ -63,7 +63,7 @@ const Notifier = forwardRef((props, ref) => {
 				severity={ type }
 				onClose={ handleClose }
 			>
-				{ messageInfo ? messageInfo.message : undefined }
+				{ message ? message.message : undefined }
 			</MuiAlert>
 		</Snackbar>
 	)

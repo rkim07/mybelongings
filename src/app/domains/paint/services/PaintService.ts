@@ -4,8 +4,8 @@ import { StoreService } from '../../store/services/StoreService';
 import { PaintCollectionService } from './PaintCollectionService';
 import { HandleUpstreamError, Key, Paint } from '../../shared/models/models';
 
-export enum PAINT_SERVICE_ERRORS {
-    PAINT_NOT_FOUND = 'PAINT_SERVICE_ERRORS.PAINT_NOT_FOUND'
+export enum PAINT_SERVICE_MESSAGES {
+    PAINT_NOT_FOUND = 'PAINT_SERVICE_MESSAGES.PAINT_NOT_FOUND'
 }
 
 @Service()
@@ -30,7 +30,7 @@ export class PaintService {
         const paint = await this.paintCollectionService.findOne({ key: { $eq: key }});
 
         if (!paint) {
-            throw new HandleUpstreamError(PAINT_SERVICE_ERRORS.PAINT_NOT_FOUND);
+            throw new HandleUpstreamError(PAINT_SERVICE_MESSAGES.PAINT_NOT_FOUND);
         }
 
         return await this.addDependencies(host, paint);

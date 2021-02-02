@@ -86,10 +86,8 @@ function Modify(props) {
 
 	const [values, setValues] = useState(initialValues);
 
-	/**
-	 * Fetch vehicle by key and run effect only once unless
-	 * it's a different vehicle
-	 */
+	// Fetch vehicle by key and run effect only
+	// once unless it's a different vehicle
 	useEffect(() => {
 		if (key) {
 			apis.getVehicle(key).then(response => {
@@ -104,18 +102,14 @@ function Modify(props) {
 		}
 	}, []);
 
-	/**
-	 * Fetch manufacturers
-	 */
+	// Fetch manufacturers
 	useEffect(() => {
 		apis.getApiMfrs().then(response => {
 			setValues(prevState => ({ ...prevState, manufacturers: response.payload}));
 		});
 	}, []);
 
-	/**
-	* Fetch models when a particular manufacturer is selected
-	*/
+	// Fetch models when a particular manufacturer is selected
 	useEffect(() => {
 		if (values.vehicle.mfrKey !== '') {
 			apis.getApiModelsByMfrKey(values.vehicle.mfrKey).then(response => {
@@ -124,35 +118,45 @@ function Modify(props) {
 		}
 	},[values.vehicle.mfrKey]);
 
-	/**
-	 * User effect for maximum and minimum VIN length,
-	 * and maximum length for plate number
-	 */
+	// Validate VIN length
 	useEffect(() => {
-		ValidatorForm.addValidationRule('isCorrectVinLength', (value) => {
-			if (value.length < 11 || value.length > 17) {
-				return false;
+		if (!ValidatorForm.hasValidationRule("isCorrectVinLength")) {
+			ValidatorForm.addValidationRule('isCorrectVinLength', (value) => {
+				if (value.length < 11 || value.length > 17) {
+					return false;
+				}
+
+				return true;
+			});
+		}
+
+		return function cleanVinLengthMatchRule() {
+			if (ValidatorForm.hasValidationRule("isCorrectVinLength")) {
+				ValidatorForm.removeValidationRule("isCorrectVinLength");
 			}
+		};
+	});
 
-			return true;
-		});
-	}, []);
-
+	// Validate plate number length
 	useEffect(() => {
-		ValidatorForm.addValidationRule('isMaxPlateLength', (value) => {
-			if (value.length > 8) {
-				return false;
+		if (!ValidatorForm.hasValidationRule("isMaxPlateLength")) {
+			ValidatorForm.addValidationRule('isMaxPlateLength', (value) => {
+				if (value.length > 8) {
+					return false;
+				}
+
+				return true;
+			});
+		}
+
+		return function cleanPlateLengthMatchRule() {
+			if (ValidatorForm.hasValidationRule("isMaxPlateLength")) {
+				ValidatorForm.removeValidationRule("isMaxPlateLength");
 			}
+		};
+	});
 
-			return true;
-		});
-	}, []);
-
-	/**
-	 * Handle select and input changes
-	 *
-	 * @param e
-	 */
+	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 
@@ -169,11 +173,7 @@ function Modify(props) {
 		});
 	}
 
-	/**
-	 * Handle image
-	 *
-	 * @param file
-	 */
+	// Handle image
 	const handleImageChange = (file) => {
 		if (_.size(file) > 0) {
 			setValues({ ...values, file: file });
@@ -182,7 +182,6 @@ function Modify(props) {
 
 	return (
 		<ValidatorForm
-			instantValidate={false}
 			onSubmit={ (e) => onHandleSubmit(e, values.file, values.vehicle) }
 		>
 			<Grid container spacing={4}>

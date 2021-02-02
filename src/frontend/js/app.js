@@ -26,7 +26,7 @@ function App() {
 						<Route path='/' element={<LandingPage />} />
 						<Route path='account/login' element={ <Login redirectUrl='/vehicles' />} />
 						<Route path='account/signup' element={ <Signup redirectUrl='/account/login' />} />
-						<Route path='account/activated/:firstName' element={ <Activated />} />
+						<Route path='account/activated/:param' element={ <Activated />} />
 						<Route path='account/password/lost' element={ <Lost />} />
 						<Route path='account/password/reset/:email/:resetCode' element={ <Reset redirectUrl='/account/login' />} />
 						<ProtectedRoute path='vehicles/*' element={ <VehiclesDashboard/> } />

@@ -13,7 +13,7 @@ import {
 import { Container, Inject } from 'typedi';
 import { logger } from '../../../common/logging';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
-import { USER_SERVICE_ERRORS, UserService } from '../services/UserService';
+import { USER_SERVICE_MESSAGES, UserService } from '../services/UserService';
 import { HandleUpstreamError, ResponseError, User } from '../../shared/models/models';
 
 const DEFAULT_USER_ERROR_MESSAGE = 'An unexpected error occurred in the user service.';
@@ -110,10 +110,10 @@ export class UserController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_ERRORS.VEHICLE_KEY_EMPTY:
+                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY:
                         logger.error('Empty vehicle key provide.');
                         return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
-                    case VEHICLE_SERVICE_ERRORS.VEHICLE_NOT_FOUND:
+                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:
                         logger.error('Vehicle not found for removal.');
                         return new ResponseError(404, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     default:

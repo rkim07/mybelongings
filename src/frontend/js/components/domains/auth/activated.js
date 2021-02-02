@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displaySuccessMsg } from '../../shared/helpers/flashmessages';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -37,7 +37,7 @@ const styles = theme => ({
 });
 
 function Activated(props) {
-	const { firstName } = useParams();
+	const { param } = useParams();
 	const { classes } = props;
 
 	return (
@@ -46,7 +46,19 @@ function Activated(props) {
 				<Grid item xs={12} sm={12} md={12}>
 					<Paper className={classes.paper}>
 						<Typography component='h1' variant='h5'>
-							{ displaySuccessMsg('activated', '', { firstName: firstName })}
+							{ param === 'success' ?
+								getMessage(
+									'success',
+									'',
+									'AUTH_SERVICE_MESSAGES.ACTIVATED'
+								)
+								:
+								getMessage(
+									'success',
+									'',
+									'AUTH_SERVICE_MESSAGES.ALREADY_ACTIVATED'
+								)
+							}
 						</Typography>
 						<Button
 							type='button'

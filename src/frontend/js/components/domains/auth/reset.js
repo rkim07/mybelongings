@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { resetPassword } from '../../../apis/auth';
-import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/flashmessages';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
@@ -80,14 +80,14 @@ function Reset(props) {
 		password: '',
 		repeatPassword: '',
 		submitted: false,
-		success: false,
+		statusType: '',
 		errorCode: '',
 		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
-	// Use effect for form validation
+	// Validate password matches
 	useEffect(() => {
 		if (!ValidatorForm.hasValidationRule("isPasswordMatch")) {
 			ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
@@ -116,12 +116,11 @@ function Reset(props) {
 		e.preventDefault();
 
 		const response = await apis.resetPassword(values);
-		const status = response.statusCode < 400 ? true : false;
 
 		setValues({
 			...values,
 			submitted: true,
-			success: status,
+			statusType: response.statusType,
 			errorCode: response.errorCode ,
 			serverMsg: response.message
 		});
@@ -136,10 +135,16 @@ function Reset(props) {
 					<Grid item xs={12} sm={12} md={12}>
 						{ values.submitted ? (
 							<Paper className={classes.paper}>
-								{ values.success ? (
+								{ values.statusType === 'success' ? (
 									<React.Fragment>
 										<Typography component='h1' variant='h5'>
-											{ displaySuccessMsg('reset', values.serverMsg) }
+											{
+												getMessage(
+													values.statusType,
+													values.serverMsg,
+													'AUTH_SERVICE_MESSAGES.RESET'
+												)
+											}
 										</Typography>
 										<Button
 											type='button'
@@ -155,7 +160,13 @@ function Reset(props) {
 									</React.Fragment>
 							 	) : (
 									<Typography component='h1' variant='h5'>
-										{ displayErrorMsg(values.errorCode, values.serverMsg) }
+										{
+											getMessage(
+												values.statusType,
+												values.serverMsg,
+												values.errorCode
+											)
+										}
 									</Typography>
 								) }
 							</Paper>

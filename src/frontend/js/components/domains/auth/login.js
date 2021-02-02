@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displayErrorMsg } from '../../shared/helpers/flashmessages';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
@@ -77,7 +77,8 @@ function Login(props) {
 		username: '',
 		password: '',
 		submitted: false,
-		success: false,
+		statusType: '',
+		statusType: '',
 		errorCode: '',
 		serverMsg: ''
 	};
@@ -95,12 +96,11 @@ function Login(props) {
 		e.preventDefault();
 
 		const response = await apis.login(values);
-		const status = response.statusCode < 400 ? true : false;
 
 		setValues({
 			...values,
 			submitted: true,
-			success: status,
+			statusType: response.statusType,
 			errorCode: response.errorCode,
 			serverMsg: response.message
 		});
@@ -108,15 +108,21 @@ function Login(props) {
 
 	return (
 		<Container className={classes.root} maxWidth='md'>
-			{ (values.submitted && values.success) && (<Navigate to={ redirectUrl } />)}
+			{ (values.submitted && values.statusType === 'success') && (<Navigate to={ redirectUrl } />)}
 			<ValidatorForm
 				onSubmit={ handleSubmit }
 			>
 				<Grid container justify='center'>
 					<Grid item xs={12} sm={12} md={12}>
-						{ (values.submitted && !values.success) && (
+						{ (values.submitted && values.statusType === 'error') && (
 							<Alert variant='filled' severity='error'>
-								{ displayErrorMsg(values.errorCode, values.serverMsg) }
+								{
+									getMessage(
+										values.statusType,
+										values.serverMsg,
+										values.errorCode
+									)
+								}
 							</Alert>
 						)}
 						<Paper className={classes.paper}>

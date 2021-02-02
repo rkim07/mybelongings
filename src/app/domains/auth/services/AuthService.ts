@@ -9,16 +9,18 @@ import { Code, Key } from '../../shared/models/utilities/Key';
 import { EmailService } from '../../shared/services/EmailService';
 import { UserService } from '../../user/services/UserService';
 
-export enum AUTH_SERVICE_ERRORS {
-    USER_NOT_FOUND = 'AUTH_SERVICE_ERRORS.USER_NOT_FOUND',
-    UNREGISTERED_USER = 'AUTH_SERVICE_ERRORS.UNREGISTERED_USER',
-    USER_ALREADY_SIGNED_UP = 'AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP',
-    INVALID_CREDENTIALS = 'AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS',
-    TOKEN_NOT_CREATED = 'AUTH_SERVICE_ERRORS.TOKEN_NOT_CREATED',
-    TOKENS_NOT_CREATED = 'AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED',
-    USER_KEY_EMPTY = 'AUTH_SERVICE_ERRORS.USER_KEY_EMPTY',
-    UNACTIVATED_ACCOUNT = 'AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT',
-    INVALID_RESET_CODE = 'AUTH_SERVICE_ERRORS.INVALID_RESET_CODE',
+export enum AUTH_SERVICE_MESSAGES {
+    USER_NOT_FOUND = 'AUTH_SERVICE_MESSAGES.USER_NOT_FOUND',
+    USERNAME_NOT_FOUND = 'AUTH_SERVICE_MESSAGES.USERNAME_NOT_FOUND',
+    USER_ALREADY_SIGNED_UP = 'AUTH_SERVICE_MESSAGES.USER_ALREADY_SIGNED_UP',
+    INVALID_CREDENTIALS = 'AUTH_SERVICE_MESSAGES.INVALID_CREDENTIALS',
+    TOKEN_NOT_CREATED = 'AUTH_SERVICE_MESSAGES.TOKEN_NOT_CREATED',
+    TOKENS_NOT_CREATED = 'AUTH_SERVICE_MESSAGES.TOKENS_NOT_CREATED',
+    USER_KEY_EMPTY = 'AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY',
+    UNACTIVATED_ACCOUNT = 'AUTH_SERVICE_MESSAGES.UNACTIVATED_ACCOUNT',
+    INVALID_RESET_CODE = 'AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE',
+    FAILED_ACCOUNT_ACTIVATION = 'AUTH_SERVICE_MESSAGES.FAILED_ACCOUNT_ACTIVATION',
+    FAILED_RESET_PASSWORD = 'AUTH_SERVICE_MESSAGES.FAILED_RESET_PASSWORD'
 }
 
 @Service()
@@ -39,17 +41,17 @@ export class AuthService {
         let user = await this.userService.getUserByField('username', body.username);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USERNAME_NOT_FOUND);
         }
 
         // Check if plain text password matches with hashed password
         if (!Hash.bcryptCompare(body.password, user.password)) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.INVALID_CREDENTIALS);
         }
 
         // User has not verified account activation
         if (!user.active) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.UNACTIVATED_ACCOUNT);
         }
 
         // Generate tokens
@@ -57,7 +59,7 @@ export class AuthService {
         const refreshToken = await AuthService.generateToken(user.key, user.authorities, 'refresh');
 
         if (!accessToken || !refreshToken) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.TOKENS_NOT_CREATED);
         }
 
         // Save refresh token for later use
@@ -77,13 +79,13 @@ export class AuthService {
      */
     public async deactivate(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         let user = await this.userService.getUser(userKey);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         // Deactivate user
@@ -104,13 +106,13 @@ export class AuthService {
      */
     public async remove(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         let user = await this.userService.getUser(userKey);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         // Deactivate user
@@ -131,13 +133,13 @@ export class AuthService {
      */
     public async logout(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         let user = await this.userService.getUser(userKey);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         user = { ...user, refreshToken: '' };
@@ -153,20 +155,20 @@ export class AuthService {
      */
     public async refreshToken(userKey: Key, jwt: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         const user = await this.userService.getUser(userKey);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         // Generate tokens
         const accessToken = await AuthService.generateToken(user.key, user.authorities, 'access');
 
         if (!accessToken) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.TOKEN_NOT_CREATED);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.TOKEN_NOT_CREATED);
         }
 
         return {
@@ -183,14 +185,14 @@ export class AuthService {
         const existingUser = await this.userService.getUserByField('email', info.email);
 
         if (existingUser) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_ALREADY_SIGNED_UP);
         }
 
         // Add new user
         const newUser = await this.userService.addUser(info);
 
         if (!newUser) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         // Send sign up confirmation email
@@ -219,7 +221,7 @@ export class AuthService {
         let newUser = await this.userService.getUserByEmailAnCode(email, signupCode, 'signupCode');
 
         if (!newUser) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.FAILED_ACCOUNT_ACTIVATION);
         }
 
         // Activate
@@ -238,7 +240,7 @@ export class AuthService {
         let user = await this.userService.getUserByField('email', email);
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.FAILED_RESET_PASSWORD);
         }
 
         // Generate new password reset code and save
@@ -263,7 +265,7 @@ export class AuthService {
         let user = await this.userService.getUserByEmailAnCode(body.email, body.resetCode, 'resetCode');
 
         if (!user) {
-            throw new HandleUpstreamError(AUTH_SERVICE_ERRORS.INVALID_RESET_CODE);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE);
         }
 
         user = { ...user, password: body.password} ;

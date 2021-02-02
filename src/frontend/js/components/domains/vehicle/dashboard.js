@@ -59,9 +59,7 @@ function Dashboard(props) {
 	const { classes } = props;
 	const [loading, setLoading] = useState(true);
 
-	/**
-	 * Get all user's vehicles
-	 */
+	// Get all user's vehicles
 	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
 	useEffect(() => {
@@ -79,12 +77,7 @@ function Dashboard(props) {
 		});
 	}, []);
 
-	/**
-	 * Delete vehicle
-	 * @param e
-	 * @param key
-	 * @returns {Promise<void>}
-	 */
+	// Delete vehicle
 	const hanleDelete = async(key) => {
 		const response = await apis.deleteVehicle(key);
 
@@ -98,14 +91,7 @@ function Dashboard(props) {
 		handleNotifier(response.statusType, response.message);
 	}
 
-	/**
-	 * Add or update vehicle
-	 *
-	 * @param e
-	 * @param file
-	 * @param vehicle
-	 * @returns {Promise<void>}
-	 */
+	// Add or update vehicle
 	const handleSubmit = async(e, file, vehicle) => {
 		e.preventDefault();
 
@@ -133,7 +119,11 @@ function Dashboard(props) {
 				payload: response.payload
 			});
 
-			handleNotifier(response.statusType, response.message)
+			handleNotifier(
+				response.statusType,
+				response.message,
+				isNewVehicle ? 'VEHICLE_SERVICE_MESSAGES.NEW' : 'VEHICLE_SERVICE_MESSAGES.UPDATE'
+			);
 
 			// Rerender component since a new vehicle
 			// was added to the list
@@ -141,17 +131,17 @@ function Dashboard(props) {
 				navigate('/vehicles');
 			}
 		} else {
-			handleNotifier(response.statusType, response.message)
+			handleNotifier(
+				response.statusType,
+				response.message,
+				response.errorCode
+			);
 		}
 	}
 
-	/**
-	 * Notifier
-	 *
-	 * @param statusType
-	 * @param message
-	 */
-	const handleNotifier = (statusType, message) => {
+	// Notifier
+	const handleNotifier = (statusType, serverMsg, msgName) => {
+		const message = getMessage(statusType, serverMsg, msgName);
 		notifierRef.current.openNotifier(statusType, message);
 	}
 

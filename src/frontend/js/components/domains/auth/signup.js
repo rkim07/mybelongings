@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/flashmessages';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import { prepareLoginData } from '../../shared/helpers/ajax';
 import { Notifier } from '../../shared/feedback/notifier';
@@ -56,14 +56,14 @@ function Signup(props) {
 		password: '',
 		confirmPassword: '',
 		submitted: false,
-		success: false,
+		statusType: '',
 		errorCode: '',
 		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
-	// Use effect for form validation
+	// Validate password matches
 	useEffect(() => {
 		if (!ValidatorForm.hasValidationRule("isPasswordMatch")) {
 			ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
@@ -92,12 +92,11 @@ function Signup(props) {
 		e.preventDefault();
 
 		const response = await apis.signup(values);
-		const status = response.statusCode < 400 ? true : false;
 
 		setValues({
 			...values,
 			submitted: true,
-			success: status,
+			statusType: response.statusType,
 			errorCode: response.errorCode ,
 			serverMsg: response.message
 		});
@@ -113,10 +112,18 @@ function Signup(props) {
 						{ values.submitted ? (
 							<Paper className={classes.paper}>
 								<Typography component='h1' variant='h5'>
-								{ values.success ?
-									displaySuccessMsg('signup', values.serverMsg, { firstName: values.firstName })
+								{ values.statusType === 'success' ?
+									getMessage(
+										values.statusType,
+										values.serverMsg,
+										'AUTH_SERVICE_MESSAGES.SIGNUP'
+									)
 									:
-									displayErrorMsg(values.errorCode, values.serverMsg)
+									getMessage(
+										values.statusType,
+										values.serverMsg,
+										values.errorCode
+									)
 								}
 								</Typography>
 							</Paper>

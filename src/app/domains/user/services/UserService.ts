@@ -2,9 +2,9 @@ import { Container, Inject, Service } from 'typedi';
 import { UserCollectionService } from './UserCollectionService';
 import { Code, HandleUpstreamError, Key, User } from '../../shared/models/models';
 
-export enum USER_SERVICE_ERRORS {
-    USER_NOT_FOUND = 'USER_SERVICE_ERRORS.USER_NOT_FOUND',
-    MISSING_PARAMETERS = 'USER_SERVICE_ERRORS.MISSING_PARAMETERS'
+export enum USER_SERVICE_MESSAGES {
+    USER_NOT_FOUND = 'USER_SERVICE_MESSAGES.USER_NOT_FOUND',
+    MISSING_PARAMETERS = 'USER_SERVICE_MESSAGES.MISSING_PARAMETERS'
 }
 
 /**
@@ -23,7 +23,7 @@ export class UserService {
      */
     public async getUser(key: Key): Promise<any> {
         if (!key) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         return await this.userCollectionService.findOne({ key: { $eq: key }});
@@ -37,7 +37,7 @@ export class UserService {
      */
     public async getUserByField(fieldName: string, value: string) {
         if (!fieldName || !value) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.MISSING_PARAMETERS);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.MISSING_PARAMETERS);
         }
 
         return await this.userCollectionService.findByField(fieldName, value,  1);
@@ -52,7 +52,7 @@ export class UserService {
      */
     public async getUserByEmailAnCode(email: string, code: Code, codeType: 'resetCode' | 'signupCode') {
         if (!email || !code || !codeType) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.MISSING_PARAMETERS);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.MISSING_PARAMETERS);
         }
 
         const query = {
@@ -79,7 +79,7 @@ export class UserService {
      */
     public async addUser(user: User) {
         if (!user) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         return await this.userCollectionService.add(user);
@@ -92,7 +92,7 @@ export class UserService {
      */
     public async updateUser(user: User) {
         if (!user.key) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         return await this.userCollectionService.update(user);
@@ -105,7 +105,7 @@ export class UserService {
      */
     public async deleteUser(userKey: Key) {
         if (!userKey) {
-            throw new HandleUpstreamError(USER_SERVICE_ERRORS.USER_NOT_FOUND);
+            throw new HandleUpstreamError(USER_SERVICE_MESSAGES.USER_NOT_FOUND);
         }
 
         return await this.userCollectionService.removeByFieldValue('key', userKey);

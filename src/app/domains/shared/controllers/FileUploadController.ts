@@ -1,9 +1,8 @@
 import { Body, Get, HttpCode, JsonController, Post, Req, UseBefore } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { logger } from '../../../common/logging';
-import { VEHICLE_SERVICE_ERRORS } from '../../vehicle/services/VehicleService';
 import { HandleUpstreamError, ResponseError } from '../models/models';
-import { FILE_UPLOAD_SERVICE_ERRORS, FileUploadService } from '../services/FileUploadService';
+import { FILE_UPLOAD_SERVICE_MESSAGES, FileUploadService } from '../services/FileUploadService';
 
 const multer = require('multer');
 
@@ -83,9 +82,9 @@ export class FileUploadController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case FILE_UPLOAD_SERVICE_ERRORS.FILE_NOT_FOUND:
+                    case FILE_UPLOAD_SERVICE_MESSAGES.FILE_NOT_FOUND:
                         return new ResponseError(404, err.key, 'The file you are trying to upload cannot be found.');
-                    case FILE_UPLOAD_SERVICE_ERRORS.EMPTY_FILE_NAME:
+                    case FILE_UPLOAD_SERVICE_MESSAGES.EMPTY_FILE_NAME:
                         return new ResponseError(404, err.key, 'Cannot find file name to delete.');
                     default:
                         return new ResponseError(500, err.key, DEFAULT_FILE_UPLOAD_SERVICE_ERROR_MESSAGE);

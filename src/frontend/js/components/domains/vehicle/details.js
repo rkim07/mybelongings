@@ -67,12 +67,7 @@ function Details(props) {
 
 	const [value, setValue] = useState(0);
 
-	/**
-	 * Hand tab changes
-	 *
-	 * @param event
-	 * @param newValue
-	 */
+	// Hand tab changes
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
 	};

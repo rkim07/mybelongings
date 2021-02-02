@@ -16,7 +16,6 @@ const styles = (theme) => ({});
 function Info(props) {
 	const apis = useContext(AppContext);
 	const { key } = useParams();
-
 	const { classes } = props;
 
 	const initialValues = {
@@ -41,19 +40,16 @@ function Info(props) {
 
 	const [values, setValues] = useState(initialValues);
 
-	/**
-	 * Fetch vehicle by key
-	 */
+	// Fetch vehicle by key
 	useEffect(() => {
 		apis.getVehicle(key).then(response => {
-			const { payload, statusCode, statusType, message } = response
+			const {payload, statusCode, statusType, message} = response
 			if (statusCode < 400) {
-				setValues({ ...values, vehicle: response.payload, loading: true });
+				setValues(prevState => ({...prevState, vehicle: _.assign(prevState.vehicle, payload)}));
 			} else {
 				onHandleNotifier(statusType, message);
-				navigate('/');
+				navigate('/vehicles');
 			}
-
 		});
 	}, [values.vehicle.key]);
 

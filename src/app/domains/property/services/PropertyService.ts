@@ -6,9 +6,9 @@ import { PropertyCollectionService } from './PropertyCollectionService';
 import { PropertyAreaService } from "./propertyAreaService";
 import { HandleUpstreamError, Key, Property } from '../../shared/models/models';
 
-export enum PROPERTY_SERVICE_ERRORS {
-    PROPERTY_NOT_FOUND = 'PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND',
-    USER_KEY_EMPTY = 'PROPERTY_SERVICE_ERRORS.USER_KEY_EMPTY'
+export enum PROPERTY_SERVICE_MESSAGES {
+    PROPERTY_NOT_FOUND = 'PROPERTY_SERVICE_MESSAGES.PROPERTY_NOT_FOUND',
+    USER_KEY_EMPTY = 'PROPERTY_SERVICE_MESSAGES.USER_KEY_EMPTY'
 }
 
 @Service()
@@ -33,7 +33,7 @@ export class PropertyService {
         const property = await this.propertyCollectionService.findOne({ key: { $eq: key }});
 
         if (!property) {
-            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_MESSAGES.PROPERTY_NOT_FOUND);
         }
 
         return await this.addDependencies(host, property);
@@ -60,13 +60,13 @@ export class PropertyService {
      */
     public async getUserProperties(userKey: Key, host: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }
 
         const results = await this.propertyCollectionService.find({ userKey: { $eq: userKey }});
 
         if (!results) {
-            throw new HandleUpstreamError(PROPERTY_SERVICE_ERRORS.PROPERTY_NOT_FOUND);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_MESSAGES.PROPERTY_NOT_FOUND);
         }
 
         const properties = await Promise.all(results.map(async (property) => {

@@ -3,11 +3,11 @@ import { Body, Get, HttpCode, JsonController, Param, Post, Req, Res } from 'rout
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
 import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
-import { AUTH_SERVICE_ERRORS, AuthService } from '../services/AuthService';
+import { AUTH_SERVICE_MESSAGES, AuthService } from '../services/AuthService';
 
 import { logger } from '../../../common/logging';
 
-const DEFAULT_AUTH_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
+const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
 
 @JsonController('/auth-svc')
 export class AuthController {
@@ -66,20 +66,19 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_ERRORS.UNREGISTERED_USER:
-                        return new ResponseError(404, err.key, 'Unregistered user.');
-                    case AUTH_SERVICE_ERRORS.INVALID_CREDENTIALS:
-                        return new ResponseError(401, err.key, 'Invalid credentials.');
-                    case AUTH_SERVICE_ERRORS.UNACTIVATED_ACCOUNT:
-                        return new ResponseError(401, err.key, 'Account has not been activated.');
-                    case AUTH_SERVICE_ERRORS.TOKENS_NOT_CREATED:
-                        logger.error('An unexpected error occurred while creating the tokens.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USERNAME_NOT_FOUND:
+                        return new ResponseError(404, err.key, '');
+                    case AUTH_SERVICE_MESSAGES.INVALID_CREDENTIALS:
+                        return new ResponseError(401, err.key, '');
+                    case AUTH_SERVICE_MESSAGES.UNACTIVATED_ACCOUNT:
+                        return new ResponseError(401, err.key, '');
+                    case AUTH_SERVICE_MESSAGES.TOKENS_NOT_CREATED:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }
@@ -121,17 +120,15 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
-                        logger.error('User key not found.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
-                        logger.error('User not found.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USER_NOT_FOUND:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }
@@ -182,20 +179,17 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
-                        logger.error('User key not found.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
-                        logger.error('User not found.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                    case AUTH_SERVICE_ERRORS.TOKEN_NOT_CREATED:
-                        logger.error('An unexpected error occurred while creating the token.');
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USER_NOT_FOUND:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.TOKEN_NOT_CREATED:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }
@@ -250,13 +244,13 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_ALREADY_SIGNED_UP:
-                        return new ResponseError(409, err.key, 'User already registered.');
+                    case AUTH_SERVICE_MESSAGES.USER_ALREADY_SIGNED_UP:
+                        return new ResponseError(409, err.key, '');
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }
@@ -294,26 +288,19 @@ export class AuthController {
      */
     @Get('/account/activate/:email/:signupCode')
     public async activateSignup(
+        @Req() req: any,
         @Param('email') email: string,
         @Param('signupCode') signupCode: string,
-        @Res() response: any): Promise<any> {
+        @Res() res: any): Promise<any> {
         try {
-            const user = await this.authService.activateSignup(email, signupCode);
+            await this.authService.activateSignup(email, signupCode);
 
             // Redirect back to frontend
-            response.redirect(`/account/activated/${user.firstName}`);
+            res.redirect(`/account/activated/success`);
         } catch (err) {
-            if (err instanceof HandleUpstreamError) {
-                switch (err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_KEY_EMPTY:
-                        logger.error('User not found during signup activation.');
-                        return new ResponseError(401, err.key, 'Failed to activate the account.');
-                    default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-                }
-            } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
-            }
+            // Redirect back to frontend, user already
+            // activated on previous attempt
+            res.redirect(`/account/activated/login`);
         }
     }
 
@@ -361,14 +348,13 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch (err.key) {
-                    case AUTH_SERVICE_ERRORS.USER_NOT_FOUND:
-                        logger.error('User not found during password reset activation.');
-                        return new ResponseError(401, err.key, 'Failed to reset the password.');
+                    case AUTH_SERVICE_MESSAGES.FAILED_RESET_PASSWORD:
+                        return new ResponseError(401, err.key, '');
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }
@@ -419,14 +405,13 @@ export class AuthController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch (err.key) {
-                    case AUTH_SERVICE_ERRORS.INVALID_RESET_CODE:
-                        logger.error('Invalid reset code.');
-                        return new ResponseError(500, err.key, 'Failed to reset the password.');
+                    case AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE:
+                        return new ResponseError(500, err.key, '');
                     default:
-                        return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, err.key, DEFAULT_AUTH_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
             }
         }
     }

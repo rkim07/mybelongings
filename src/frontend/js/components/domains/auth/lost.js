@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/flashmessages';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
@@ -73,7 +73,7 @@ function Lost(props) {
 	const initialValues = {
 		email: '',
 		submitted: false,
-		success: false,
+		statusType: '',
 		errorCode: '',
 		serverMsg: ''
 	};
@@ -91,12 +91,11 @@ function Lost(props) {
 		e.preventDefault();
 
 		const response = await apis.activatePasswordReset(values);
-		const status = response.statusCode < 400 ? true : false;
 
 		setValues({
 			...values,
 			submitted: true,
-			success: status,
+			statusType: response.statusType,
 			errorCode: response.errorCode ,
 			serverMsg: response.message
 		});
@@ -112,10 +111,18 @@ function Lost(props) {
 						{ values.submitted ? (
 							<Paper className={classes.paper}>
 								<Typography component='h1' variant='h5'>
-								{ values.success ?
-									displaySuccessMsg('lost', values.serverMsg)
-									:
-									displayErrorMsg(values.errorCode, values.serverMsg)
+								{ values.statusType === 'success' ?
+										getMessage(
+											values.statusType,
+											values.serverMsg,
+											'AUTH_SERVICE_MESSAGES.LOST'
+										)
+										:
+										getMessage(
+											values.statusType,
+											values.serverMsg,
+											values.errorCode
+										)
 								}
 								</Typography>
 							</Paper>
