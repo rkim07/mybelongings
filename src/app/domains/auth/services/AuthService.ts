@@ -268,7 +268,7 @@ export class AuthService {
             throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE);
         }
 
-        user = { ...user, password: body.password} ;
+        user = { ...user, password: Hash.bcryptHash(body.password) } ;
         user = { ...user, resetCode: '' };
         await this.userService.updateUser(user);
 

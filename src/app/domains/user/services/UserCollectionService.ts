@@ -1,5 +1,6 @@
 import { Service } from 'typedi';
 import { Datetime, Key, User, Vehicle } from '../../shared/models/models';
+import { Hash } from '../../shared/models/utilities/Hash';
 import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 
 @Service()

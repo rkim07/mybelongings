@@ -155,7 +155,7 @@ function Reset(props) {
 											component={Link}
 											to={ '/account/login' }
 										>
-											Add
+											Login
 										</Button>
 									</React.Fragment>
 							 	) : (

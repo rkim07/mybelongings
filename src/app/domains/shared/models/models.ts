@@ -5,11 +5,12 @@ export * from './domains/Address';
 export * from './domains/Store';
 export * from './domains/Paint';
 
-export * from './utilities/Datetime';
-export * from './utilities/Key';
-export * from './utilities/HandleUpstreamError';
-export * from './utilities/ResponseError';
 export * from './utilities/CustomError';
+export * from './utilities/Datetime';
+export * from './utilities/HandleUpstreamError';
+export * from './utilities/Hash';
+export * from './utilities/Key';
+export * from './utilities/ResponseError';
 
 /**
  * @swagger

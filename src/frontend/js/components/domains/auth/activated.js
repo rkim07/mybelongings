@@ -46,17 +46,17 @@ function Activated(props) {
 				<Grid item xs={12} sm={12} md={12}>
 					<Paper className={classes.paper}>
 						<Typography component='h1' variant='h5'>
-							{ param === 'success' ?
+							{ param === 'login' ?
 								getMessage(
 									'success',
 									'',
-									'AUTH_SERVICE_MESSAGES.ACTIVATED'
+									'AUTH_SERVICE_MESSAGES.ALREADY_ACTIVATED'
 								)
 								:
 								getMessage(
 									'success',
 									'',
-									'AUTH_SERVICE_MESSAGES.ALREADY_ACTIVATED'
+									'AUTH_SERVICE_MESSAGES.ACTIVATED'
 								)
 							}
 						</Typography>

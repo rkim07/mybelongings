@@ -2,22 +2,23 @@ import * as _ from 'lodash';
 import lost from "../../domains/auth/lost";
 
 /**
- * Display custom error message in frontend
+ * Handle message according to type, domain, and label
  *
  * @param statusType
  * @param serverMsg
- * @param msgName
+ * @param msgLabel
  * @returns {*|string}
  */
-export function messageHandler(statusType, serverMsg, msgName) {
-	let errorCodeParts = [];
+export function messageHandler(statusType, serverMsg, msgLabel) {
+	let msgLabelParts = [];
+	let serviceNameParts = [];
 
-	if (msgName) {
+	if (msgLabel) {
 		// Split message name, ex: AUTH_SERVICE_MESSAGES.USER_NOT_FOUND
-		msgNameParts = msgName.split('.');
+		msgLabelParts = msgLabel.split('.');
 
 		// Split again and get service name
-		serviceNameParts = msgNameParts[0].split('_');
+		serviceNameParts = msgLabelParts[0].split('_');
 	} else {
 		return _.isEmpty(serverMsg) ? serverMsg : 'We apologize but we cannot process your request at this moment.';
 	}
@@ -64,7 +65,7 @@ export function messageHandler(statusType, serverMsg, msgName) {
 		}
 	};
 
-	return messages[serviceNameParts[0]][statusType][msgNameParts[1]];
+	return messages[serviceNameParts[0].toLowerCase()][statusType][msgLabelParts[1]];
 }
 
 /**
@@ -73,9 +74,9 @@ export function messageHandler(statusType, serverMsg, msgName) {
  *
  * @param statusType
  * @param serverMsg
- * @param msgName
+ * @param msgLabel
  * @returns {*|string}
  */
-export function getMessage(statusType, serverMsg, msgName) {
-	return messageHandler(statusType, serverMsg, msgName);
+export function getMessage(statusType, serverMsg, msgLabel) {
+	return messageHandler(statusType, serverMsg, msgLabel);
 }
