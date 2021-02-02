@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { displayErrorMsg } from '../../shared/helpers/uimessages';
 import AppContext from '../../../appcontext';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
@@ -76,47 +77,46 @@ function Login(props) {
 		username: '',
 		password: '',
 		submitted: false,
-		success: true,
-		message: ''
+		success: false,
+		errorCode: '',
+		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
-	/**
-	 * Handle select and input changes
-	 *
-	 * @param e
-	 */
+	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setValues({ ...values, [name]: value });
 	}
 
-	/**
-	 * Log in the user
-	 *
-	 * @param e
-	 */
+	// Log in the user
 	const handleSubmit = async(e) => {
 		e.preventDefault();
 
 		const response = await apis.login(values);
 		const status = response.statusCode < 400 ? true : false;
 
-		setValues({ ...values, submitted: status, success: status, message: response.message });
+		setValues({
+			...values,
+			submitted: true,
+			success: status,
+			errorCode: response.errorCode,
+			serverMsg: response.message
+		});
 	}
 
 	return (
 		<Container className={classes.root} maxWidth='md'>
-			{ values.submitted && (<Navigate to={ redirectUrl } />)}
+			{ (values.submitted && values.success) && (<Navigate to={ redirectUrl } />)}
 			<ValidatorForm
 				onSubmit={ handleSubmit }
 			>
 				<Grid container justify='center'>
 					<Grid item xs={12} sm={12} md={12}>
-						{ !values.success && (
-							<Alert variant="filled" severity="error">
-								{ values.message }
+						{ (values.submitted && !values.success) && (
+							<Alert variant='filled' severity='error'>
+								{ displayErrorMsg(values.errorCode, values.serverMsg) }
 							</Alert>
 						)}
 						<Paper className={classes.paper}>
@@ -156,12 +156,12 @@ function Login(props) {
 								</FormControl>
 							</Grid>
 							<Grid item xs={12}>
-								<Typography align="center">
+								<Typography align='center'>
 									<Link to='/account/password/lost'>Forgot password</Link>
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>
-								<Typography align="center">
+								<Typography align='center'>
 									<Link to='/account/signup'>Not enrolled? Sign up now</Link>
 								</Typography>
 							</Grid>

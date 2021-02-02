@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { displaySuccessMsg } from '../../shared/helpers/uimessages';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -45,7 +46,7 @@ function Activated(props) {
 				<Grid item xs={12} sm={12} md={12}>
 					<Paper className={classes.paper}>
 						<Typography component='h1' variant='h5'>
-							Welcome { firstName }, your account is ready to use.  Please click the login button below to proceed.
+							{ displaySuccessMsg('activated', '', { firstName: firstName })}
 						</Typography>
 						<Button
 							type='button'

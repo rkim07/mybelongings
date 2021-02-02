@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/uimessages';
 import AppContext from '../../../appcontext';
 import { prepareLoginData } from '../../shared/helpers/ajax';
 import { Notifier } from '../../shared/feedback/notifier';
@@ -55,43 +56,51 @@ function Signup(props) {
 		password: '',
 		confirmPassword: '',
 		submitted: false,
-		success: true
+		success: false,
+		errorCode: '',
+		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
+	// Use effect for form validation
 	useEffect(() => {
-		ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
-			if (value !== values.password) {
-				return false;
-			}
+		if (!ValidatorForm.hasValidationRule("isPasswordMatch")) {
+			ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
+				if (value !== values.password) {
+					return false;
+				}
+				return true;
+			});
+		}
 
-			return true;
-		});
+		return function cleanPasswordMatchRule() {
+			if (ValidatorForm.hasValidationRule("isPasswordMatch")) {
+				ValidatorForm.removeValidationRule("isPasswordMatch");
+			}
+		};
 	});
 
-	/**
-	 * Handle select and input changes
-	 *
-	 * @param e
-	 */
+	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setValues({ ...values, [name]: value });
 	}
 
-	/**
-	 * Reset password
-	 *
-	 * @param e
-	 */
+	// Reset password
 	const handleSubmit = async(e) => {
 		e.preventDefault();
 
 		const response = await apis.signup(values);
 		const status = response.statusCode < 400 ? true : false;
 
-		setValues({ ...values, submitted: true, success: status });
+		setValues({
+			...values,
+			submitted: true,
+			success: status,
+			errorCode: response.errorCode ,
+			serverMsg: response.message
+		});
 	}
 
 	return (
@@ -103,16 +112,13 @@ function Signup(props) {
 					<Grid item xs={12} sm={12} md={12}>
 						{ values.submitted ? (
 							<Paper className={classes.paper}>
-								{ values.success ? (
-									<Typography component='h1' variant='h5'>
-										You have successfully submitted all your information.
-										Please check your email in order to finish setting up your account.
-									</Typography>
-								) : (
-									<Typography component='h1' variant='h5'>
-										Something went wrong while trying to create an account.  Please contact the administrator.
-									</Typography>
-								)}
+								<Typography component='h1' variant='h5'>
+								{ values.success ?
+									displaySuccessMsg('signup', values.serverMsg, { firstName: values.firstName })
+									:
+									displayErrorMsg(values.errorCode, values.serverMsg)
+								}
+								</Typography>
 							</Paper>
 						) : (
 							<Paper className={classes.paper}>

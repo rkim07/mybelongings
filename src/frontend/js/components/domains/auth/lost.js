@@ -1,6 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/uimessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
@@ -72,33 +73,33 @@ function Lost(props) {
 	const initialValues = {
 		email: '',
 		submitted: false,
-		success: true
+		success: false,
+		errorCode: '',
+		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
-	/**
-	 * Handle select and input changes
-	 *
-	 * @param e
-	 */
+	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setValues({ ...values, [name]: value });
 	}
 
-	/**
-	 * Send reset password email
-	 *
-	 * @param e
-	 */
+	// Send reset password email
 	const handleSubmit = async(e) => {
 		e.preventDefault();
 
 		const response = await apis.activatePasswordReset(values);
 		const status = response.statusCode < 400 ? true : false;
 
-		setValues({ ...values, submitted: status, success: status });
+		setValues({
+			...values,
+			submitted: true,
+			success: status,
+			errorCode: response.errorCode ,
+			serverMsg: response.message
+		});
 	}
 
 	return (
@@ -110,15 +111,13 @@ function Lost(props) {
 					<Grid item xs={12} sm={12} md={12}>
 						{ values.submitted ? (
 							<Paper className={classes.paper}>
-								{ values.success ? (
-									<Typography component='h1' variant='h5'>
-										Please check your email for further instructions on resetting your password.
-									</Typography>
-								) : (
-									<Typography component='h1' variant='h5'>
-										We apologize but we cannot process your request at this moment.
-									</Typography>
-								)}
+								<Typography component='h1' variant='h5'>
+								{ values.success ?
+									displaySuccessMsg('lost', values.serverMsg)
+									:
+									displayErrorMsg(values.errorCode, values.serverMsg)
+								}
+								</Typography>
 							</Paper>
 						) : (
 							<Paper className={classes.paper}>

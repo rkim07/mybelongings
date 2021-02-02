@@ -1,6 +1,9 @@
+import * as _ from 'lodash';
 import React, {useContext, useEffect, useState} from 'react';
-import {Link, Navigate, useParams} from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { resetPassword } from '../../../apis/auth';
+import { displayErrorMsg, displaySuccessMsg } from '../../shared/helpers/uimessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
@@ -77,46 +80,51 @@ function Reset(props) {
 		password: '',
 		repeatPassword: '',
 		submitted: false,
-		success: true,
+		success: false,
+		errorCode: '',
+		serverMsg: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
 
-	/**
-	 * User effect for password match
-	 */
+	// Use effect for form validation
 	useEffect(() => {
-		ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
-			if (value !== values.password) {
-				return false;
-			}
+		if (!ValidatorForm.hasValidationRule("isPasswordMatch")) {
+			ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
+				if (value !== values.password) {
+					return false;
+				}
+				return true;
+			});
+		}
 
-			return true;
-		});
+		return function cleanPasswordMatchRule() {
+			if (ValidatorForm.hasValidationRule("isPasswordMatch")) {
+				ValidatorForm.removeValidationRule("isPasswordMatch");
+			}
+		};
 	});
 
-	/**
-	 * Handle select and input changes
-	 *
-	 * @param e
-	 */
+	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setValues({ ...values, [name]: value });
 	}
 
-	/**
-	 * Submit
-	 *
-	 * @param e
-	 */
+	// Submit
 	const handleSubmit = async(e) => {
 		e.preventDefault();
 
 		const response = await apis.resetPassword(values);
 		const status = response.statusCode < 400 ? true : false;
 
-		setValues({ ...values, submitted: status, success: status });
+		setValues({
+			...values,
+			submitted: true,
+			success: status,
+			errorCode: response.errorCode ,
+			serverMsg: response.message
+		});
 	}
 
 	return (
@@ -126,31 +134,32 @@ function Reset(props) {
 			>
 				<Grid container justify='center'>
 					<Grid item xs={12} sm={12} md={12}>
-						{ values.submitted ?
-							 values.success ? (
-								 <Paper className={classes.paper}>
-									 <Typography component='h1' variant='h5'>Your password has been reset successfully.  Please click the login button below to proceed.</Typography>
-									 <Button
-										 type='button'
-										 variant='contained'
-										 color='default'
-										 className={classes.button}
-										 startIcon={<AddIcon />}
-										 component={Link}
-										 to={ '/account/login' }
-									 >
-										 Add
-									 </Button>
-								 </Paper>
-							 ) : (
-								<Paper className={classes.paper}>
+						{ values.submitted ? (
+							<Paper className={classes.paper}>
+								{ values.success ? (
+									<React.Fragment>
+										<Typography component='h1' variant='h5'>
+											{ displaySuccessMsg('reset', values.serverMsg) }
+										</Typography>
+										<Button
+											type='button'
+											variant='contained'
+											color='default'
+											className={classes.button}
+											startIcon={<AddIcon />}
+											component={Link}
+											to={ '/account/login' }
+										>
+											Add
+										</Button>
+									</React.Fragment>
+							 	) : (
 									<Typography component='h1' variant='h5'>
-										Your password has already been reset.  If you think this is a mistake on our part, plese contact our
-										administrator to request again.
+										{ displayErrorMsg(values.errorCode, values.serverMsg) }
 									</Typography>
-								</Paper>
-							)
-						 : (
+								) }
+							</Paper>
+						) : (
 							<Paper className={classes.paper}>
 								<Typography component='h1' variant='h5'>
 									Reset Password
@@ -179,8 +188,14 @@ function Reset(props) {
 											name='repeatPassword'
 											value={ values.repeatPassword }
 											onChange={ handleChange }
-											validators={['required', 'isPasswordMatch']}
-											errorMessages={['This field is required', 'Password mismatch']}
+											validators={[
+												'required',
+												'isPasswordMatch'
+											]}
+											errorMessages={[
+												'This field is required',
+												'Password mismatch'
+											]}
 										/>
 									</FormControl>
 								</Grid>
