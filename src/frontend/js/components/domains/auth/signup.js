@@ -1,51 +1,37 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
-import { prepareLoginData } from '../../shared/helpers/ajax';
-import { Notifier } from '../../shared/feedback/notifier';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AuthHeader from './shared/authheader';
+import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import Container from '@material-ui/core/Container';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
-const styles = theme => ({
-	main: {
-		width: 'auto',
-		display: 'block', // Fix IE 11 issue.
-		marginLeft: theme.spacing(3),
-		marginRight: theme.spacing(3),
-		[theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
-			width: 400,
-			marginLeft: 'auto',
-			marginRight: 'auto',
-		},
-	},
+const useStyles = makeStyles((theme) => ({
 	paper: {
 		marginTop: theme.spacing(8),
 		display: 'flex',
 		flexDirection: 'column',
-		alignItems: 'center',
-		padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
+		alignItems: 'center'
 	},
 	form: {
-		width: '100%', // Fix IE 11 issue.
-		marginTop: theme.spacing(),
+		width: '100%',
+		marginTop: theme.spacing(3)
 	},
-	submit: {
-		marginTop: theme.spacing(3),
+	button: {
+		margin: theme.spacing(3, 0, 2)
 	}
-});
+}));
 
-function Signup(props) {
+export default function Signup() {
 	const apis = useContext(AppContext);
-
-	const { classes } = props;
+	const classes = useStyles();
 
 	const initialValues = {
 		firstName: '',
@@ -54,7 +40,7 @@ function Signup(props) {
 		phone: '',
 		username: '',
 		password: '',
-		confirmPassword: '',
+		repeatPassword: '',
 		submitted: false,
 		statusType: '',
 		errorCode: '',
@@ -65,8 +51,8 @@ function Signup(props) {
 
 	// Validate password matches
 	useEffect(() => {
-		if (!ValidatorForm.hasValidationRule("isPasswordMatch")) {
-			ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
+		if (!ValidatorForm.hasValidationRule('isPasswordMatch')) {
+			ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
 				if (value !== values.password) {
 					return false;
 				}
@@ -75,8 +61,8 @@ function Signup(props) {
 		}
 
 		return function cleanPasswordMatchRule() {
-			if (ValidatorForm.hasValidationRule("isPasswordMatch")) {
-				ValidatorForm.removeValidationRule("isPasswordMatch");
+			if (ValidatorForm.hasValidationRule('isPasswordMatch')) {
+				ValidatorForm.removeValidationRule('isPasswordMatch');
 			}
 		};
 	});
@@ -103,138 +89,142 @@ function Signup(props) {
 	}
 
 	return (
-		<Container className={classes.root} maxWidth='md'>
-			<ValidatorForm
-				onSubmit={ handleSubmit }
-			>
-				<Grid container justify='center'>
-					<Grid item xs={12} sm={12} md={12}>
-						{ values.submitted ? (
-							<Paper className={classes.paper}>
-								<Typography component='h1' variant='h5'>
-								{ values.statusType === 'success' ?
-									getMessage(
-										values.statusType,
-										values.serverMsg,
-										'AUTH_SERVICE_MESSAGES.SIGNUP'
-									)
-									:
-									getMessage(
-										values.statusType,
-										values.serverMsg,
-										values.errorCode
-									)
-								}
-								</Typography>
-							</Paper>
-						) : (
-							<Paper className={classes.paper}>
-								<Typography component='h1' variant='h5'>
-									Create your MyBelongings account
-								</Typography>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='First name'
-											name='firstName'
-											onChange={ handleChange }
-											value={ values.firstName }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Last name'
-											name='lastName'
-											onChange={ handleChange }
-											value={ values.lastName }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Email'
-											name='email'
-											onChange={ handleChange }
-											value={ values.email }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Phone number'
-											name='phone'
-											onChange={ handleChange }
-											value={ values.phone }
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Username'
-											name='username'
-											onChange={ handleChange }
-											value={ values.username }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Password'
-											type='password'
-											name='password'
-											value={ values.password }
-											onChange={ handleChange }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Confirm password'
-											type='password'
-											name='confirmPassword'
-											value={ values.confirmPassword }
-											onChange={ handleChange }
-											validators={['required', 'isPasswordMatch']}
-											errorMessages={['This field is required', 'Password mismatch']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<Button
-										type='submit'
-										fullWidth
-										variant='contained'
-										color='primary'
-										startIcon={ <PersonAddIcon /> }
-										className={classes.submit}
-									>
-										Signup
-									</Button>
-								</Grid>
-							</Paper>
-						)}
-					</Grid>
-				</Grid>
-			</ValidatorForm>
+		<Container component='main' maxWidth='xs'>
+			<CssBaseline />
+			<div className={classes.paper}>
+				<AuthHeader title='Sign Up' />
+				{ values.submitted ? (
+					<Typography component='h1' variant='h5'>
+						{ values.statusType === 'success' ?
+							getMessage(
+								values.statusType,
+								values.serverMsg,
+								'AUTH_SERVICE_MESSAGES.SIGNUP'
+							)
+							:
+							getMessage(
+								values.statusType,
+								values.serverMsg,
+								values.errorCode
+							)
+						}
+					</Typography>
+				) : (
+					<ValidatorForm
+						onSubmit={ handleSubmit }
+						className={classes.form}
+					>
+						<Grid container spacing={2}>
+							<Grid item xs={12} sm={6}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='First name'
+									name='firstName'
+									value={ values.firstName }
+									onChange={ handleChange }
+									validators={['required']}
+									errorMessages={['This field is required']}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='Last name'
+									name='lastName'
+									value={ values.lastName }
+									onChange={ handleChange }
+									validators={['required']}
+									errorMessages={['This field is required']}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='Email'
+									name='email'
+									value={ values.email }
+									onChange={ handleChange }
+									validators={['required']}
+									errorMessages={['This field is required']}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextValidator
+									fullWidth
+									variant='outlined'
+									label='Phone number'
+									name='phone'
+									value={ values.phone }
+									onChange={ handleChange }
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='Username'
+									name='username'
+									value={ values.username }
+									onChange={ handleChange }
+									validators={['required']}
+									errorMessages={['This field is required']}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='Password'
+									type='password'
+									name='password'
+									value={ values.password }
+									onChange={ handleChange }
+									validators={['required']}
+									errorMessages={['This field is required']}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextValidator
+									required
+									fullWidth
+									variant='outlined'
+									label='Confirm password'
+									type='password'
+									name='repeatPassword'
+									value={ values.repeatPassword }
+									onChange={ handleChange }
+									validators={['required', 'isPasswordMatch']}
+									errorMessages={['This field is required', 'Password mismatch']}
+								/>
+							</Grid>
+						</Grid>
+						<Button
+							fullWidth
+							type='submit'
+							variant='contained'
+							color='default'
+							className={classes.button}
+						>
+							Sign Up
+						</Button>
+						<Grid container justify='flex-end'>
+							<Grid item>
+								<Link to='/account/signin' variant='body2'>
+									Already have an account? Sign in
+								</Link>
+							</Grid>
+						</Grid>
+					</ValidatorForm>
+				)}
+			</div>
 		</Container>
 	)
 }
-
-export default withStyles(styles)(Signup);
