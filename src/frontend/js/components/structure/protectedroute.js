@@ -1,15 +1,17 @@
-import React from 'react'
-import { Route, Redirect } from 'react-router-dom';
-import { withContext } from '../../contexts/appcontext'
+import React, {useContext} from 'react'
+import { Route, Navigate } from 'react-router-dom';
+import AppContext from '../../appcontext'
 
 function ProtectedRoute(props) {
-	const { component: Component, ...rest } = props;
+	const apis = useContext(AppContext);
+	const { path, element } = props;
 
 	return (
-		props.accessToken ?
-			<Route {...rest} component={Component} /> :
-			<Redirect to='/login' />
+		apis.isSignedIn() ?
+			<Route path={path} element={element} />
+			:
+			<Navigate to='/account/signin' />
 	)
 }
 
-export default withContext(ProtectedRoute);
+export default ProtectedRoute;

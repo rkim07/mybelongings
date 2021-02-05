@@ -1,7 +1,6 @@
 import React from 'react';
-import { withContext } from '../../contexts/appcontext';
 
-function NotFound() {
+export default function NotFound() {
 	return (
 		<React.Fragment>
 			<h1> Whoops!</h1>
@@ -10,5 +9,3 @@ function NotFound() {
 
 	);
 }
-
-export default withContext((NotFound));

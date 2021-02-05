@@ -149,8 +149,8 @@ const queryPartsHasDotNotation = (qps: Array<QueryPart>): boolean => {
 
 /**
  * Converts a query part that contains . notation into a SQL query.
- * For example `{ 'user.identity': { $eq: 'crew' } };` will be transformed to
- * `COLUMN_GET(COLUMN_GET(dynamic_cols, 'user' AS BINARY), 'identity' as CHAR) = 'crew'`
+ * For example `{ 'user.identity': { $eq: 'something' } };` will be transformed to
+ * `COLUMN_GET(COLUMN_GET(dynamic_cols, 'user' AS BINARY), 'identity' as CHAR) = 'something'`
  * @param qp the query part that contains the property with the .
  */
 const convertDotNotationQuery = (qp: QueryPart): string => {

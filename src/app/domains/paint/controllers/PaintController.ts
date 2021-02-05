@@ -12,7 +12,7 @@ export class PaintController {
     /**
      * @swagger
      * paths:
-     *   paint-svc/paints/{paint_key}:
+     *   /paint-svc/paints/{paint_key}:
      *     get:
      *       summary: Retrieve a specific paint.
      *       description: Retrieve a specific paint.

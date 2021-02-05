@@ -1,3 +1,7 @@
+site:
+  domain: mybelongings.com
+  frontName: MyBelongings
+
 ports:
   http: 80
   debug: 5858
@@ -22,9 +26,9 @@ jwt:
     secret: 'MTIzNDU2Nzg=' # HAC secret for JWTs
     token:
       access:
-        expiration: 900 # 5 minutes in seconds
+        expiration: 1200 # 20 minutes in seconds
       refresh:
-        expiration: 3600 #  30 minutes in seconds
+        expiration: 3600 # 1 hour in seconds
 
 hash:
   bcrypt:
@@ -37,3 +41,30 @@ api:
       listFormat: 'json'
       mfrEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes'
       mfrModelsEndpoint: 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeId'
+
+# Setup mail server
+nodemailer:
+  adminEmail: 'admin@mybelongings.com'
+  host: ''
+  port: 2525
+  secure: true
+  user: ''
+  pass: ''
+
+email:
+  host: 'http://www.mybelongings.com'
+  templatePath: '../../../../assets/templates/email'
+
+fixtures:
+  api:
+    blacklistedVehicleMfrs: './assets/fixtures/blacklistedVehicleMfrs.json'
+    whitelistedVehicleMfrs: './assets/fixtures/whitelistedVehicleMfrs.json'
+
+system:
+  auth:
+    signup:
+      verification:
+        path: 'auth-svc/account/activate'  # Email link path
+    password:
+      reset:
+        path: 'account/password/reset' # Email link path

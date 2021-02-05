@@ -1,174 +1,182 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'
-import { withStyles }  from '@material-ui/core/styles';
-import { withContext } from '../../../contexts/appcontext';
+import AppContext from '../../../appcontext';
+import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import {RecentActors} from "@material-ui/icons";
 
-const styles = theme => ({
-	root: {
-		flexGrow: 1,
+const useStyles = makeStyles((theme) => ({
+	appBar: {
+		backgroundColor: '#404040',
+		borderBottom: `1px solid ${theme.palette.divider}`,
+		color: '#FFFFFF'
 	},
-	title: {
-		display: 'none',
-		[theme.breakpoints.up('sm')]: {
-			display: 'block',
-		},
+	toolbar: {
+		flexWrap: 'wrap'
 	},
-	grow: {
-		flexGrow: 1,
+	toolbarTitle: {
+		flexGrow: 1
 	},
-	sectionDesktop: {
+	desktopSection: {
 		display: 'none',
 		[theme.breakpoints.up('md')]: {
-			display: 'flex',
+			display: 'flex'
 		},
+		color: '#FFFFFF'
 	},
-	sectionMobile: {
+	mobileSection: {
 		display: 'flex',
 		[theme.breakpoints.up('md')]: {
-			display: 'none',
-		},
-	},
-});
-
-class Header extends React.Component
-{
-	// Constructor
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			anchor: null,
-			mobileAnchor: null
+			display: 'none'
 		}
+	}
+}));
 
-		this.onHandleProfileMenuOpen = this.onHandleProfileMenuOpen.bind(this);
-		this.onHandleMenuClose = this.onHandleMenuClose.bind(this);
-		this.onHandleMobileMenuOpen = this.onHandleMobileMenuOpen.bind(this);
-		this.onHandleMobileMenuClose = this.onHandleMobileMenuClose.bind(this);
+const desktopMenuItems = [
+	'properties', 'vehicles',
+]
+
+export default function Header() {
+	const navigate = useNavigate();
+	const apis = useContext(AppContext);
+	const classes = useStyles();
+
+	const [anchor, setAnchor] = useState(null);
+	const [mobileAnchor, setMobileAnchor] = useState(null);
+
+	const isMenuOpen = Boolean(anchor);
+	const isMobileMenuOpen = Boolean(mobileAnchor);
+
+	function onHandleSignOut() {
+		setAnchor('');
+		setMobileAnchor('');
+		apis.signout().then(response => {
+			navigate('/');
+		});
 	}
 
-	onHandleProfileMenuOpen = event => {
-		this.setState({
-			anchor: event.currentTarget
-		});
-	};
+	return (
+		<React.Fragment>
+			<AppBar position='static' color='default' elevation={0} className={classes.appBar}>
+				<Toolbar className={classes.toolbar}>
+					<Typography variant='h6' color='inherit' className={classes.toolbarTitle}  noWrap>
+						MyBelongings
+					</Typography>
+					{ !apis.isSignedIn() ? (
+						<Button
+							color='primary'
+							variant='outlined'
+							component={Link} to='/account/signin'
+						>
+							Login
+						</Button>
+					) : (
+						<React.Fragment>
+							{/* Desktop nav */}
+							<nav className={classes.desktopSection}>
+								<Button
+									component={Link}
+									to='/properties'
+								>
+									Properties
+								</Button>
+								<Button
+									component={Link}
+									to='/vehicles'
+								>
+									Vehicles
+								</Button>
+								<IconButton
+									aria-owns={ isMenuOpen && 'material-appbar' }
+									aria-haspopup='true'
+									onClick={ e => setAnchor(e.currentTarget) }
+									color='inherit'>
+									<AccountCircle />
+								</IconButton>
+							</nav>
 
-	onHandleMenuClose = () => {
-		this.setState({
-			anchor: null,
-			mobileAnchor: null
-		});
-	};
+							{/* Mobile nav */}
 
-	onHandleMobileMenuOpen = event => {
-		this.setState({ mobileAnchor: event.currentTarget });
-	};
+							<nav className={classes.mobileSection}>
+								<IconButton
+								aria-haspopup='true'
+								color='inherit'
+								onClick={ e => setMobileAnchor(e.currentTarget) }
+								>
+								<MoreIcon/>
+								</IconButton>
+							</nav>
 
-	onHandleMobileMenuClose = () => {
-		this.setState({ mobileAnchor: null });
-	};
+							{/* Desktop & mobile menu */}
 
-	render() {
-		const { anchor, mobileAnchor } = this.state;
-		const { classes, ...other } = this.props;
-		const isMenuOpen = Boolean(anchor);
-		const isMobileMenuOpen = Boolean(mobileAnchor);
+							<Menu
+								anchorEl={ mobileAnchor }
+								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								open={ isMobileMenuOpen }
+								onClose={ e => setMobileAnchor('') }>
+								<MenuItem
+									component={Link}
+									to='/properties'
+									onClick={ e => setMobileAnchor('') }
+								>
+									Properties
+								</MenuItem>
+								<MenuItem
+									component={Link}
+									to='/vehicles'
+									onClick={ e => setMobileAnchor('') }
+								>
+									Vehicles
+								</MenuItem>
+								<MenuItem
+									component={Link}
+									to='/profile'
+									onClick={ e => setMobileAnchor('') }
+								>
+									Profile
+								</MenuItem>
+								<MenuItem onClick={ onHandleSignOut }>
+									Logout
+								</MenuItem>
+							</Menu>
 
-		const desktopSection =
-			<div className={classes.sectionDesktop}>
-				{ !this.props.accessToken ? (
-					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>
-				) : (
-					<React.Fragment>
-						<Button component={Link} to='/properties'>Properties</Button>
-						<Button component={Link} to='/vehicles'>Vehicles</Button>
-						<IconButton
-							aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-							aria-haspopup='true'
-							onClick={this.onHandleProfileMenuOpen}
-							color='inherit'>
-							<AccountCircle />
-						</IconButton>
-					</React.Fragment>
-				)}
-			</div>;
+							{/* Mobile menu */}
 
-		const mobileSection =
-			<div className={classes.sectionMobile}>
-				{ !this.props.accessToken ? (
-					<Button color='primary' variant='outlined' component={Link} to='/login'>Login</Button>
-				) : (
-					<IconButton aria-haspopup='true' onClick={this.onHandleMobileMenuOpen} color='inherit'>
-						<MoreIcon/>
-					</IconButton>
-				)}
-			</div>;
-
-		const renderDesktopMenu =
-			<Menu
-				anchorEl={anchor}
-				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-				transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-				open={isMenuOpen}
-				onClose={this.onHandleMenuClose}>
-				<MenuItem onClick={this.onHandleMenuClose} component={Link} to='/profile'>
-					My Account
-				</MenuItem>
-				<MenuItem onClick={() => {
-					this.onHandleMenuClose();
-					this.props.logout();
-				}
-				}>Logout
-				</MenuItem>
-			</Menu>;
-
-		const renderMobileMenu =
-			<Menu
-				anchorEl={mobileAnchor}
-				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-				transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-				open={isMobileMenuOpen}
-				onClose={this.onHandleMobileMenuClose}>
-				<MenuItem onClick={this.onHandleMobileMenuClose}>
-					<Button component={Link} to='/properties/dashboard'>Properties</Button>
-				</MenuItem>
-				<MenuItem onClick={this.onHandleMobileMenuClose}>
-					<Button component={Link} to='/vehicles'>Vehicles</Button>
-				</MenuItem>
-				<MenuItem onClick={this.onHandleMobileMenuClose}>
-					<Button component={Link} to='/profile'>Profile</Button>
-				</MenuItem>
-				<MenuItem onClick={this.onHandleMobileMenuClose}>
-					<Button component={Link} to='/logount'>Logount</Button>
-				</MenuItem>
-			</Menu>;
-
-		return (
-			<React.Fragment>
-				<AppBar position='static' color='default'>
-					<Toolbar>
-						<Typography className={classes.title} variant='h6' color='inherit' noWrap/>
-						<div className={classes.grow} />
-						{ desktopSection }
-						{ mobileSection }
-					</Toolbar>
-				</AppBar>
-
-				{ renderDesktopMenu }
-				{ renderMobileMenu }
-			</React.Fragment>
-		)
-	}
+							<Menu
+								anchorEl={ anchor }
+								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								open={ isMenuOpen }
+								onClose={ () => {
+									setAnchor('');
+									setMobileAnchor('')
+								}}>
+								<MenuItem
+									component={Link}
+									to='/profile'
+									onClick={ () => {
+										setAnchor('');
+										setMobileAnchor('');
+									}}>
+									My Account
+								</MenuItem>
+								<MenuItem onClick={ onHandleSignOut }>
+									Logout
+								</MenuItem>
+							</Menu>
+						</React.Fragment>
+					)}
+				</Toolbar>
+			</AppBar>
+		</React.Fragment>
+	)
 }
-
-export default withContext(withStyles(styles)(Header));

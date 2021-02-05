@@ -7,15 +7,17 @@ import { ResultSet } from '../../../common/db/ResultSet';
 import { logger } from '../../../common/logging';
 import { VehicleApiHelper } from '../../shared/helpers/VehicleApiHelper';
 import { HandleUpstreamError, Key, NhtsaApiVehicleMfr, NhtsaApiVehicleModel } from '../../shared/models/models';
-import { NhtsaApiVehicleMfrCollectionService } from './NhtsaApiVehicleMfrCollectionService';
-import { NhtsaApiVehicleModelCollectionService } from './NhtsaApiVehicleModelCollectionService';
+import { NhtsaApiVehicleMfrCollectionService } from './collections/NhtsaApiVehicleMfrCollectionService';
+import { NhtsaApiVehicleModelCollectionService } from './collections/NhtsaApiVehicleModelCollectionService';
 
 const path = require('path');
 
-const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource');
-const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint');
-const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint');
-const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat');
+const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource').toString();
+const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint').toString();
+const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint').toString();
+const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat').toString();
+const BLACKLISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.blacklistedVehicleMfrs').toString();
+const WHITELISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.whitelistedVehicleMfrs').toString();
 
 export enum VEHICLE_API_ERRORS {
     VEHICLE_MFR_NOT_FOUND = 'VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND',
@@ -47,7 +49,7 @@ export class VehicleApiService {
             throw new HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND);
         }
 
-        mfr['mfrName'] = VehicleApiService.formatName(mfr.mfrName);
+        mfr.mfrName = VehicleApiService.formatName(mfr.mfrName);
         return mfr;
     }
 
@@ -62,7 +64,7 @@ export class VehicleApiService {
         }
 
         return await Promise.all(mfrs.map((mfr) => {
-            mfr['mfrName'] = VehicleApiService.formatName(mfr.mfrName);
+            mfr.mfrName = VehicleApiService.formatName(mfr.mfrName);
             return mfr;
         }));
     }
@@ -83,7 +85,7 @@ export class VehicleApiService {
             throw new HandleUpstreamError(VEHICLE_API_ERRORS.VEHICLE_MODEL_NOT_FOUND);
         }
 
-        model['model'] = VehicleApiService.formatName(mfrName, model.model);
+        model.model = VehicleApiService.formatName(mfrName, model.model);
         return model;
     }
 
@@ -94,7 +96,7 @@ export class VehicleApiService {
         const models = await this.nhtsaApiVehicleModelCollectionService.getApiModels();
 
         return await Promise.all(models.map((model) => {
-            model['model'] = VehicleApiService.formatName(null, model.model);
+            model.model = VehicleApiService.formatName(null, model.model);
             return model;
         }));
     }
@@ -117,7 +119,7 @@ export class VehicleApiService {
         const mfr = await this.getApiMfr(mfrKey);
 
         return await Promise.all(models.map((model) => {
-            model['model'] = VehicleApiService.formatName(mfr.mfrName, model.model);
+            model.model = VehicleApiService.formatName(mfr.mfrName, model.model);
             return model;
         }));
     }
@@ -159,7 +161,7 @@ export class VehicleApiService {
         // Save to API manufacturers DB
         const savedMfrs: any = await Promise.all(list.map(async (mfr) => {
             // Remove all hyphens and save as lower case
-            mfr['Make_Name'] = filterClass.formatDbMfrName(mfr.Make_Name);
+            mfr.Make_Name = filterClass.formatDbMfrName(mfr.Make_Name);
             return await this.updateApiMfrs(mfr);
         }));
 
@@ -174,8 +176,8 @@ export class VehicleApiService {
             if (apiModels) {
                 await Promise.all(apiModels.map(async (model) => {
                     // Remove all space special character and save as lower case
-                    model['Make_Name'] = filterClass.formatDbMfrName(model.Make_Name);
-                    model['Model_Name'] = filterClass.formatDbModelName(model.Model_Name);
+                    model.Make_Name = filterClass.formatDbMfrName(model.Make_Name);
+                    model.Model_Name = filterClass.formatDbModelName(model.Model_Name);
                     await this.updateApiModelsByMfrKey(mfr.key, model);
                 }));
             }
@@ -189,7 +191,7 @@ export class VehicleApiService {
      */
     private async getNhtsaMfrs(listSource): Promise<any> {
         if (listSource === NHTSA_LIST_SOURCE) {
-            return JSON.parse(readFileSync(path.resolve(__dirname, '../../shared/fixtures/whitelistedCarMfrs.json'), 'utf8'));
+            return JSON.parse(readFileSync(path.resolve(__dirname, WHITELISTED_VEHICLE_MFRS_FIXTURE), 'utf8'));
         }
 
         const apiList = await axios.get(`${NHTSA_MFR_ENDPOINT}?format=${LIST_FORMAT}`)
@@ -200,9 +202,9 @@ export class VehicleApiService {
                 logger.error('Failed to sync manufacturers list with NHTSA API.');
             });
 
-        const blacklistedCarMfrs = JSON.parse(readFileSync(path.resolve(__dirname, '../../shared/fixtures/blacklistedCarMfrs.json'), 'utf8'));
+        const blackListed = JSON.parse(readFileSync(path.resolve(__dirname, BLACKLISTED_VEHICLE_MFRS_FIXTURE), 'utf8'));
 
-        return _.difference(apiList, blacklistedCarMfrs);
+        return _.difference(apiList, blackListed);
     }
 
     /**

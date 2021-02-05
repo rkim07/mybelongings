@@ -1,16 +1,20 @@
 import { Datetime } from '../utilities/Datetime';
 import { Hash } from '../utilities/Hash';
-import { Key } from '../utilities/Key';
+import { Code, Key } from '../utilities/Key';
 
 export class User {
     key: Key;
-    authorities: Array<string>;
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
     username: string;
     password: string;
-    refreshToken: string;
+    active: number;
+    signupCode: Code;
+    resetCode: Code;
+    refreshToken: Key;
+    authorities: Array<string>;
     created: string;
     modified: string;
 
@@ -20,22 +24,30 @@ export class User {
      * @param data
      */
     constructor(data: {
-        authorities: Array<string>,
         firstName: string,
         lastName: string,
         email: string,
+        phone: string,
         username: string,
         password: string,
-        refreshToken: string
+        active: number,
+        signupCode: Code,
+        resetCode: Code,
+        refreshToken: Key,
+        authorities: Array<string>
     }) {
         this.key = Key.generate();
-        this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.email = data.email;
+        this.phone = data.phone || '';
         this.username = data.username;
         this.password = Hash.bcryptHash(data.password);
-        this.refreshToken = data.refreshToken;
+        this.active = data.active || 0;
+        this.signupCode = Code.generate();
+        this.resetCode = data.resetCode || '';
+        this.refreshToken = data.refreshToken || '';
+        this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.modified = this.created = Datetime.getNow();
     }
 }

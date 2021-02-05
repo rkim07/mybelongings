@@ -9,6 +9,8 @@ export class Vehicle {
     image: string;
     year: number;
     color: string;
+    style: string;
+    mileage: number;
     vin: string;
     plate: string;
     condition: string;
@@ -27,6 +29,8 @@ export class Vehicle {
         image: string,
         year: number,
         color: string,
+        style: string;
+        mileage: number;
         vin: string,
         plate: string,
         condition: string
@@ -37,10 +41,57 @@ export class Vehicle {
         this.modelKey = data.modelKey;
         this.image = data.image;
         this.year = data.year;
+        this.style = data.style;
+        this.mileage = data.mileage;
         this.color = data.color;
         this.vin = data.vin;
         this.plate = data.plate;
         this.condition = data.condition;
+        this.modified = this.created = Datetime.getNow();
+    }
+}
+
+export class VehicleDealer {
+    key: Key;
+    userKey: Key;
+    vehicleKey: Key;
+    storeKey: Key;
+    image: string;
+    odometer: number;
+    deposit: number;
+    vehiclePrice: number;
+    purchasePrice: number;
+    agreement: string;
+    purchaseDate: string;
+    created: string;
+    modified: string;
+
+    /**
+     * Constructor
+     *
+     * @param data
+     */
+    constructor(data: {
+        userKey: Key;
+        vehicleKey: Key;
+        storeKey: Key,
+        odometer: number,
+        deposit: number,
+        vehiclePrice: number;
+        purchasePrice: number;
+        agreement: string,
+        purchaseDate: string
+    }) {
+        this.key = Key.generate();
+        this.userKey = data.userKey;
+        this.vehicleKey = data.vehicleKey;
+        this.storeKey = data.storeKey;
+        this.odometer = data.odometer;
+        this.deposit = data.deposit;
+        this.vehiclePrice = data.vehiclePrice;
+        this.purchasePrice = data.purchasePrice;
+        this.agreement = data.agreement;
+        this.purchaseDate = data.purchaseDate;
         this.modified = this.created = Datetime.getNow();
     }
 }

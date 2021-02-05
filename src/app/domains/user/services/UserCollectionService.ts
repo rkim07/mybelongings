@@ -1,5 +1,6 @@
 import { Service } from 'typedi';
-import { Datetime, User } from '../../shared/models/models';
+import { Datetime, Key, User, Vehicle } from '../../shared/models/models';
+import { Hash } from '../../shared/models/utilities/Hash';
 import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
 
 @Service()
@@ -11,7 +12,7 @@ export class UserCollectionService extends DatabaseCollectionService {
     /**
      * Get all users
      */
-    public async getUsers(): Promise<any> {
+    public async getAll(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -21,40 +22,51 @@ export class UserCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update user
+     * Add user
      *
      * @param user
      */
-    public async updateUser(user: User) {
+    public async add(user: any): Promise<any> {
+        return await this.addOne(new User({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            username: user.username,
+            password: user.password,
+            active: user.active,
+            signupCode: user.signupCode,
+            resetCode: user.resetCode,
+            refreshToken: user.refreshToken,
+            authorities: user.authorities
+        }));
+    }
+
+    /**
+     * Update user
+     *
+     * @param user
+     */
+    public async update(user: User): Promise<any> {
         await this.loadCollection();
 
-        const existingUser = await this.findOne({ key: { $eq: user.key }});
-
-        if (existingUser) {
-            return await this.updateManyFields({
-                uniqueField: 'key',
-                uniqueFieldValue: existingUser.key,
-                updateFields: {
-                    authorities: user.authorities,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    username: user.username,
-                    password: user.password,
-                    refreshToken: user.refreshToken,
-                    modified: Datetime.getNow()
-                }
-            });
-        } else {
-            return await this.addOne(new User({
-                authorities: user.authorities,
+        return await this.updateManyFields({
+            uniqueField: 'key',
+            uniqueFieldValue: user.key,
+            updateFields: {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                phone: user.phone,
                 username: user.username,
                 password: user.password,
-                refreshToken: user.refreshToken
-            }));
-        }
+                active: user.active,
+                signupCode: user.signupCode,
+                resetCode: user.resetCode,
+                refreshToken: user.refreshToken,
+                authorities: user.authorities,
+                modified: Datetime.getNow()
+            }
+        });
     }
 }

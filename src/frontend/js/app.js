@@ -1,63 +1,41 @@
 import React from 'react';
-import { withRouter } from 'react-router';
-import { withStyles }  from '@material-ui/core/styles';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AppContext from "./appcontext";
+import globalApis from './apis/apis';
+import ProtectedRoute from './components/structure/protectedroute';
 import Header from './components/structure/default/header';
 import Footer from './components/structure/default/footer';
-import {Route, Switch} from 'react-router-dom';
 import LandingPage from './components/structure/default/landing';
-import Login from './components/domains/auth/login';
-import CreateLogin from './components/domains/auth/registration';
-import ProtectedRoute from './components/structure/protectedroute';
-import Profile from './components/domains/users/profile';
-import PropertiesDashboard from './components/domains/properties/dashboard';
-import VehiclesDashboard from './components/domains/vehicles/dashboard';
+import Login from './components/domains/auth/signin';
+import ResetEmail from './components/domains/auth/resetemail';
+import Reset from './components/domains/auth/reset';
+import Signup from './components/domains/auth/signup';
+import Activated from './components/domains/auth/activated';
+/*import Profile from './components/domains/users/profile';
+import PropertiesDashboard from './components/domains/property/dashboard';*/
+import VehiclesDashboard from './components/domains/vehicle/dashboard';
 import NotFound from './components/structure/notfound';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
-const styles = theme => ({
-	root: {
-		flexGrow: 1,
-	},
-	title: {
-		display: 'none',
-		[theme.breakpoints.up('sm')]: {
-			display: 'block'
-		}
-	},
-	grow: {
-		flexGrow: 1
-	},
-	sectionDesktop: {
-		display: 'none',
-		[theme.breakpoints.up('md')]: {
-			display: 'flex'
-		}
-	},
-	sectionMobile: {
-		display: 'flex',
-		[theme.breakpoints.up('md')]: {
-			display: 'none'
-		}
-	}
-});
-
-function App(props) {
-	const { classes, ...other } = props;
-
+export default function App() {
 	return (
-		<div className={classes.root}>
-			<Header {...props} />
-			<Switch>
-				<Route exact path='/' render={(routeProps) => <LandingPage {...routeProps} />}/>
-				<Route path='/login' render={(routeProps) => <Login {...routeProps} redirectUrl='/vehicles' />}/>
-				<Route exact path='/registration/email/:accessToken/:email' render={(routeProps) => <CreateLogin {...routeProps} {...other} />}/>
-				<ProtectedRoute path='/profile' component={ Profile } />
-				<ProtectedRoute path='/properties' component={ PropertiesDashboard } />
-				<ProtectedRoute path='/vehicles' component={ VehiclesDashboard } />
-				<Route path='*' component={ NotFound } />
-			</Switch>
-			<Footer />
-		</div>
+		<AppContext.Provider value={ globalApis }>
+			<Router>
+				<CssBaseline />
+				<Header />
+				<Routes>
+					<Route path='/' element={<LandingPage />} />
+					<Route path='account/signin' element={ <Login redirectUrl='/vehicles' />} />
+					<Route path='account/signup' element={ <Signup redirectUrl='/account/signin' />} />
+					<Route path='account/activated/:param' element={ <Activated />} />
+					<Route path='account/password/lost' element={ <ResetEmail />} />
+					<Route path='account/password/reset/:email/:resetCode' element={ <Reset redirectUrl='/account/signin' />} />
+					<ProtectedRoute path='vehicles/*' element={ <VehiclesDashboard/> } />
+					{/*<ProtectedRoute path='properties/*' element={ <PropertiesDashboard/> } />*/}
+					<Route path='/*' element={<NotFound/> } />
+				</Routes>
+				<Footer />
+			</Router>
+		</AppContext.Provider>
 	)
 }
-
-export default withRouter(withStyles(styles)(App));

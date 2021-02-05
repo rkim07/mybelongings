@@ -36,6 +36,26 @@ CREATE TABLE IF NOT EXISTS vehicles (
     dynamic_cols  blob
 );
 
+CREATE TABLE IF NOT EXISTS vehicle_dealers (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS vehicle_finances (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS vehicle_insurances (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
+CREATE TABLE IF NOT EXISTS vehicle_upgrades (
+    id varchar(36) primary key,
+    dynamic_cols  blob
+);
+
 CREATE TABLE IF NOT EXISTS nhtsaapivehiclemfrs (
     id varchar(36) primary key,
     dynamic_cols  blob

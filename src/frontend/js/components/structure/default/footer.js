@@ -1,20 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
 import classNames from 'classnames';
-import { withStyles } from '@material-ui/core';
+import Copyright from './copyright';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
 	footer: {
-		marginTop: theme.spacing(8),
 		borderTop: `1px solid ${theme.palette.divider}`,
-		padding: `${theme.spacing(6)}px 0`,
+		marginTop: theme.spacing(8),
+		paddingTop: theme.spacing(3),
+		paddingBottom: theme.spacing(3),
+		[theme.breakpoints.up('sm')]: {
+			paddingTop: theme.spacing(6),
+			paddingBottom: theme.spacing(6),
+		}
 	}
-});
+}));
 
-const footers = [
-	{
+const links = [
+	/*{
 		title: 'Company',
 		description: ['Team', 'History', 'Contact us', 'Locations'],
 	},
@@ -29,35 +36,31 @@ const footers = [
 	{
 		title: 'Legal',
 		description: ['Privacy policy', 'Terms of use'],
-	},
+	}*/
 ];
 
-function Footer(props) {
-	const { classes } = props;
+export default function Footer() {
+	const classes = useStyles();
 
 	return (
-		<footer className={classNames(classes.footer, classes.layout)}>
+		<Container maxWidth='md' component='footer' className={classes.footer}>
 			<Grid container spacing={2} justify='space-evenly'>
-				{footers.map(footer => (
-					<Grid item xs key={footer.title}>
+				{ links.map(link => (
+					<Grid item xs key={link.title}>
 						<Typography variant='h6' color='textPrimary' gutterBottom>
-							{footer.title}
+							{ link.title }
 						</Typography>
-						{footer.description.map(item => (
+						{ link.description.map(item => (
 							<Typography key={item} variant='subtitle1' color='textSecondary'>
-								{item}
+								{ item }
 							</Typography>
 						))}
 					</Grid>
 				))}
 			</Grid>
-		</footer>
+			<Box mt={5}>
+				<Copyright />
+			</Box>
+		</Container>
 	)
 }
-
-Footer.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
-
-
-export default withStyles(styles)(Footer);

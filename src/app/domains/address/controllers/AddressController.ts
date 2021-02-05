@@ -12,7 +12,7 @@ export class AddressController {
     /**
      * @swagger
      * paths:
-     *   address-svc/addresses/{address_key}:
+     *   /address-svc/addresses/{address_key}:
      *     get:
      *       summary: Retrieve a specific address.
      *       description: Retrieve a specific address.

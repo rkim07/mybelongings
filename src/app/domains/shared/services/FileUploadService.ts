@@ -3,9 +3,9 @@ import { Service } from 'typedi';
 import { HandleUpstreamError } from '../models/utilities/HandleUpstreamError';
 import { File } from '../interfaces/File';
 
-export enum FILE_SERVICE_UPLOAD_ERRORS {
-    FILE_NOT_FOUND = 'FILE_SERVICE_UPLOAD_ERRORS.FILE_NOT_FOUND',
-    EMPTY_FILE_NAME = 'FILE_SERVICE_UPLOAD_ERRORS.EMPTY_FILE_NAME'
+export enum FILE_UPLOAD_SERVICE_MESSAGES {
+    FILE_NOT_FOUND = 'FILE_UPLOAD_SERVICE_MESSAGES.FILE_NOT_FOUND',
+    EMPTY_FILE_NAME = 'FILE_UPLOAD_SERVICE_MESSAGES.EMPTY_FILE_NAME'
 }
 
 const SOURCE_PATH = 'src/assets/images';
@@ -21,7 +21,7 @@ export class FileUploadService {
      */
     public async uploadFile(file: File): Promise<string> {
         if (!file) {
-            throw new HandleUpstreamError(FILE_SERVICE_UPLOAD_ERRORS.FILE_NOT_FOUND);
+            throw new HandleUpstreamError(FILE_UPLOAD_SERVICE_MESSAGES.FILE_NOT_FOUND);
         }
 
         const fileName = file.originalname;
@@ -50,25 +50,17 @@ export class FileUploadService {
     }
 
     /**
-     * Set image path, if file is missing, it will set a default one
+     * Set image path, if file is missing, just return host
      *
-     * @param origin
      * @param image
+     * @param host
      * @param type
      */
-    public setImagePath(origin: string, image: string, type: string): string {
-        if (origin === '' || type === '') {
+    public setImagePath(image: string, host?: string): string {
+        if (host === '') {
             return '';
         }
 
-        const noPicImages = {
-            vehicle: 'no_pic_vehicle.jpg',
-            property: 'no_pic_property.png',
-            user: '',
-            paint: '',
-            area: ''
-        }
-
-        return image !== ''? `${origin}/${image}` : `${origin}/${noPicImages[type]}`;
+        return image !== '' ? `${host}/${image}` : `${host}`;
     }
 }

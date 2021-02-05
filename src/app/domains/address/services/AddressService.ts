@@ -2,8 +2,8 @@ import { Container, Inject, Service } from 'typedi';
 import { AddressCollectionService } from './AddressCollectionService';
 import { Address, HandleUpstreamError, Key } from '../../shared/models/models';
 
-export enum ADDRESS_SERVICE_ERRORS {
-    ADDRESS_NOT_FOUND = 'ADDRESS_SERVICE_ERRORS.ADDRESS_NOT_FOUND'
+export enum ADDRESS_SERVICE_MESSAGES {
+    ADDRESS_NOT_FOUND = 'ADDRESS_SERVICE_MESSAGES.ADDRESS_NOT_FOUND'
 }
 
 @Service()
@@ -22,7 +22,7 @@ export class AddressService {
         const address = await this.addressCollectionService.findOne({ key: { $eq: key }});
 
         if (!address) {
-            throw new HandleUpstreamError(ADDRESS_SERVICE_ERRORS.ADDRESS_NOT_FOUND);
+            throw new HandleUpstreamError(ADDRESS_SERVICE_MESSAGES.ADDRESS_NOT_FOUND);
         }
 
         return address

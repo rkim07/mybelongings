@@ -5,11 +5,12 @@ export * from './domains/Address';
 export * from './domains/Store';
 export * from './domains/Paint';
 
-export * from './utilities/Datetime';
-export * from './utilities/Key';
-export * from './utilities/HandleUpstreamError';
-export * from './utilities/ResponseError';
 export * from './utilities/CustomError';
+export * from './utilities/Datetime';
+export * from './utilities/HandleUpstreamError';
+export * from './utilities/Hash';
+export * from './utilities/Key';
+export * from './utilities/ResponseError';
 
 /**
  * @swagger
@@ -52,25 +53,27 @@ export * from './utilities/CustomError';
  *         $ref: "#/definitions/Key"
  *       firstName:
  *         type: string
- *         minLength: 4
+ *         minLength: 2
  *       lastName:
  *         type: string
- *         minLength: 2
+ *         minLength: 1
  *       email:
  *         type: string
  *         minLength: 5
  *       username:
  *         type: string
- *         minLength: 5
+ *         minLength: 1
  *       password:
  *         type: string
- *         minLength: 4
+ *         minLength: 1
+ *       active:
+ *         type: number
+ *       refreshToken:
+ *         type: string
  *       authorities:
  *         type: array
  *         items:
  *           type: string
- *       refreshToken:
- *         type: string
  *       created:
  *         $ref: "#/definitions/Datetime"
  *       modified:
@@ -101,6 +104,10 @@ export * from './utilities/CustomError';
  *         type: string
  *       vin:
  *         type: string
+ *       style:
+ *         type: string
+ *       mileage:
+ *         type: number
  *       plate:
  *         type: string
  *       condition:
@@ -114,6 +121,7 @@ export * from './utilities/CustomError';
  *       - modelKey
  *       - year
  *       - color
+ *       - style
  *       - vin
  *       - plate
  *       - condition
@@ -300,4 +308,25 @@ export * from './utilities/CustomError';
  *       - zip
  *       - country
  *       - type
+ *
+ *   Email:
+ *     type: object
+ *     properties:
+ *       firstName:
+ *         type: string
+ *         minLength: 2
+ *       email:
+ *         type: string
+ *         minLength: 1
+ *       type:
+ *         type: string
+ *         minLength: 1
+ *       content:
+ *         type: string
+ *
+ *     required:
+ *       - firstName
+ *       - email
+ *       - type
+ *       - content
  */

@@ -8,7 +8,9 @@ import { AuthorisedRequest, JwtDecoded } from '../domains/shared/interfaces/inte
 export namespace AuthorizationMiddleware {
 
     /**
-     * Retrieve and verify the JWT from a request (if necessary), authorise the user and decorate the request with a new User
+     * Retrieve and verify the JWT from a request (if necessary), authorise
+     * the user and decorate the request with a new user
+     *
      * 403 - Forbidden
      * 401 - Failure
      *
@@ -113,7 +115,7 @@ export namespace AuthorizationMiddleware {
             req.requestor.jwt = token;
             req.requestor.jwtDecoded = decodedJwt;
             req.requestor.userKey = decodedJwt.userKey;
-            req.requestor.origin = `${req.protocol}://${req.get('host')}`;
+            req.requestor.host = `${req.protocol}://${req.get('host')}`;
 
             authorizedRequest = true;
         }
