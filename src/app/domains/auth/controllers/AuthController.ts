@@ -18,14 +18,14 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/account/login:
+     *   /auth-svc/account/signin:
      *     post:
      *       description: Login user
      *       tags:
      *         - Auth
      *       parameters:
      *         - in: body
-     *           name: login
+     *           name: signin
      *           description: The username and password
      *           required: true
      *           schema:
@@ -52,14 +52,14 @@ export class AuthController {
      *             $ref: '#/definitions/ResponseError'
      */
     @HttpCode(201)
-    @Post('/account/login')
-    public async login(@Body() body: any): Promise<any> {
+    @Post('/account/signin')
+    public async signIn(@Body() body: any): Promise<any> {
         try {
-            const login = await this.authService.login(body);
+            const signIn = await this.authService.signIn(body);
 
             return {
-                accessToken: login.accessToken,
-                refreshToken: login.refreshToken,
+                accessToken: signIn.accessToken,
+                refreshToken: signIn.refreshToken,
                 statusCode: 201,
                 message: 'User logged in.'
             };
@@ -86,7 +86,7 @@ export class AuthController {
     /**
      * @swagger
      * paths:
-     *   /auth-svc/account/logout:
+     *   /auth-svc/account/signout:
      *     get:
      *       description: Logout user
      *       tags:
@@ -108,10 +108,10 @@ export class AuthController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/account/logout')
-    public async logout(@Req() { requestor: { userKey }}: AuthorisedRequest): Promise<any> {
+    @Get('/account/signout')
+    public async signOut(@Req() { requestor: { userKey }}: AuthorisedRequest): Promise<any> {
         try {
-            await this.authService.logout(userKey);
+            await this.authService.signOut(userKey);
 
             return {
                 statusCode: 200,
@@ -300,7 +300,7 @@ export class AuthController {
         } catch (err) {
             // Redirect back to frontend, user already
             // activated on previous attempt
-            res.redirect(`/account/activated/login`);
+            res.redirect(`/account/activated/signin`);
         }
     }
 

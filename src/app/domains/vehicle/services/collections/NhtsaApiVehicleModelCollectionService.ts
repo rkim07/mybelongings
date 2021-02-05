@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { Key, NhtsaApiVehicleModel } from '../../shared/models/models';
-import { Datetime } from '../../shared/models/utilities/Datetime';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
+import { Key, NhtsaApiVehicleModel } from '../../../shared/models/models';
+import { Datetime } from '../../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionService {

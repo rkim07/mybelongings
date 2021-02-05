@@ -7,6 +7,8 @@ export interface Vehicle {
     image: string;
     year: number;
     color: string;
+    style: string
+    mileage: number;
     vin: string;
     plate: string;
     condition: string;

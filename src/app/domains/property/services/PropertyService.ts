@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Container, Inject, Service } from 'typedi';
 import { AddressService } from '../../address/services/AddressService';
 import { FileUploadService } from '../../shared/services/FileUploadService';
-import { PropertyCollectionService } from './PropertyCollectionService';
+import { PropertyCollectionService } from './collections/PropertyCollectionService';
 import { PropertyAreaService } from "./propertyAreaService";
 import { HandleUpstreamError, Key, Property } from '../../shared/models/models';
 

@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { PropertyArea } from '../../shared/models/models';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
-import { Datetime } from '../../shared/models/utilities/Datetime';
+import { PropertyArea } from '../../../shared/models/models';
+import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
+import { Datetime } from '../../../shared/models/utilities/Datetime';
 
 @Service()
 export class PropertyAreaCollectionService extends DatabaseCollectionService {

@@ -134,9 +134,30 @@ export const schema: Array<TableSchema> = [
             { name: 'image', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'year', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'color', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'style', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'vin', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'plate', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'mileage', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'condition', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
+        ]
+    },
+    {
+        collectionName: 'VehicleDealer',
+        tableName: 'vehicle_dealers',
+        isBlob: false,
+        columns: [
+            { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'userKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'vehicleKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'storeKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'odometer', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'deposit', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'vehiclePrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'purchasePrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'agreement', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'purchaseDate', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
         ]

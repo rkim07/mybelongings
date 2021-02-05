@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { Key, Vehicle } from '../../shared/models/models';
-import { Datetime } from '../../shared/models/utilities/Datetime';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
+import { Key, Vehicle } from '../../../shared/models/models';
+import { Datetime } from '../../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class VehicleCollectionService extends DatabaseCollectionService {
@@ -40,6 +40,8 @@ export class VehicleCollectionService extends DatabaseCollectionService {
                 image: vehicle.image,
                 year: vehicle.year,
                 color: vehicle.color,
+                style: vehicle.style,
+                mileage: vehicle.mileage,
                 vin: vehicle.vin,
                 plate: vehicle.plate,
                 condition: vehicle.condition
@@ -50,21 +52,13 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     /**
      * Update vehicle
      *
-     * @param userKey
      * @param vehicle
      * @param vehicleKey
      */
-    public async update(userKey: Key, vehicleKey: Key, vehicle: any): Promise<any> {
+    public async update(vehicleKey: Key, vehicle: any): Promise<any> {
         await this.loadCollection();
 
-        const query = {
-            $and: [
-                { key: { $eq: vehicleKey } },
-                { userKey: { $eq: userKey } }
-            ]
-        };
-
-        const existingVehicle = await this.findOne(query);
+        const existingVehicle = await this.findOne({ key: { $eq: vehicleKey } });
 
         // For existing vehicle, user, manufacturer, model, and vin
         // are restricted from being updated
@@ -77,6 +71,8 @@ export class VehicleCollectionService extends DatabaseCollectionService {
                     year: vehicle.year,
                     color: vehicle.color,
                     plate: vehicle.plate,
+                    style: vehicle.style,
+                    mileage: vehicle.mileage,
                     condition: vehicle.condition,
                     modified: Datetime.getNow()
                 }

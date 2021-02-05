@@ -1,30 +1,19 @@
 import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import { currentYear } from '../../shared/helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
-import Container from '@material-ui/core/Container';
 import List from './list';
 import Modify from './modify';
-import { Info } from '@material-ui/icons';
+import Details from './details';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
-import Details from './details';
-
-const styles = theme => ({
-	root: {
-		flexGrow: 1
-	},
-	cardGrid: {
-		paddingTop: theme.spacing(8),
-		paddingBottom: theme.spacing(8),
-	}
-});
+import { Info } from '@material-ui/icons';
 
 const vehiclesReducer = (state, action) => {
 	const { payload } = action;
@@ -51,12 +40,11 @@ const vehiclesReducer = (state, action) => {
  * @returns {JSX.Element}
  * @constructor
  */
-function Dashboard(props) {
+export default function Dashboard(props) {
 	const navigate = useNavigate();
-	const apis = useContext(AppContext);
 	const notifierRef = useRef();
+	const apis = useContext(AppContext);
 
-	const { classes } = props;
 	const [loading, setLoading] = useState(true);
 
 	// Get all user's vehicles
@@ -146,7 +134,7 @@ function Dashboard(props) {
 	}
 
 	return (
-		<Container className={classes.cardGrid} maxWidth='md'>
+		<React.Fragment>
 			<Notifier ref={ notifierRef }/>
 			<Routes>
 				<Route path='/' element={
@@ -171,8 +159,6 @@ function Dashboard(props) {
 					<Details />
 				} />
 			</Routes>
-		</Container>
+		</React.Fragment>
 	)
 }
-
-export default withStyles(styles)(Dashboard);

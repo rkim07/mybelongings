@@ -2482,9 +2482,9 @@ camelcase@^5.0.0:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001093:
-  version "1.0.30001100"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001100.tgz#2a58615e0c01cf716ab349b20ca4d86ef944aa4e"
-  integrity sha512-0eYdp1+wFCnMlCj2oudciuQn2B9xAFq3WpgpcBIZTxk/1HNA/O2YA7rpeYhnOqsqAJq1AHUgx6i1jtafg7m2zA==
+  version "1.0.30001183"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001183.tgz"
+  integrity sha512-7JkwTEE1hlRKETbCFd8HDZeLiQIUcl8rC6JgNjvHCNaxOeNmQ9V4LvQXRUsKIV2CC73qKxljwVhToaA3kLRqTw==
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
@@ -8218,10 +8218,10 @@ react-dropzone@^11.2.4:
     file-selector "^0.2.2"
     prop-types "^15.7.2"
 
-react-form-validator-core@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-form-validator-core/-/react-form-validator-core-1.0.0.tgz#77b771411611b4b89f3d78849cdb468052789c1f"
-  integrity sha512-J+itG0oD/6VikXWJlOyjpoe3QaB35iX2WeFuQ1psxyJ5KkjMncBcOjUw/lemW8dYCOC7vQTFGUjlvwkGenTgig==
+react-form-validator-core@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-form-validator-core/-/react-form-validator-core-1.1.0.tgz#a0afa7af9b090374ad29be6d9bcfe7bdd2203f93"
+  integrity sha512-r7EKKm6e7YAZHbwiaxrVnBPMUIdYGMM0tOzvz4d9D6vqKqfqjmfUK5lFb/fy5o/+mkOvxM6alFdv5i5mC1KruQ==
   dependencies:
     create-react-context "^0.3.0"
     promise-polyfill "8.1.0"
@@ -8264,13 +8264,13 @@ react-lifecycles-compat@^3.0.2:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-material-ui-form-validator@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/react-material-ui-form-validator/-/react-material-ui-form-validator-2.1.1.tgz#f673cd30f511781cd437e8484d8357afcdeca70a"
-  integrity sha512-4+W6dbRVyfUnWPHaBWJTLo6LTyim/ZyCWre/GUuBalbH0l4KMlOO7VUcz+h9Vy4cTQT1/TQIxzdfitD5Y+nYMw==
+react-material-ui-form-validator@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/react-material-ui-form-validator/-/react-material-ui-form-validator-2.1.3.tgz#0807fb32c083532f846f0dbca8b313cd7689a8d9"
+  integrity sha512-i525YsjLH93PB6CT6FRQYo5mh/fTCsphvC1ppBxrrfBTlna9fku0KsG7sHv35fArSuc6vT34Bppf3uBy12errg==
   dependencies:
     prop-types "^15.0.0"
-    react-form-validator-core "1.0.0"
+    react-form-validator-core "1.1.0"
 
 react-motion@^0.5.2:
   version "0.5.2"

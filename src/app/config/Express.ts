@@ -137,7 +137,7 @@ export class ExpressConfig {
      * @private
      */
     private resolveReactRouters() {
-        this.app.get('/account/login', (req, res) => {
+        this.app.get('/account/signin', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 

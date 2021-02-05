@@ -20,8 +20,7 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     get:
-     *       summary: Fetch a specific vehicle.
-     *       description: Fetch a specific vehicle.
+     *       description: Fetch vehicle by key.
      *       tags:
      *         - Vehicle
      *       security:
@@ -35,7 +34,7 @@ export class VehicleController {
      *           required: true
      *         - name: vehicle_key
      *           in: path
-     *           description: The key associated to the desired vehicle.
+     *           description: The key associated to the vehicle.
      *           type: string
      *           required: true
      *       responses:
@@ -83,7 +82,6 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles:
      *     get:
-     *       summary: Fetch all vehicles.
      *       description: Fetch all vehicles.
      *       tags:
      *          - Vehicle
@@ -137,8 +135,7 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/by/user:
      *     get:
-     *       summary: Fetch all the vehicles of a user.
-     *       description: Fetch all the vehicles of a user.
+     *       description: Fetch all the vehicles for a user by user key
      *       tags:
      *         - Vehicle
      *       security:
@@ -279,7 +276,7 @@ export class VehicleController {
      *           required: true
      *         - name: vehicle_key
      *           in: path
-     *           description: The key associated to the desired vehicle.
+     *           description: The key associated to the vehicle.
      *           type: string
      *           required: true
      *         - in: body
@@ -309,7 +306,7 @@ export class VehicleController {
         @Body() body: any
     ): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.updateVehicle(userKey, vehicleKey, body, host);
+            const vehicle = await this.vehicleService.updateVehicle(vehicleKey, body, host);
 
             return {
                 payload: vehicle,
@@ -375,7 +372,7 @@ export class VehicleController {
         @Param('vehicle_key') vehicleKey: string,
         @Res() response: any): Promise<any> {
         try {
-            const vehicle = await this.vehicleService.deleteVehicle(userKey, vehicleKey);
+            const vehicle = await this.vehicleService.deleteVehicle(vehicleKey);
 
             if (vehicle) {
                 response.send({

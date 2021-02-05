@@ -139,6 +139,7 @@ export function deleteVehicle(key) {
  */
 function prepareSubmitData(vehicle, key = null) {
 	vehicle.year = parseInt(vehicle.year);
+	vehicle.mileage = parseInt(vehicle.mileage);
 
 	if (key) {
 		delete (vehicle.mfrName);

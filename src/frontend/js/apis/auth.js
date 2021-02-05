@@ -28,7 +28,7 @@ export function signup(formData) {
  * @param formData
  * @returns {Promise<T>}
  */
-export function login(formData) {
+export function signin(formData) {
 	// Remove existing tokens.  Do not need to remove from server
 	// since it will be updated automatically with new ones
 	if (localStorage.getItem('accessToken') !== '') {
@@ -41,7 +41,7 @@ export function login(formData) {
 
 	const refreshToken = localStorage.getItem('refreshToken');
 	return axios
-		.post('/auth-svc/account/login', formData)
+		.post('/auth-svc/account/signin', formData)
 		.then((response) => {
 			const { data } = response;
 			data.redirect = false;
@@ -67,9 +67,9 @@ export function login(formData) {
  *
  * @returns {*}
  */
-export function logout() {
+export function signout() {
 	return axios
-		.get('/auth-svc/account/logout')
+		.get('/auth-svc/account/signout')
 		.then((response) => {
 			if (response.data.statusCode < 400) {
 				localStorage.removeItem('accessToken');
@@ -154,11 +154,11 @@ export function activatePasswordReset(formData) {
 }
 
 /**
- * Check if token has been set after login
+ * Check if token has been set after sign in
  *
  * @returns {boolean}
  */
-export function isLoggedIn() {
+export function isSignedIn() {
 	const token = localStorage.getItem('accessToken');
 	return token ? true : false;
 }

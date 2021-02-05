@@ -10,29 +10,23 @@ import Skeleton from "@material-ui/lab/Skeleton";
  * @returns {JSX.Element}
  * @constructor
  */
-export default function Dealer() {
+export default function Dealer(props) {
 	const { key } = useParams();
-	const {
-		dealer,
-		loading,
-		type
-	} = props;
+	const { ...other } = props;
+
+	// Needs to be implemented
+	const tableCells = {
+		odometer: 'Odometer',
+		deposit: 'Deposit',
+		vehiclePrice: 'Vehicle Price',
+		purchasePrice: 'Purchase Price',
+		purchaseDate: 'Purchase Date',
+		agreement: 'Purchase Agreement'
+	};
 
 	return (
 		<React.Fragment>
-			{ loading ? (
-				<Box>
-					<Skeleton />
-					<Skeleton />
-					<Skeleton />
-					<Skeleton />
-					<Skeleton />
-					<Skeleton />
-					<Skeleton />
-				</Box>
-			) : (
-				<TwoColumnsTable type="dealer" model={ dealer } />
-			) }
+			<TwoColumnsTable tableCells={ tableCells } { ...other } />
 		</React.Fragment>
 	)
 }

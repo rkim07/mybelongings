@@ -1,138 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react';
-import * as _ from 'lodash';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import AppContext from '../../../appcontext';
-import Grid from '@material-ui/core/Grid';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
+import TwoColumnsTable from '../../shared/view/twocolumnstable';
+import Box from '@material-ui/core/Box';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-const styles = (theme) => ({});
-
-function Info(props) {
-	const apis = useContext(AppContext);
+/**
+ * Child component of details
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
+export default function Info(props) {
 	const { key } = useParams();
-	const { classes } = props;
+	const { ...other } = props;
 
-	const initialValues = {
-		vehicle: {
-			mfrKey: '',
-			mfrName: '',
-			modelKey: '',
-			model: '',
-			image: '',
-			imagePath: '',
-			condition: '',
-			year: '',
-			color: '',
-			vin: '',
-			plate: ''
-		},
-		resetCode: resetCode,
-		password: '',
-		repeatPassword: '',
-		loading: false
+	// Needs to be implemented
+	const tableCells = {
+		condition: 'Condition',
+		year: 'Year',
+		mfrName: 'Manufacturer',
+		model: 'Model',
+		color: 'Color',
+		style: 'Style',
+		mileage: 'Mileage',
+		vin: 'VIN',
+		plate: 'Plate'
 	};
-
-	const [values, setValues] = useState(initialValues);
-
-	// Fetch vehicle by key
-	useEffect(() => {
-		apis.getVehicle(key).then(response => {
-			const {payload, statusCode, statusType, message} = response
-			if (statusCode < 400) {
-				setValues(prevState => ({...prevState, vehicle: _.assign(prevState.vehicle, payload)}));
-			} else {
-				onHandleNotifier(statusType, message);
-				navigate('/vehicles');
-			}
-		});
-	}, [values.vehicle.key]);
 
 	return (
 		<React.Fragment>
-			<Grid item xs={12}>
-				{ values.loading ? (
-					<React.Fragment>
-						<Skeleton />
-						<Skeleton />
-						<Skeleton />
-						<Skeleton />
-						<Skeleton />
-						<Skeleton />
-						<Skeleton />
-					</React.Fragment>
-				) : (
-					<TableContainer>
-						<Table className={ classes.table } aria-label='custom table'>
-							<TableBody>
-								<TableRow key='condition'>
-									<TableCell component='th' scope='row'>
-										Condition
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ _.capitalize(values.vehicle.condition) }
-									</TableCell>
-								</TableRow>
-								<TableRow key='year'>
-									<TableCell component='th' scope='row'>
-										Year
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ values.vehicle.year }
-									</TableCell>
-								</TableRow>
-								<TableRow key='mfrName'>
-									<TableCell component='th' scope='row'>
-										Manufacturer
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ _.capitalize(values.vehicle.mfrName) }
-									</TableCell>
-								</TableRow>
-								<TableRow key='model'>
-									<TableCell component='th' scope='row'>
-										Model
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ _.capitalize(values.vehicle.model) }
-									</TableCell>
-								</TableRow>
-								<TableRow key='color'>
-									<TableCell component='th' scope='row'>
-										Color
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ _.capitalize(values.vehicle.color) }
-									</TableCell>
-								</TableRow>
-								<TableRow key='vin'>
-									<TableCell component='th' scope='row'>
-										VIN
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ values.vehicle.vin }
-									</TableCell>
-								</TableRow>
-								<TableRow key='plate'>
-									<TableCell component='th' scope='row'>
-										Plate
-									</TableCell>
-									<TableCell style={{ width: 80 }} align='right'>
-										{ values.vehicle.plate }
-									</TableCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</TableContainer>
-				)}
-			</Grid>
+			<TwoColumnsTable tableCells={ tableCells } { ...other } />
 		</React.Fragment>
 	)
 }
-
-export default withStyles(styles)(Info);

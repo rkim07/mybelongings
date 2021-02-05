@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, Routes, Route, useParams, useNavigate} from 'react-router-dom';
-import { withStyles }  from '@material-ui/core/styles';
 import Info	from './info';
+import Dealer from './dealer';
+import Finance from './finance';
 import Insurance from './insurance';
 import AppContext from '../../../appcontext';
+import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -11,17 +13,47 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
+import BuildIcon from '@material-ui/icons/Build';
 import BeachAccessIcon from '@material-ui/icons/BeachAccess';
+import StoreIcon from '@material-ui/icons/Store';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
+import { makeStyles } from '@material-ui/core/styles';
+import * as _ from "lodash";
+
+const useStyles = makeStyles((theme) => ({
+	root: {
+		marginTop: theme.spacing(4),
+		flexGrow: 1,
+		alignItems: 'center'
+	},
+	appBar: {
+		backgroundColor: '#404040',
+		width: '100%',
+		alignItems: 'center'
+	},
+	button: {
+		background: '#404040',
+		color: 'white',
+		height: 36,
+		margin: theme.spacing(3, 0, 2)
+	}
+}));
 
 function TabPanel(props) {
-	const { children, value, index, ...other } = props;
+	const {
+		children,
+		value,
+		index,
+		...other
+	} = props;
 
 	return (
 		<div
 			role='tabpanel'
+			align="center" // align contents inside tab panel
 			hidden={value !== index}
 			id={`simple-tabpanel-${index}`}
 			aria-labelledby={`simple-tab-${index}`}
@@ -36,21 +68,8 @@ function TabPanel(props) {
 	);
 }
 
-function tabAttrs(index) {
-	return {
-		id: `simple-tab-${index}`,
-		'aria-controls': `simple-tabpanel-${index}`,
-	};
-}
-
-const styles = (theme) => ({
-	button: {
-		margin: theme.spacing(1),
-	}
-});
-
 /**
- * Main component for both info and insurance
+ * Parent component for both info and insurance
  *
  * Contains:
  * Nested routes
@@ -59,58 +78,127 @@ const styles = (theme) => ({
  * @returns {JSX.Element}
  * @constructor
  */
-function Details(props) {
+export default function Details() {
 	const apis = useContext(AppContext);
 	const navigate = useNavigate();
 	const { key } = useParams();
-	const { classes } = props;
+	const classes = useStyles();
 
-	const [value, setValue] = useState(0);
+	const initialValues = {
+		vehicle: {
+			mfrKey: '',
+			mfrName: '',
+			modelKey: '',
+			model: '',
+			image: '',
+			imagePath: '',
+			condition: '',
+			sytle: '',
+			mileage: '',
+			year: '',
+			color: '',
+			vin: '',
+			plate: ''
+		},
+		loading: true,
+		tabValue: 0
+	};
+
+	const [values, setValues] = useState(initialValues);
+
+	useEffect(() => {
+		apis.getVehicle(key).then(response => {
+			const {payload, statusCode, statusType, message} = response
+			if (statusCode < 400) {
+				setValues(prevState => ({
+					...prevState,
+					vehicle: _.assign(prevState.vehicle, payload),
+					loading: false
+				}));
+			} else {
+				onHandleNotifier(statusType, message);
+				navigate('/vehicles');
+			}
+		});
+	}, []);
 
 	// Hand tab changes
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
+	const handleChange = (e, value) => {
+		setValues({
+			...values,
+			tabValue: value
+		})
 	};
 
 	return (
-		<Grid container spacing={4}>
-			<Grid item xs={12}>
-				<Button
-					type='button'
-					variant='contained'
-					color='default'
-					className={classes.button}
-					startIcon={<ArrowBack />}
-					onClick={ () => navigate('/vehicles') }
-				>
-					Back
-				</Button>
-			</Grid>
-			<Grid item xs={12}>
-				<AppBar position='static'>
+		<Container component='main' maxWidth='md'>
+			<div className={classes.root}>
+				<Grid container justify='flex-start'>
+					<Grid item>
+						<Typography gutterBottom variant='h5'>
+							Details
+						</Typography>
+					</Grid>
+				</Grid>
+				<AppBar position='static' className={classes.appBar}>
 					<Tabs
-						value={ value }
-						onChange={handleChange}
+						value={ values.tabValue }
+						onChange={ handleChange }
 					>
 						<Tab label='Info' icon={<DirectionsCarIcon />} component={Link} to='info' />
-						<Tab label='Upgrades' icon={<BeachAccessIcon />} component={Link} to='upgrades' />
-						<Tab label='Insurance' icon={<BeachAccessIcon />} component={Link} to='insurance' />
+						<Tab label='Dealer' icon={<StoreIcon />} component={Link} to='dealer' />
+						<Tab label='Finance' icon={<AttachMoneyIcon />} component={Link} to='finance' disabled />
+						<Tab label='Insurance' icon={<BeachAccessIcon />} component={Link} to='insurance' disabled />
 					</Tabs>
 				</AppBar>
 				<Routes>
-					<TabPanel value={value} index={0} >
-						<Route path='info' element={ <Info key={ key } /> } />
+					<TabPanel value={ values.tabValue } index={0} >
+						<Route path='info' element={
+							<Info
+								model={ values.vehicle }
+								loading={ values.loading }
+							/>
+						} />
 					</TabPanel>
-					<TabPanel value={value} index={1} >
-
+					<TabPanel value={ values.tabValue } index={1} >
+						<Route path='dealer' element={
+							<Dealer
+								model={ values.vehicle.dealer }
+								loading={ values.loading }
+							/>
+						} />
 					</TabPanel>
-					<TabPanel value={value} index={2} >
-						<Route path='insurance' element={ <Insurance key={ key } /> } />
+					<TabPanel value={ values.tabValue } index={2} >
+						<Route path='finance' element={
+							<Finance
+								model={ values.vehicle.finance }
+								loading={ values.loading }
+							/>
+						} />
+					</TabPanel>
+					<TabPanel value={ values.tabValue } index={3} >
+						<Route path='insurance' element={
+							<Insurance
+								model={ values.vehicle.insurance }
+								loading={ values.loading }
+							/>
+						} />
 					</TabPanel>
 				</Routes>
-			</Grid>
-		</Grid>
+				<Grid container justify='flex-end'>
+					<Grid item>
+						<Button
+							type='button'
+							variant='contained'
+							className={classes.button}
+							startIcon={<ArrowBack />}
+							onClick={ () => navigate('/vehicles') }
+						>
+							Back
+						</Button>
+					</Grid>
+				</Grid>
+			</div>
+		</Container>
 	);
 }
-
-export default withStyles(styles)(Details);

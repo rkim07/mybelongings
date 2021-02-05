@@ -1,7 +1,7 @@
 import { Container, Inject, Service } from 'typedi';
-import { PaintService} from "../../paint/services/PaintService";
+import { PaintService } from "../../paint/services/PaintService";
 import { FileUploadService } from '../../shared/services/FileUploadService';
-import { PropertyAreaCollectionService } from "./PropertyAreaCollectionService";
+import { PropertyAreaCollectionService } from "./collections/PropertyAreaCollectionService";
 import { Key, Property, PropertyArea } from '../../shared/models/models';
 
 @Service()

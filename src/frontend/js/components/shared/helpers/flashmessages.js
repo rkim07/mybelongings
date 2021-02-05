@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import lost from "../../domains/auth/lost";
+import lost from "../../domains/auth/resetemail";
 
 /**
  * Handle message according to type, domain, and label
@@ -28,9 +28,9 @@ export function messageHandler(statusType, serverMsg, msgLabel) {
 			success: {
 				LOGIN: 'User loggen in.',
 				SIGNUP: 'You have successfully submitted all your information. Please check your email in order to finish setting up your account.',
-				ACTIVATED: `Welcome, your account is ready to use.  Please click the login button below to proceed.`,
-				ALREADY_ACTIVATED: 'You already activated your account.   Please click the login button below to proceed.',
-				RESET: 'Your password has been reset successfully.  Please click the login button below to proceed.',
+				ACTIVATED: `Welcome, your account is ready to use.  Please click the sign in button below to proceed.`,
+				ALREADY_ACTIVATED: 'You already activated your account.   Please click the sign in button below to proceed.',
+				RESET: 'Your password has been reset successfully.  Please click the sign in button below to proceed.',
 				LOST: 'Please check your email for further instructions on resetting your password.',
 			},
 			error: {

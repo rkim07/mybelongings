@@ -33,11 +33,11 @@ export class AuthService {
     private emailService: EmailService = Container.get(EmailService);
 
     /**
-     * Login user
+     * Sign in user
      *
      * @param body
      */
-    public async login(body: any): Promise<any> {
+    public async signIn(body: any): Promise<any> {
         let user = await this.userService.getUserByField('username', body.username);
 
         if (!user) {
@@ -127,11 +127,11 @@ export class AuthService {
     }
 
     /**
-     * Logout user
+     * Sign out user
      *
      * @param userKey
      */
-    public async logout(userKey: Key): Promise<any> {
+    public async signOut(userKey: Key): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
         }

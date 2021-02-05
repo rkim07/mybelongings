@@ -104,6 +104,10 @@ export * from './utilities/ResponseError';
  *         type: string
  *       vin:
  *         type: string
+ *       style:
+ *         type: string
+ *       mileage:
+ *         type: number
  *       plate:
  *         type: string
  *       condition:
@@ -117,6 +121,7 @@ export * from './utilities/ResponseError';
  *       - modelKey
  *       - year
  *       - color
+ *       - style
  *       - vin
  *       - plate
  *       - condition

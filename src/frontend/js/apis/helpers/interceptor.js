@@ -13,7 +13,7 @@ export function routeNeedsAuth(url) {
 
 	// Routes that don't need authorization
 	const nonProtectedRoutes = [
-		'/auth-svc/account/login',
+		'/auth-svc/account/signin',
 		'/auth-svc/account/password/reset/activate',
 		'/auth-svc/account/password/reset',
 		'/auth-svc/account/activate',

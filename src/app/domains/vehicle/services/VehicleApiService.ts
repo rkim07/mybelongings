@@ -7,8 +7,8 @@ import { ResultSet } from '../../../common/db/ResultSet';
 import { logger } from '../../../common/logging';
 import { VehicleApiHelper } from '../../shared/helpers/VehicleApiHelper';
 import { HandleUpstreamError, Key, NhtsaApiVehicleMfr, NhtsaApiVehicleModel } from '../../shared/models/models';
-import { NhtsaApiVehicleMfrCollectionService } from './NhtsaApiVehicleMfrCollectionService';
-import { NhtsaApiVehicleModelCollectionService } from './NhtsaApiVehicleModelCollectionService';
+import { NhtsaApiVehicleMfrCollectionService } from './collections/NhtsaApiVehicleMfrCollectionService';
+import { NhtsaApiVehicleModelCollectionService } from './collections/NhtsaApiVehicleModelCollectionService';
 
 const path = require('path');
 

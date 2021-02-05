@@ -1,78 +1,42 @@
 import * as _ from 'lodash';
 import React, {useContext, useEffect, useState} from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import AppContext from '../../../appcontext';
 import { resetPassword } from '../../../apis/auth';
 import { getMessage } from '../../shared/helpers/flashmessages';
-import AppContext from '../../../appcontext';
-import Notifier from '../../shared/feedback/notifier';
+import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
-import AddIcon from '@material-ui/icons/Add';
+import { makeStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
 	root: {
-		width: 'auto',
-		display: 'block', // Fix IE 11 issue.
-		marginLeft: theme.spacing(3),
-		marginRight: theme.spacing(3),
-		[theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
-			width: 400,
-			marginLeft: 'auto',
-			marginRight: 'auto'
-		},
-	},
-	paper: {
 		marginTop: theme.spacing(8),
 		display: 'flex',
 		flexDirection: 'column',
-		alignItems: 'center',
-		padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
+		alignItems: 'center'
 	},
 	form: {
-		width: '100%', // Fix IE 11 issue.
-		marginTop: theme.spacing()
-	},
-	submit: {
+		width: '100%',
 		marginTop: theme.spacing(3)
 	},
 	button: {
-		margin: theme.spacing(1),
+		background: '#404040',
+		color: 'white',
+		height: 36,
+		margin: theme.spacing(3, 0, 2)
 	}
-});
+}));
 
-// Override style
-const theme = createMuiTheme({
-	overrides: {
-		MuiDropzonePreviewList: {
-			image: {
-				width: 600
-			}
-		},
-		MuiSelect: {
-			select: {
-				width: 150
-			}
-		},
-		MuiInputBase: {
-			input: {
-				width: 300
-			}
-		}
-	}
-});
-
-function Reset(props) {
+export default function Reset() {
 	const apis = useContext(AppContext);
 	const { email, resetCode } = useParams();
-
-	const { classes } = props;
+	const classes = useStyles();
 
 	const initialValues = {
 		email: email,
@@ -127,112 +91,88 @@ function Reset(props) {
 	}
 
 	return (
-		<Container className={classes.root} maxWidth='md'>
-			<ValidatorForm
-				onSubmit={ handleSubmit }
-			>
-				<Grid container justify='center'>
-					<Grid item xs={12} sm={12} md={12}>
-						{ values.submitted ? (
-							<Paper className={classes.paper}>
-								{ values.statusType === 'success' ? (
-									<React.Fragment>
-										<Typography component='h1' variant='h5'>
-											{
-												getMessage(
-													values.statusType,
-													values.serverMsg,
-													'AUTH_SERVICE_MESSAGES.RESET'
-												)
-											}
-										</Typography>
-										<Button
-											type='button'
-											variant='contained'
-											color='default'
-											className={classes.button}
-											startIcon={<AddIcon />}
-											component={Link}
-											to={ '/account/login' }
-										>
-											Login
-										</Button>
-									</React.Fragment>
-							 	) : (
-									<Typography component='h1' variant='h5'>
-										{
-											getMessage(
-												values.statusType,
-												values.serverMsg,
-												values.errorCode
-											)
-										}
-									</Typography>
-								) }
-							</Paper>
-						) : (
-							<Paper className={classes.paper}>
-								<Typography component='h1' variant='h5'>
-									Reset Password
-								</Typography>
-								<Typography component='h5' variant='h5'>
-									Please enter your new password
-								</Typography>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Password'
-											type='password'
-											name='password'
-											value={ values.password }
-											onChange={ handleChange }
-											validators={['required']}
-											errorMessages={['This field is required']}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControl margin='normal' required fullWidth>
-										<TextValidator
-											label='Confirm Password'
-											type='password'
-											name='repeatPassword'
-											value={ values.repeatPassword }
-											onChange={ handleChange }
-											validators={[
-												'required',
-												'isPasswordMatch'
-											]}
-											errorMessages={[
-												'This field is required',
-												'Password mismatch'
-											]}
-										/>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<Button
-										type='submit'
-										variant='contained'
-										color='default'
-										className={classes.submit}
-										fullWidth
-									>
-										Reset password
-									</Button>
-								</Grid>
-								<Grid item xs={12}>
-									<Typography component='h5' variant='h5'>
-										<Link to='/account/login'>Remember your password?</Link>
-									</Typography>
-								</Grid>
-							</Paper>
-						)}
-					</Grid>
-				</Grid>
-			</ValidatorForm>
+		<Container component='main' maxWidth='xs'>
+			<div className={classes.root}>
+				<AuthHeader title='Forgot Password' />
+				{ values.submitted ? (
+					 values.statusType === 'success' ? (
+						<Box mt={2}>
+							<Typography variant='body1'>
+								{
+									getMessage(
+										values.statusType,
+										values.serverMsg,
+										'AUTH_SERVICE_MESSAGES.RESET'
+									)
+								}
+							</Typography>
+							<Button
+								fullWidth
+								type='button'
+								variant='contained'
+								color='default'
+								className={classes.button}
+								component={Link}
+								to={ '/account/signin' }
+							>
+								Sign In
+							</Button>
+						</Box>
+					) : (
+						<Box mt={2}>
+							<Typography variant='body1'>
+								{ displayErrorMsg(values.errorCode, values.serverMsg) }
+							</Typography>
+						</Box>
+					)
+				) : (
+					<ValidatorForm
+						onSubmit={ handleSubmit }
+						className={classes.form}
+					>
+						<TextValidator
+							fullWidth
+							variant='outlined'
+							margin='normal'
+							label='New password'
+							type='password'
+							name='password'
+							value={ values.password }
+							onChange={ handleChange }
+							validators={['required']}
+							errorMessages={['This field is required']}
+						/>
+						<TextValidator
+							fullWidth
+							variant='outlined'
+							margin='normal'
+							label='Confirm new password'
+							type='password'
+							name='repeatPassword'
+							value={ values.repeatPassword }
+							onChange={ handleChange }
+							validators={['required', 'isPasswordMatch']}
+							errorMessages={['This field is required', 'Password mismatch']}
+						/>
+						<Button
+							fullWidth
+							type='submit'
+							variant='contained'
+							color='default'
+							className={classes.button}
+						>
+							Reset password
+						</Button>
+						<Grid container justify='flex-end'>
+							<Grid item>
+								<Link to='/account/signin' variant='body2'>
+									Remember your password? Sign In
+								</Link>
+							</Grid>
+						</Grid>
+					</ValidatorForm>
+				)}
+			</div>
 		</Container>
 	)
 }
-
-export default withStyles(styles)(Reset);

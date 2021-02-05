@@ -15,19 +15,6 @@ export function getPaymentTypes() {
 	];
 }
 
-export function getVehicleColors() {
-	return [
-		{
-			value: 'black',
-			label: 'Black'
-		},
-		{
-			value: 'white',
-			label: 'White'
-		}
-	];
-}
-
 export function getStates() {
 	return [
 		{

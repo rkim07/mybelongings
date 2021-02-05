@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -12,9 +10,10 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-	paper: {
+	root: {
 		marginTop: theme.spacing(8),
 		display: 'flex',
 		flexDirection: 'column',
@@ -25,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: theme.spacing(3)
 	},
 	button: {
+		background: '#696969',
+		color: 'white',
+		height: 36,
 		margin: theme.spacing(3, 0, 2)
 	}
 }));
@@ -90,8 +92,7 @@ export default function Signup() {
 
 	return (
 		<Container component='main' maxWidth='xs'>
-			<CssBaseline />
-			<div className={classes.paper}>
+			<div className={classes.root}>
 				<AuthHeader title='Sign Up' />
 				{ values.submitted ? (
 					<Typography component='h1' variant='h5'>
@@ -117,7 +118,6 @@ export default function Signup() {
 						<Grid container spacing={2}>
 							<Grid item xs={12} sm={6}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='First name'
@@ -130,7 +130,6 @@ export default function Signup() {
 							</Grid>
 							<Grid item xs={12} sm={6}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='Last name'
@@ -143,7 +142,6 @@ export default function Signup() {
 							</Grid>
 							<Grid item xs={12}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='Email'
@@ -166,7 +164,6 @@ export default function Signup() {
 							</Grid>
 							<Grid item xs={12}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='Username'
@@ -179,7 +176,6 @@ export default function Signup() {
 							</Grid>
 							<Grid item xs={12}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='Password'
@@ -193,7 +189,6 @@ export default function Signup() {
 							</Grid>
 							<Grid item xs={12}>
 								<TextValidator
-									required
 									fullWidth
 									variant='outlined'
 									label='Confirm password'
