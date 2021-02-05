@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     dynamic_cols  blob
 );
 
-CREATE TABLE IF NOT EXISTS vehicle_dealers (
+CREATE TABLE IF NOT EXISTS vehicle_purchases (
     id varchar(36) primary key,
     dynamic_cols  blob
 );

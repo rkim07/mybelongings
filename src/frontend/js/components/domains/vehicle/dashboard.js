@@ -7,7 +7,7 @@ import { currentYear } from '../../shared/helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import List from './list';
 import Modify from './modify';
-import Details from './details';
+import Information from './information';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBack from '@material-ui/icons/ArrowBack';
@@ -155,8 +155,8 @@ export default function Dashboard(props) {
 						onHandleNotifier={ handleNotifier }
 					/>
 				} />
-				<Route path='details/:key/*' element={
-					<Details />
+				<Route path='information/:key/*' element={
+					<Information />
 				} />
 			</Routes>
 		</React.Fragment>

@@ -126,6 +126,46 @@ export * from './utilities/ResponseError';
  *       - plate
  *       - condition
  *
+ *   VehiclePurchase:
+ *     type: object
+ *     properties:
+ *       key:
+ *         $ref: "#/definitions/Key"
+ *       vehicleKey:
+ *         $ref: "#/definitions/Key"
+ *       storeKey:
+ *         $ref: "#/definitions/Key"
+ *       odometer:
+ *         type: number
+ *       deposit:
+ *         type: number
+ *       downPayment:
+ *         type: number
+ *       msrpPrice:
+ *         type: number
+ *       stickerPrice:
+ *         type: number
+ *       purchasePrice:
+ *         type: number
+ *       agreement:
+ *         type: string
+ *       purchaseType:
+ *         type: string
+ *       purchaseDate:
+ *         $ref: "#/definitions/Datetime"
+ *       created:
+ *         $ref: "#/definitions/Datetime"
+ *       modified:
+ *         $ref: "#/definitions/Datetime"
+ *     required:
+ *       - vehicleKey
+ *       - odometer
+ *       - msrpPrice
+ *       - purchasePrice
+ *       - agreement
+ *       - purchaseType
+ *       - purchaseDate
+ *
  *   Property:
  *     type: object
  *     properties:

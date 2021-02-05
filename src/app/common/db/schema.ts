@@ -144,19 +144,21 @@ export const schema: Array<TableSchema> = [
         ]
     },
     {
-        collectionName: 'VehicleDealer',
-        tableName: 'vehicle_dealers',
+        collectionName: 'VehiclePurchase',
+        tableName: 'vehicle_purchases',
         isBlob: false,
         columns: [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'userKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'vehicleKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'storeKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'odometer', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'deposit', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
-            { name: 'vehiclePrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'downPayment', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'msrpPrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'stickerPrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'purchasePrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'agreement', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'purchaseType', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'purchaseDate', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }

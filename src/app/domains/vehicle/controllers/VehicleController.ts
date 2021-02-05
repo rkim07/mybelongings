@@ -3,17 +3,22 @@ import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put, Req, Res
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
 import { HandleUpstreamError, Key, ResponseError } from '../../shared/models/models';
+import { VEHICLE_PURCHASE_SERVICE_MESSAGES, VehiclePurchaseService } from '../services/VehiclePurchaseService';
 import { VEHICLE_SERVICE_MESSAGES, VehicleService } from '../services/VehicleService';
 
 import { logger } from '../../../common/logging';
 
-const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
+const DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
+const DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle purchase service.';
 
 @JsonController('/vehicle-svc')
 export class VehicleController {
 
     @Inject()
     private vehicleService: VehicleService = Container.get(VehicleService);
+
+    @Inject()
+    private vehiclePurchaseService: VehiclePurchaseService = Container.get(VehiclePurchaseService);
 
     /**
      * @swagger
@@ -64,15 +69,15 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -122,10 +127,10 @@ export class VehicleController {
                     case VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -162,7 +167,7 @@ export class VehicleController {
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/vehicles/by/user')
-    public async getUserVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
+    public async getVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
             const vehicles = await this.vehicleService.getUserVehicles(userKey, host);
 
@@ -174,15 +179,15 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.USER_KEY_EMPTY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -242,16 +247,16 @@ export class VehicleController {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
                     case VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO:
-                        return new ResponseError(422, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', '');
+                        return new ResponseError(422, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', '');
                     case VEHICLE_SERVICE_MESSAGES.EXISTING_VIN:
                         return new ResponseError(422, err.key, '');
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -316,16 +321,16 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
 
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -384,15 +389,86 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:
-                        return new ResponseError(404, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(404, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /vehicle-svc/vehicle/{vehicle_key}/purchase:
+     *     post:
+     *       description: Add vehicle purchase
+     *       tags:
+     *          - Vehicle Purchase
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *         - in: path
+     *           name: vehicle_key
+     *           description: The key for the vehicle that we're working with.
+     *           required: true
+     *           type: string
+     *         - in: body
+     *           name: request
+     *           description: New vehicle purchase information.
+     *           required: true
+     *           schema:
+     *             $ref: '#/definitions/VehiclePurchase'
+     *       responses:
+     *         201:
+     *           description: Data has been added successfully.
+     *           schema:
+     *             $ref: '#/definitions/VehiclePurchase'
+     *         422:
+     *           description: Restrictions for adding vehicle purchase.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the vehicle purchase service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @HttpCode(201)
+    @Post('/vehicle/:vehicle_key/purchase')
+    public async addVehiclePurchase(
+        @Param('vehicle_key') vehicleKey: string,
+        @Body() body: any): Promise<any> {
+        try {
+            const vehicle = await this.vehiclePurchaseService.addPurchase(vehicleKey, body);
+
+            return {
+                payload: vehicle,
+                statusCode: 201,
+                message: 'Vehicle purchase successfully added.'
+            };
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO:
+                        return new ResponseError(422, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', '');
+                    case VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_ADDED:
+                        return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
             }
         }
     }

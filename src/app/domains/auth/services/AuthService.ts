@@ -16,7 +16,7 @@ export enum AUTH_SERVICE_MESSAGES {
     INVALID_CREDENTIALS = 'AUTH_SERVICE_MESSAGES.INVALID_CREDENTIALS',
     TOKEN_NOT_CREATED = 'AUTH_SERVICE_MESSAGES.TOKEN_NOT_CREATED',
     TOKENS_NOT_CREATED = 'AUTH_SERVICE_MESSAGES.TOKENS_NOT_CREATED',
-    USER_KEY_EMPTY = 'AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY',
+    EMPTY_USER_KEY = 'AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY',
     UNACTIVATED_ACCOUNT = 'AUTH_SERVICE_MESSAGES.UNACTIVATED_ACCOUNT',
     INVALID_RESET_CODE = 'AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE',
     FAILED_ACCOUNT_ACTIVATION = 'AUTH_SERVICE_MESSAGES.FAILED_ACCOUNT_ACTIVATION',
@@ -79,7 +79,7 @@ export class AuthService {
      */
     public async deactivate(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         let user = await this.userService.getUser(userKey);
@@ -106,7 +106,7 @@ export class AuthService {
      */
     public async remove(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         let user = await this.userService.getUser(userKey);
@@ -133,7 +133,7 @@ export class AuthService {
      */
     public async signOut(userKey: Key): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         let user = await this.userService.getUser(userKey);
@@ -155,7 +155,7 @@ export class AuthService {
      */
     public async refreshToken(userKey: Key, jwt: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         const user = await this.userService.getUser(userKey);
