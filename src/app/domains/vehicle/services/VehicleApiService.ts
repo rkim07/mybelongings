@@ -12,13 +12,6 @@ import { NhtsaApiVehicleModelCollectionService } from './collections/NhtsaApiVeh
 
 const path = require('path');
 
-const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource').toString();
-const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint').toString();
-const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint').toString();
-const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat').toString();
-const BLACKLISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.blacklistedVehicleMfrs').toString();
-const WHITELISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.whitelistedVehicleMfrs').toString();
-
 export enum VEHICLE_API_ERRORS {
     VEHICLE_MFR_NOT_FOUND = 'VEHICLE_API_ERRORS.VEHICLE_MFR_NOT_FOUND',
     VEHICLE_MFRS_NOT_FOUND = 'VEHICLE_API_ERRORS.VEHICLE_MFRS_NOT_FOUND',
@@ -27,6 +20,28 @@ export enum VEHICLE_API_ERRORS {
     MFR_KEY_EMPTY = 'VEHICLE_API_ERRORS.MFR_KEY_EMPTY',
     MODEL_KEY_EMPTY = 'VEHICLE_API_ERRORS.MODEL_KEY_EMPTY'
 }
+
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const vehicleApiMappingValues = {
+    date: [
+        'created',
+        'modified'
+    ],
+    'capitalized-text': [
+        'mfrName',
+        'model'
+    ]
+};
+
+const NHTSA_LIST_SOURCE: string = config.get('api.vehicles.nhtsa.listSource').toString();
+const NHTSA_MFR_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrEndpoint').toString();
+const NHTSA_MFR_MODELS_URL_ENDPOINT: string = config.get('api.vehicles.nhtsa.mfrModelsEndpoint').toString();
+const LIST_FORMAT: string = config.get('api.vehicles.nhtsa.listFormat').toString();
+const BLACKLISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.blacklistedVehicleMfrs').toString();
+const WHITELISTED_VEHICLE_MFRS_FIXTURE: string = config.get('fixtures.api.whitelistedVehicleMfrs').toString();
 
 @Service()
 export class VehicleApiService {

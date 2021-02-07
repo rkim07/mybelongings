@@ -98,7 +98,10 @@ export default function Information() {
 			year: '',
 			color: '',
 			vin: '',
-			plate: ''
+			plate: '',
+			purchase: {},
+			finance: {},
+			insurance: {}
 		},
 		loading: true,
 		tabValue: 0

@@ -17,8 +17,8 @@ export function prepareProfileData(type, state) {
 			data['zip']     = state.user.zip;
 		break;
 
-		case 'phone':
-			data['phone'] = state.user.phone;
+		case 'mobile':
+			data['mobile'] = state.user.mobile;
 		break;
 
 		case 'email':

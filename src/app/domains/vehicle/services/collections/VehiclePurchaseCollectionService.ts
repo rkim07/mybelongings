@@ -14,7 +14,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
     }
 
     /**
-     * Get all vehicle purchases
+     * Get all purchases sorted
      */
     public async getAll(): Promise<any> {
         await this.loadCollection();
@@ -26,7 +26,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
     }
 
     /**
-     * Add vehicle purchase
+     * Add purchase
      *
      * @param vehicleKey
      * @param purchase
@@ -50,7 +50,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
     }
 
     /**
-     * Update vehicle
+     * Update purchase
      *
      * @param purchaseKey
      * @param purchase

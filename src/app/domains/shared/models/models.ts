@@ -11,6 +11,7 @@ export * from './utilities/HandleUpstreamError';
 export * from './utilities/Hash';
 export * from './utilities/Key';
 export * from './utilities/ResponseError';
+export * from './utilities/Text';
 
 /**
  * @swagger

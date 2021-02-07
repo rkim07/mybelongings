@@ -65,6 +65,7 @@ export function parseResponse(response) {
 		401: 'error',
 		403: 'error',
 		404: 'warning',
+		409: 'error',
 		422: 'warning',
 		500: 'error'
 	};

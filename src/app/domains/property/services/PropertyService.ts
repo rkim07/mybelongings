@@ -11,6 +11,29 @@ export enum PROPERTY_SERVICE_MESSAGES {
     EMPTY_USER_KEY = 'PROPERTY_SERVICE_MESSAGES.EMPTY_USER_KEY'
 }
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const propertyMappingValues = {
+    date: [
+        'created',
+        'modified',
+    ],
+    decimals: [
+        'lotSize'
+    ],
+    'string-to-number': [
+        'year'
+    ],
+    'capitalize-text': [
+        'type',
+        'style',
+        'features',
+        'subdivision'
+    ]
+};
+
 @Service()
 export class PropertyService {
 

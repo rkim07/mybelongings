@@ -8,6 +8,30 @@ export enum PAINT_SERVICE_MESSAGES {
     PAINT_NOT_FOUND = 'PAINT_SERVICE_MESSAGES.PAINT_NOT_FOUND'
 }
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const paintMappingValues = {
+    date: [
+        'created',
+        'modified'
+    ],
+    'capitalized-text': [
+        'name',
+        'finish',
+        'color',
+        'country',
+        'usage'
+    ],
+    'upper-text': [
+        'number',
+        'hex',
+        'rbg',
+        'lrv'
+    ],
+};
+
 @Service()
 export class PaintService {
 

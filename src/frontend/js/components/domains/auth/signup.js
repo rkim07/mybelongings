@@ -39,7 +39,7 @@ export default function Signup() {
 		firstName: '',
 		lastName: '',
 		email: '',
-		phone: '',
+		mobile: '',
 		username: '',
 		password: '',
 		repeatPassword: '',
@@ -156,9 +156,9 @@ export default function Signup() {
 								<TextValidator
 									fullWidth
 									variant='outlined'
-									label='Phone number'
-									name='phone'
-									value={ values.phone }
+									label='Mobile number'
+									name='mobile'
+									value={ values.mobile }
 									onChange={ handleChange }
 								/>
 							</Grid>

@@ -69,10 +69,10 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
@@ -169,7 +169,7 @@ export class VehicleController {
     @Get('/vehicles/by/user')
     public async getVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
-            const vehicles = await this.vehicleService.getUserVehicles(userKey, host);
+            const vehicles = await this.vehicleService.getVehiclesByUser(userKey, host);
 
             return {
                 payload: vehicles || [],
@@ -179,10 +179,10 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
@@ -221,6 +221,10 @@ export class VehicleController {
      *           description: Data has been added successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
+     *         409:
+     *           description: Duplicate vehicle.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         422:
      *           description: Restrictions for adding vehicle.
      *           schema:
@@ -246,10 +250,10 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
+                    case VEHICLE_SERVICE_MESSAGES.EXISTING_VIN:
+                        return new ResponseError(409, err.key, '');
                     case VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO:
                         return new ResponseError(422, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', '');
-                    case VEHICLE_SERVICE_MESSAGES.EXISTING_VIN:
-                        return new ResponseError(422, err.key, '');
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED:
                         return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
@@ -389,10 +393,10 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:
                         return new ResponseError(404, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
+                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
                         return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                 }
@@ -435,6 +439,10 @@ export class VehicleController {
      *           description: Data has been added successfully.
      *           schema:
      *             $ref: '#/definitions/VehiclePurchase'
+     *         409:
+     *           description: Duplicate purchase information.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         422:
      *           description: Restrictions for adding vehicle purchase.
      *           schema:
@@ -460,10 +468,12 @@ export class VehicleController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
+                    case VEHICLE_PURCHASE_SERVICE_MESSAGES.EXISTING_PURCHASE:
+                        return new ResponseError(409, err.key, '');
                     case VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO:
                         return new ResponseError(422, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', '');
                     case VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_ADDED:
-                        return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
+                        return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', '');
                     default:
                         return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
                 }

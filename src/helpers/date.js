@@ -1,12 +1,4 @@
-import moment from 'moment';
-
-export function formatIsoDate(date) {
-	return moment(date).format('YYYY-MM-DD');
-}
-
-export function formatShortDate(date) {
-	return moment(date).format('MM/DD/YYYY');
-}
+import * as moment from 'moment';
 
 export function currentMonth() {
 	return moment().format('MMMM, YYYY');

@@ -8,8 +8,28 @@ export enum USER_SERVICE_MESSAGES {
 }
 
 /**
- * @author Ryan Kim
+ * Key values that will be converted
+ * both on request and response
  */
+export const userMappingValues = {
+    'upper-text': [
+        'authorities'
+    ],
+    phone: [
+        'mobile'
+    ],
+    date: [
+        'created',
+        'modified'
+    ],
+    'capitalized-text': [
+        'firstName',
+        'lastName',
+        'county',
+        'country'
+    ]
+};
+
 @Service()
 export class UserService {
 

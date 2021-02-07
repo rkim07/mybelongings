@@ -8,7 +8,8 @@ export class Store {
     key: Key;
     addressKey: Key;
     name: string;
-    phone: string;
+    landline: string;
+    mobile: string;
     email: string;
     website: string;
     salesPerson: string;
@@ -24,7 +25,8 @@ export class Store {
     constructor(data: {
         addressKey: Key;
         name: string;
-        phone: string;
+        landline: string;
+        mobile: string;
         email: string;
         website: string;
         salesPerson: string;
@@ -33,7 +35,8 @@ export class Store {
         this.key = Key.generate();
         this.addressKey = data.addressKey;
         this.name = data.name;
-        this.phone = data.phone;
+        this.landline = data.landline;
+        this.mobile = data.mobile;
         this.email = data.email;
         this.website = data.website;
         this.salesPerson = data.salesPerson;

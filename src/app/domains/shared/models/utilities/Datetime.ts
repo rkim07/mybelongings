@@ -1,7 +1,5 @@
-/**
- * Datetime as ISO 8601 including Date, Time and Timezone offset. Format: 'yyyy-mm-ddThh:mm:ss(+/-)hh:mm'. E.g: '2017-05-30T23:59:59+00:00' where '+00:00' is for UTC
- * @author Swagger/James Gibbs
- */
+import * as moment from 'moment';
+
 export class Datetime {
     /**
      * Creates and formats a Date object
@@ -9,15 +7,19 @@ export class Datetime {
      */
     static getNow(): string {
         const now = new Date();
-        return this.formatDate(now);
+        return this.getUTCFormat(now);
     }
 
-    static formatDate(date: Date): string {
-
+    /**
+     * Get date formatted as YYYY-MM-DDTHH:mm:ss:SSZ (UTC)
+     *
+     * @param date
+     */
+    static getUTCFormat(date: Date): string {
         const tzo = -date.getTimezoneOffset();
         const dif = tzo >= 0 ? '+' : '-';
 
-        function pad(num) {
+        const pad = (num) => {
             const norm = Math.abs(Math.floor(num));
             return (norm < 10 ? '0' : '') + norm;
         }
@@ -33,8 +35,21 @@ export class Datetime {
             + ':' + pad(0);
     }
 
-    static getFormatString(): string {
-        return 'YYYY-MM-DDTHH:mm:ss:SSZ';
+    /**
+     * Get date formatted as MM/DD/YYYY
+     *
+     * @param date
+     */
+    static getMonthDateYearFormat(date: Date): string {
+        return moment(date).format('MM/DD/YYYY');
     }
 
+    /**
+     * Get date formatted as YYYY-MM-DD
+     *
+     * @param date
+     */
+    static getIsoDateFormat(date) {
+        return moment(date).format('YYYY-MM-DD');
+    }
 }

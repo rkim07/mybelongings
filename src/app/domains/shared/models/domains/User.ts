@@ -7,7 +7,7 @@ export class User {
     firstName: string;
     lastName: string;
     email: string;
-    phone: string;
+    mobile: string;
     username: string;
     password: string;
     active: number;
@@ -27,7 +27,7 @@ export class User {
         firstName: string,
         lastName: string,
         email: string,
-        phone: string,
+        mobile: string,
         username: string,
         password: string,
         active: number,
@@ -40,7 +40,7 @@ export class User {
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.email = data.email;
-        this.phone = data.phone || '';
+        this.mobile = data.mobile || '';
         this.username = data.username;
         this.password = Hash.bcryptHash(data.password);
         this.active = data.active || 0;

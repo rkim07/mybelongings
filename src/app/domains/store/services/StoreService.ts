@@ -7,6 +7,25 @@ export enum STORE_SERVICE_MESSAGES {
     STORE_NOT_FOUND = 'STORE_SERVICE_MESSAGES.STORE_NOT_FOUND'
 }
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const storeMappingValues = {
+    'capitalized-text': [
+        'name',
+        'salesPerson'
+    ],
+    phone: [
+        'landline',
+        'mobile'
+    ],
+    date: [
+        'created',
+        'modified'
+    ]
+};
+
 @Service()
 export class StoreService {
 
@@ -26,7 +45,7 @@ export class StoreService {
         const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
 
         if (!store) {
-            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.STORE_NOT_FOUND);
+            return {};
         }
 
         return await this.addDependencies(origin, store);

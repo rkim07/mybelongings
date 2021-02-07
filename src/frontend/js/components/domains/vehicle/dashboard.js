@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
-import { currentYear } from '../../shared/helpers/date';
+import { currentYear } from '../../../../../helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import List from './list';
 import Modify from './modify';
@@ -51,7 +51,7 @@ export default function Dashboard(props) {
 	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
 	useEffect(() => {
-		apis.getUserVehicles().then(response => {
+		apis.getVehiclesByUser().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
 				dispatchVehicles({
 					type: 'add',

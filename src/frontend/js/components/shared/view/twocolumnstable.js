@@ -40,22 +40,14 @@ export default function TwoColumnsTable(props) {
 		<TableContainer>
 			<Table className={ classes.table }>
 				<TableBody>
-				{( loading ? Array.from(new Array(10)) : Object.entries(pickedObjs)).map((idx, index) => (
+				{( loading ? Array.from(new Array(10)) : _.entries(pickedObjs)).map((idx, index) => (
 					idx ? (
 						<TableRow key={ index }>
 							<StyledTableCell component='th' scope='row'>
 								{ tableCells[idx[0]] }
 							</StyledTableCell>
 							<StyledTableCell align='right'>
-							{
-								{
-									'string': _.capitalize(idx[1]),
-									'number' : idx[0] === 'year' ?
-										idx[1]
-										:
-										idx[1].toLocaleString('en')
-								}[typeof idx[1]]
-							}
+								{ idx[1] }
 							</StyledTableCell>
 						</TableRow>
 					):(

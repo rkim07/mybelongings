@@ -4,15 +4,39 @@ import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, VehiclePurchase } from '../../shared/models/models';
 import { StoreService } from '../../store/services/StoreService';
 import { VehiclePurchaseCollectionService } from './collections/VehiclePurchaseCollectionService';
+import { VEHICLE_SERVICE_MESSAGES } from './VehicleService';
 
 export enum VEHICLE_PURCHASE_SERVICE_MESSAGES {
     EMPTY_VEHICLE_KEY = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY',
     PURCHASE_NOT_FOUND = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_FOUND',
     PURCHASE_NOT_ADDED = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_ADDED',
     PURCHASE_NOT_UPDATED = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_UPDATED',
+    EXISTING_PURCHASE = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.EXISTING_PURCHASE',
     EMPTY_PURCHASE_KEY = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_PURCHASE_KEY',
     EMPTY_NEW_PURCHASE_INFO = 'VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO'
 }
+
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const vehiclePurchaseMappingValues = {
+    date: [
+        'created',
+        'modified',
+        'purchaseDate'
+    ],
+    decimals: [
+        'odometer'
+    ],
+    price: [
+        'deposit',
+        'downPayment',
+        'msrpPrice',
+        'stickerPrice',
+        'purchasePrice'
+    ],
+};
 
 @Service()
 export class VehiclePurchaseService {
@@ -24,11 +48,11 @@ export class VehiclePurchaseService {
     private vehiclePurchaseCollectionService: VehiclePurchaseCollectionService = Container.get(VehiclePurchaseCollectionService);
 
     /**
-     * Get vehicle purchase by key
+     * Get purchase by key
      *
      * @param purchaseKey
      */
-    public async getVehiclePurchase(purchaseKey: Key): Promise<any> {
+    public async getPurchase(purchaseKey: Key): Promise<any> {
         if (!purchaseKey) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_PURCHASE_KEY);
         }
@@ -43,9 +67,9 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Get all vehicle purchases
+     * Get all purchases
      */
-    public async getVehiclePurchases(): Promise<any> {
+    public async getPurchases(): Promise<any> {
         const purchases = await this.vehiclePurchaseCollectionService.getAll();
 
         if (purchases.length === 0) {
@@ -58,30 +82,26 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Get purchase by vehicle
+     * Get purchase by vehicle key
      *
-     * @param userKey
+     * @param vehicleKey
      */
     public async getPurchaseByVehicle(vehicleKey: Key): Promise<any> {
         if (!vehicleKey) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
-        const purchases = await this.vehiclePurchaseCollectionService.find({ vehicleKey: { $eq: vehicleKey }});
+        const purchase = await this.vehiclePurchaseCollectionService.findOne({ vehicleKey: { $eq: vehicleKey }});
 
-        if (purchases.length === 0) {
-            return [];
+        if (!purchase) {
+            return {};
         }
 
-        const results = await Promise.all(purchases.map(async (purchase) => {
-            return await this.addDependencies(purchase);
-        }));
-
-        return _.sortBy(results, o => o.model);
+        return await this.addDependencies(purchase);
     }
 
     /**
-     * Add vehicle purchase
+     * Add purchase
      *
      * @param vehicleKey
      * @param purchase
@@ -89,6 +109,12 @@ export class VehiclePurchaseService {
     public async addPurchase(vehicleKey: Key, purchase: any): Promise<any> {
         if (!purchase) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO);
+        }
+
+        const purchaseExists = await this.vehiclePurchaseCollectionService.findOne({ vehicleKey: { $eq: vehicleKey }});
+
+        if (purchaseExists) {
+            throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EXISTING_PURCHASE);
         }
 
         const results = await this.vehiclePurchaseCollectionService.add(vehicleKey, purchase);
@@ -101,7 +127,7 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Update vehicle purchase
+     * Update purchase
      *
      * @param purchaseKey
      * @param purchase
@@ -121,7 +147,7 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Deletes by purchase key
+     * Delete purchase
      *
      * @param purchaseKey
      */

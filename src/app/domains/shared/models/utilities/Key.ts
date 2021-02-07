@@ -18,8 +18,6 @@ export class Key {
     }
 }
 
-
-
 /**
  * Unique GUID indentifier
  */

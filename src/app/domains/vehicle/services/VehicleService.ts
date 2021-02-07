@@ -18,6 +18,28 @@ export enum VEHICLE_SERVICE_MESSAGES {
     EMPTY_USER_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY'
 }
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const vehicleMappingValues = {
+    date: [
+        'created',
+        'modified',
+        'purchaseDate'
+    ],
+    decimals: [
+        'mileage'
+    ],
+    'string-to-number': [
+        'year'
+    ],
+    'upper-text': [
+        'vin',
+        'plate'
+    ]
+};
+
 @Service()
 export class VehicleService {
 
@@ -76,7 +98,7 @@ export class VehicleService {
      * @param userKey
      * @param host
      */
-    public async getUserVehicles(userKey: Key, host?: string): Promise<any> {
+    public async getVehiclesByUser(userKey: Key, host?: string): Promise<any> {
         if (!userKey) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
@@ -107,7 +129,7 @@ export class VehicleService {
         }
 
         // Make sure VIN numbers are unique
-        const vinExists = await this.vehicleCollectionService.findOne({ vin: {$eq: vehicle.vin} });
+        const vinExists = await this.vehicleCollectionService.findOne({ vin: { $eq: vehicle.vin }});
 
         if (vinExists) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EXISTING_VIN);
@@ -144,7 +166,7 @@ export class VehicleService {
     }
 
     /**
-     * Deletes a vehicle by key
+     * Delete vehicle
      *
      * @param vehicleKey
      */
