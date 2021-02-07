@@ -11,8 +11,8 @@ export enum STORE_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const storeMappingValues = {
-    'capitalized-text': [
+export const storeMappingKeys = {
+    capitalizedText: [
         'name',
         'salesPerson'
     ],

@@ -10,18 +10,18 @@ export enum ADDRESS_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const addressMappingValues = {
+export const addressMappingKeys = {
     date: [
         'created',
         'modified'
     ],
-    'capitalized-text': [
+    capitalizedText: [
         'street',
         'city',
         'county',
         'country'
     ],
-    'upper-text': [
+    upperText: [
       'state'
     ],
     phone: [

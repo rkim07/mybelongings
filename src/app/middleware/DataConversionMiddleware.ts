@@ -15,12 +15,11 @@ export namespace DataConversionMiddleware {
      * @param next
      */
     export function requestInterceptor(req: Request, res: Response, next: NextFunction) {
-        const service = new DataConversionService('response');
+        const dataConversionService = new DataConversionService('request');
 
         try {
-            if (service.isRequestConvertingRoute(req.url)) {
-                const service = new DataConversionService('request');
-                req.body = service.process(req.body);
+            if (dataConversionService.isRequestConvertingRoute(req.url)) {
+                req.body = dataConversionService.process(req.body);
             }
 
             next();
@@ -37,17 +36,17 @@ export namespace DataConversionMiddleware {
      * @param next
      */
     export function responseInterceptor(req: Request, res: Response, next: NextFunction) {
-        const service = new DataConversionService('response');
+        const dataConversionService = new DataConversionService('response');
 
         try {
             // Original response
             const originalSend = res.send;
 
             // Check if route is listed for data conversion
-            if (service.isResponseConvertingRoute(res.req.url)) {
+            if (dataConversionService.isResponseConvertingRoute(res.req.url)) {
                 res.send = function(): any {
                     let parsedData = JSON.parse(arguments[0]);
-                    let convertedPayload = service.process(parsedData.payload);
+                    let convertedPayload = dataConversionService.process(parsedData.payload);
                     arguments[0] = JSON.stringify({ ...parsedData, payload: convertedPayload });
                     originalSend.apply(res, arguments);
                 }

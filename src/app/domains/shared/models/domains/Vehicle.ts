@@ -64,7 +64,7 @@ export class VehiclePurchase {
     purchasePrice: number;
     agreement: string;
     purchaseType: string;
-    purchaseDate: string;
+    purchased: string;
     created: string;
     modified: string;
 
@@ -84,7 +84,7 @@ export class VehiclePurchase {
         purchasePrice: number;
         agreement: string,
         purchaseType: string;
-        purchaseDate: string
+        purchased: string
     }) {
         this.key = Key.generate();
         this.vehicleKey = data.vehicleKey;
@@ -97,7 +97,7 @@ export class VehiclePurchase {
         this.purchasePrice = data.purchasePrice;
         this.agreement = data.agreement;
         this.purchaseType = data.purchaseType;
-        this.purchaseDate = data.purchaseDate;
+        this.purchased = data.purchased;
         this.modified = this.created = Datetime.getNow();
     }
 }

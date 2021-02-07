@@ -25,12 +25,12 @@ export enum VEHICLE_API_ERRORS {
  * Key values that will be converted
  * both on request and response
  */
-export const vehicleApiMappingValues = {
+export const vehicleApiMappingKeys = {
     date: [
         'created',
         'modified'
     ],
-    'capitalized-text': [
+    capitalizedText: [
         'mfrName',
         'model'
     ]

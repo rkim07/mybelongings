@@ -23,7 +23,7 @@ export default function Purchase(props) {
 		stickerPrice: 'Sticker price',
 		purchasePrice: 'Purchase price',
 		purchaseType: 'Purchase type',
-		purchaseDate: 'Purchase date',
+		purchased: 'Purchase date',
 		agreement: 'Purchase agreement'
 	};
 

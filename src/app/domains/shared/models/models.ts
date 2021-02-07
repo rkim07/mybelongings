@@ -58,6 +58,9 @@ export * from './utilities/Text';
  *       lastName:
  *         type: string
  *         minLength: 1
+ *       mobile:
+ *         type: string
+ *         minLength: 1
  *       email:
  *         type: string
  *         minLength: 5
@@ -152,7 +155,7 @@ export * from './utilities/Text';
  *         type: string
  *       purchaseType:
  *         type: string
- *       purchaseDate:
+ *       purchased:
  *         $ref: "#/definitions/Datetime"
  *       created:
  *         $ref: "#/definitions/Datetime"
@@ -165,7 +168,7 @@ export * from './utilities/Text';
  *       - purchasePrice
  *       - agreement
  *       - purchaseType
- *       - purchaseDate
+ *       - purchased
  *
  *   Property:
  *     type: object
@@ -298,7 +301,10 @@ export * from './utilities/Text';
  *       name:
  *         type: string
  *         minLength: 1
- *       phone:
+ *       landline:
+ *         type: string
+ *         minLength: 1
+ *       mobile:
  *         type: string
  *         minLength: 1
  *       email:

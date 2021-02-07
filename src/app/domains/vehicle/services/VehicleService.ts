@@ -22,19 +22,19 @@ export enum VEHICLE_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const vehicleMappingValues = {
+export const vehicleMappingKeys = {
     date: [
         'created',
         'modified',
-        'purchaseDate'
+        'purchased'
     ],
     decimals: [
         'mileage'
     ],
-    'string-to-number': [
+    stringToNumber: [
         'year'
     ],
-    'upper-text': [
+    upperText: [
         'vin',
         'plate'
     ]

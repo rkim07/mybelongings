@@ -44,7 +44,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
                 purchasePrice: purchase.purchasePrice,
                 agreement: purchase.agreement,
                 purchaseType: purchase.purchaseType,
-                purchaseDate: purchase.purchaseDate
+                purchased: purchase.purchased
             })
         );
     }
@@ -75,7 +75,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
                     purchasePrice: purchase.purchasePrice,
                     agreement: purchase.agreement,
                     purchaseType: purchase.purchaseType,
-                    purchaseDate: purchase.purchaseDate,
+                    purchased: purchase.purchased,
                     modified: Datetime.getNow()
                 }
             });

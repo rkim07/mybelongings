@@ -7,7 +7,7 @@ export class User {
     firstName: string;
     lastName: string;
     email: string;
-    mobile: string;
+    mobile: number;
     username: string;
     password: string;
     active: number;
@@ -27,7 +27,7 @@ export class User {
         firstName: string,
         lastName: string,
         email: string,
-        mobile: string,
+        mobile: number,
         username: string,
         password: string,
         active: number,
@@ -40,13 +40,13 @@ export class User {
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.email = data.email;
-        this.mobile = data.mobile || '';
+        this.mobile = data.mobile;
         this.username = data.username;
         this.password = Hash.bcryptHash(data.password);
         this.active = data.active || 0;
         this.signupCode = Code.generate();
-        this.resetCode = data.resetCode || '';
-        this.refreshToken = data.refreshToken || '';
+        this.resetCode = data.resetCode;
+        this.refreshToken = data.refreshToken;
         this.authorities = data.authorities ? data.authorities : ['ROLE_USER'];
         this.modified = this.created = Datetime.getNow();
     }

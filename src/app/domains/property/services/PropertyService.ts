@@ -15,7 +15,7 @@ export enum PROPERTY_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const propertyMappingValues = {
+export const propertyMappingKeys = {
     date: [
         'created',
         'modified',
@@ -23,7 +23,7 @@ export const propertyMappingValues = {
     decimals: [
         'lotSize'
     ],
-    'string-to-number': [
+    stringToNumber: [
         'year'
     ],
     'capitalize-text': [

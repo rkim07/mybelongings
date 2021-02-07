@@ -11,8 +11,8 @@ export enum USER_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const userMappingValues = {
-    'upper-text': [
+export const userMappingKeys = {
+    upperText: [
         'authorities'
     ],
     phone: [
@@ -22,7 +22,7 @@ export const userMappingValues = {
         'created',
         'modified'
     ],
-    'capitalized-text': [
+    capitalizedText: [
         'firstName',
         'lastName',
         'county',

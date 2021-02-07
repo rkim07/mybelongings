@@ -10,7 +10,7 @@ export const schema: Array<TableSchema> = [
             { name: 'firstName', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'lastName', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'email', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'mobile', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'mobile', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'username', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'password', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'active', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
@@ -113,8 +113,8 @@ export const schema: Array<TableSchema> = [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'addressKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'name', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'landline', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'mobile', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'landline', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'mobile', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'email', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'website', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'salesPerson', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
@@ -160,7 +160,7 @@ export const schema: Array<TableSchema> = [
             { name: 'purchasePrice', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'agreement', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'purchaseType', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'purchaseDate', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'purchased', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
         ]

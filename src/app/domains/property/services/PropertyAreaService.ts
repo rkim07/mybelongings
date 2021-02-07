@@ -8,7 +8,7 @@ import { Key, Property, PropertyArea } from '../../shared/models/models';
  * Key values that will be converted
  * both on request and response
  */
-export const propertyAreaMappingValues = {
+export const propertyAreaMappingKeys = {
     date: [
         'created',
         'modified',
@@ -17,7 +17,7 @@ export const propertyAreaMappingValues = {
     decimals: [
         'sqFt'
     ],
-    'capitalized-text': [
+    capitalizedText: [
         'name',
         'location'
     ]

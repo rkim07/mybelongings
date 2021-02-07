@@ -8,8 +8,8 @@ export class Store {
     key: Key;
     addressKey: Key;
     name: string;
-    landline: string;
-    mobile: string;
+    landline: number;
+    mobile: number;
     email: string;
     website: string;
     salesPerson: string;
@@ -25,8 +25,8 @@ export class Store {
     constructor(data: {
         addressKey: Key;
         name: string;
-        landline: string;
-        mobile: string;
+        landline: number;
+        mobile: number;
         email: string;
         website: string;
         salesPerson: string;

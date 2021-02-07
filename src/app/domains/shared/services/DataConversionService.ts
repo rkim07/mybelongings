@@ -2,24 +2,42 @@ import * as _ from 'lodash';
 import { Service } from 'typedi';
 import { Datetime } from '../models/utilities/Datetime';
 import { Text } from '../models/utilities/Text';
-import { addressMappingValues } from '../../address/services/AddressService';
-import { paintMappingValues} from '../../paint/services/PaintService';
-import { propertyMappingValues} from '../../property/services/PropertyService';
-import { propertyAreaMappingValues} from '../../property/services/PropertyAreaService';
-import { storeMappingValues} from '../../store/services/StoreService';
-import { userMappingValues} from '../../user/services/UserService';
-import { vehicleMappingValues } from '../../vehicle/services/VehicleService';
-import { vehiclePurchaseMappingValues } from '../../vehicle/services/VehiclePurchaseService';
-import { vehicleApiMappingValues } from '../../vehicle/services/VehicleApiService';
+import { addressMappingKeys } from '../../address/services/AddressService';
+import { paintMappingKeys} from '../../paint/services/PaintService';
+import { propertyMappingKeys} from '../../property/services/PropertyService';
+import { propertyAreaMappingKeys} from '../../property/services/PropertyAreaService';
+import { storeMappingKeys} from '../../store/services/StoreService';
+import { userMappingKeys} from '../../user/services/UserService';
+import { vehicleMappingKeys } from '../../vehicle/services/VehicleService';
+import { vehiclePurchaseMappingKeys } from '../../vehicle/services/VehiclePurchaseService';
+import { vehicleApiMappingKeys } from '../../vehicle/services/VehicleApiService';
 
 @Service()
 export class DataConversionService {
 
     method: string;
+    keyMappers: Array<object>;
 
+    /**
+     * Constructor
+     *
+     * @param method
+     */
     constructor(method) {
         this.method = method;
+        this.keyMappers = [
+            addressMappingKeys,
+            paintMappingKeys,
+            propertyMappingKeys,
+            propertyAreaMappingKeys,
+            storeMappingKeys,
+            userMappingKeys,
+            vehicleMappingKeys,
+            vehiclePurchaseMappingKeys,
+            vehicleApiMappingKeys
+        ];
     }
+
     /**
      * Process mapping and conversion
      *
@@ -46,7 +64,7 @@ export class DataConversionService {
         const entries = Object.entries(clonedObj);
 
         entries.forEach(([key, value]) => {
-            if (typeof value === "object") {
+            if (typeof value === 'object') {
                 clonedObj[key] = this.findAndConvert(value);
             } else {
                 clonedObj[key] = this.convert(key, value);
@@ -68,7 +86,7 @@ export class DataConversionService {
      */
     public convert(convertingKey, convertingValue) {
         let mappingType = '';
-        const mappingKeys = this.getMappingKeys()
+        const mappingKeys = this.getKeyMappers();
         _.forEach(mappingKeys, (keys, type) => {
             if (_.includes(keys, convertingKey)) {
                 mappingType = type;
@@ -82,12 +100,12 @@ export class DataConversionService {
                 case 'price':
                 case 'phone':
                     return Text.numberWithoutCommas(convertingValue);
-                case 'upper-text':
-                case 'capitalized-text':
+                case 'upperText':
+                case 'capitalizedText':
                     return Text.toLowerCase(convertingValue);
                 case 'date':
                     return Datetime.getUTCFormat(convertingValue);
-                case 'string-to-number':
+                case 'stringToNumber':
                     return Text.toInteger(convertingValue);
                 default:
                     return convertingValue;
@@ -99,9 +117,9 @@ export class DataConversionService {
                     return Text.numberWithCommas(convertingValue);
                 case 'date':
                     return Datetime.getMonthDateYearFormat(convertingValue);
-                case 'upper-text':
+                case 'upperText':
                     return Text.toUpperCase(convertingValue);
-                case 'capitalized-text':
+                case 'capitalizedText':
                     return Text.capitalizeWords(convertingValue);
                 case 'price':
                     return `${Text.numberWithCommas(convertingValue)}`;
@@ -130,20 +148,30 @@ export class DataConversionService {
     /**
      * Get all combined mappers
      *
+     * Needed to create own merging instead of using 3rd party libraries.
+     * Most of the librarires out there, merges arrays by key as a result
+     * excluding or overriding other array keys in objects.  This functionality
+     * will preserve and add any new element of the next array uniquely.
+     *
      * @private
      */
-    private getMappingKeys() {
-        return _.merge(
-            {},
-            addressMappingValues,
-            paintMappingValues,
-            propertyMappingValues,
-            propertyAreaMappingValues,
-            storeMappingValues,
-            userMappingValues,
-            vehicleMappingValues,
-            vehiclePurchaseMappingValues,
-            vehicleApiMappingValues
-        );
+    private getKeyMappers() {
+        let mainArr = {};
+        let tempArr;
+        let distinctArr;
+
+        _.forEach(this.keyMappers, (mapper, index) => {
+            _.forIn(mapper, (mapperValue, key) => {
+                if (!mainArr[key]) {
+                    mainArr[key] = mapperValue;
+                } else {
+                    tempArr = [...mainArr[key], ...mapperValue];
+                    distinctArr = new Set(tempArr);
+                    mainArr[key] = [...distinctArr];
+                }
+            });
+        });
+
+        return mainArr;
     }
 }

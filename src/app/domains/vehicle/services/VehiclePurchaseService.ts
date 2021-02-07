@@ -20,11 +20,11 @@ export enum VEHICLE_PURCHASE_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const vehiclePurchaseMappingValues = {
+export const vehiclePurchaseMappingKeys = {
     date: [
         'created',
         'modified',
-        'purchaseDate'
+        'purchased'
     ],
     decimals: [
         'odometer'

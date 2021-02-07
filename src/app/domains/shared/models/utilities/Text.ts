@@ -31,7 +31,7 @@ export class Text {
 	 * @param number
 	 */
 	static numberWithoutCommas(number) {
-		return number.replace(',', '');
+		return parseInt(number.replace(',', ''));
 	}
 
 	/**
@@ -40,7 +40,7 @@ export class Text {
 	 * @param number
 	 */
 	static getNumericOnly(number) {
-		return number.replace(/\D/g, '');
+		return parseInt(number.replace(/\D/g, ''));
 	}
 
 	/**

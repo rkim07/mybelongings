@@ -12,19 +12,19 @@ export enum PAINT_SERVICE_MESSAGES {
  * Key values that will be converted
  * both on request and response
  */
-export const paintMappingValues = {
+export const paintMappingKeys = {
     date: [
         'created',
         'modified'
     ],
-    'capitalized-text': [
+    capitalizedText: [
         'name',
         'finish',
         'color',
         'country',
         'usage'
     ],
-    'upper-text': [
+    upperText: [
         'number',
         'hex',
         'rbg',
