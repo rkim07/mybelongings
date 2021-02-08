@@ -34,6 +34,11 @@ export const vehicleMappingKeys = {
     stringToNumber: [
         'year'
     ],
+    capitalizedText: [
+        'color',
+        'style',
+        'condition',
+    ],
     upperText: [
         'vin',
         'plate'

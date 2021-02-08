@@ -63,8 +63,7 @@ export class VehicleController {
 
             return {
                 payload: vehicle || {},
-                statusCode: 200,
-                message: 'Fetched specific vehicle.'
+                statusCode: 200
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -119,7 +118,7 @@ export class VehicleController {
             return {
                 payload: vehicles || [],
                 statusCode: 200,
-                message: vehicles.length > 0 ? 'Fetched all the vehicles.' : 'There are no vehicles at this time.'
+                successCode: 'VEHICLE_SERVICE_MESSAGES.EMPTY_LIST'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -174,7 +173,7 @@ export class VehicleController {
             return {
                 payload: vehicles || [],
                 statusCode: 200,
-                message: vehicles.length > 0 ? 'Fetched all vehicles for the user.' : 'No vehicles were found for the user.'
+                successCode: 'VEHICLE_SERVICE_MESSAGES.USER_VEHICLES_EMPTY_LIST'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -245,7 +244,7 @@ export class VehicleController {
             return {
                 payload: vehicle,
                 statusCode: 201,
-                message: 'Vehicle successfully added.'
+                successCode: 'VEHICLE_SERVICE_MESSAGES.NEW'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -320,7 +319,7 @@ export class VehicleController {
             return {
                 payload: vehicle,
                 statusCode: 200,
-                message: 'Vehicle successfully updated.'
+                successCode: 'VEHICLE_SERVICE_MESSAGES.UPDATED'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -387,7 +386,7 @@ export class VehicleController {
                 response.send({
                     payload: vehicle,
                     statusCode: 204,
-                    message: 'Vehicle successfully deleted.'
+                    successCode: 'VEHICLE_SERVICE_MESSAGES.DELETED'
                 });
             }
         } catch (err) {
@@ -463,7 +462,7 @@ export class VehicleController {
             return {
                 payload: vehicle,
                 statusCode: 201,
-                message: 'Vehicle purchase successfully added.'
+                message: 'Vehicle purchase information successfully added.'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {

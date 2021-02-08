@@ -61,7 +61,7 @@ export class AuthController {
                 accessToken: signIn.accessToken,
                 refreshToken: signIn.refreshToken,
                 statusCode: 201,
-                message: 'User logged in.'
+                successCode: 'AUTH_SERVICE_ERROR_MESSAGE.LOGIN'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -115,7 +115,6 @@ export class AuthController {
 
             return {
                 statusCode: 200,
-                message: 'Logout success.'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -173,8 +172,7 @@ export class AuthController {
 
             return {
                 accessToken: refresh.accessToken,
-                statusCode: 200,
-                message: 'Token refreshed.'
+                statusCode: 200
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -238,8 +236,7 @@ export class AuthController {
 
             return {
                 user: signup.user,
-                statusCode: 201,
-                message: 'User successfully signed up.'
+                statusCode: 201
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -342,8 +339,7 @@ export class AuthController {
             await this.authService.activatePasswordReset(body.email);
 
             response.send({
-                statusCode: 201,
-                message: 'Successful password reset activation.'
+                statusCode: 201
             });
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -400,7 +396,7 @@ export class AuthController {
 
             response.send({
                 statusCode: 201,
-                message: 'Password reset successful.'
+                successCode: 'AUTH_SERVICE_MESSAGES.RESET'
             });
         } catch (err) {
             if (err instanceof HandleUpstreamError) {

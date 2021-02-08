@@ -132,16 +132,21 @@ export class DataConversionService {
     }
 
     /**
-     * Check if path is in the list for data modification
+     * Check if it's request route for conversion
      * @param path
      */
-    public isRequestConvertingRoute(path) {
+    public isRequestRouteForConversion(path) {
         const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,}))$/;
         return regex.test(path);
     }
 
-    public isResponseConvertingRoute(path) {
-        const regex = /^\//;
+    /**
+     * Check if it's response route for conversion
+     *
+     * @param path
+     */
+    public isResponseRouteForConversion(path) {
+        const regex = /^\/(=?vehicle-svc|property-svc)/;
         return regex.test(path);
     }
 

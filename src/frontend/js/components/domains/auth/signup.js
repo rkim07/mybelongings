@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
@@ -44,9 +43,7 @@ export default function Signup() {
 		password: '',
 		repeatPassword: '',
 		submitted: false,
-		statusType: '',
-		errorCode: '',
-		serverMsg: ''
+		message: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
@@ -84,9 +81,7 @@ export default function Signup() {
 		setValues({
 			...values,
 			submitted: true,
-			statusType: response.statusType,
-			errorCode: response.errorCode ,
-			serverMsg: response.message
+			message: response.message
 		});
 	}
 
@@ -96,19 +91,7 @@ export default function Signup() {
 				<AuthHeader title='Sign Up' />
 				{ values.submitted ? (
 					<Typography component='h1' variant='h5'>
-						{ values.statusType === 'success' ?
-							getMessage(
-								values.statusType,
-								values.serverMsg,
-								'AUTH_SERVICE_MESSAGES.SIGNUP'
-							)
-							:
-							getMessage(
-								values.statusType,
-								values.serverMsg,
-								values.errorCode
-							)
-						}
+						{ values.message}
 					</Typography>
 				) : (
 					<ValidatorForm

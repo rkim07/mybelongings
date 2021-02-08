@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import { currentYear } from '../../../../../helpers/date';
@@ -109,8 +108,7 @@ export default function Dashboard(props) {
 
 			handleNotifier(
 				response.statusType,
-				response.message,
-				isNewVehicle ? 'VEHICLE_SERVICE_MESSAGES.NEW' : 'VEHICLE_SERVICE_MESSAGES.UPDATE'
+				response.message
 			);
 
 			// Rerender component since a new vehicle
@@ -121,15 +119,13 @@ export default function Dashboard(props) {
 		} else {
 			handleNotifier(
 				response.statusType,
-				response.message,
-				response.errorCode
+				response.message
 			);
 		}
 	}
 
 	// Notifier
-	const handleNotifier = (statusType, serverMsg, msgName) => {
-		const message = getMessage(statusType, serverMsg, msgName);
+	const handleNotifier = (statusType, message) => {
 		notifierRef.current.openNotifier(statusType, message);
 	}
 

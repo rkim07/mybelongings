@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from "axios";
 import ReactDOM from 'react-dom';
-import { getHeaderAuthorization, parseResponse, routeNeedsAuth } from "./apis/helpers/interceptor";
+import { getHeaderAuthorization, routeNeedsAuth } from "./apis/helpers/interceptor";
 import { refreshAccessToken } from "./apis/auth";
 import App from './app';
 
@@ -20,7 +20,7 @@ const refreshAxios = axios.create();
 
 // Response interceptor
 axios.interceptors.response.use(response => {
-	return parseResponse(response);
+	return response;
 }, err => {
 	const { config, response } = err;
 
