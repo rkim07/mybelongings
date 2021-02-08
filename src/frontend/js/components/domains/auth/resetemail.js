@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
@@ -40,7 +39,7 @@ export default function ResetEmail() {
 		submitted: false,
 		statusType: '',
 		errorCode: '',
-		serverMsg: ''
+		message: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
@@ -62,7 +61,7 @@ export default function ResetEmail() {
 			submitted: true,
 			statusType: response.statusType,
 			errorCode: response.errorCode ,
-			serverMsg: response.message
+			message: response.message
 		});
 	}
 
@@ -73,19 +72,7 @@ export default function ResetEmail() {
 				{ values.submitted ? (
 					<Box mt={8}>
 						<Typography variant='body1'>
-							{ values.statusType === 'success' ?
-								getMessage(
-									values.statusType,
-									values.serverMsg,
-									'AUTH_SERVICE_MESSAGES.LOST'
-								)
-								:
-								getMessage(
-									values.statusType,
-									values.serverMsg,
-									values.errorCode
-								)
-							}
+							{ values.message }
 						</Typography>
 					</Box>
 				) : (

@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
-import { currentYear } from '../../shared/helpers/date';
+import { currentYear } from '../../../../../helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import List from './list';
 import Modify from './modify';
-import Details from './details';
+import Information from './information';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import ArrowBack from '@material-ui/icons/ArrowBack';
@@ -51,7 +50,7 @@ export default function Dashboard(props) {
 	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
 	useEffect(() => {
-		apis.getUserVehicles().then(response => {
+		apis.getVehiclesByUser().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
 				dispatchVehicles({
 					type: 'add',
@@ -109,8 +108,7 @@ export default function Dashboard(props) {
 
 			handleNotifier(
 				response.statusType,
-				response.message,
-				isNewVehicle ? 'VEHICLE_SERVICE_MESSAGES.NEW' : 'VEHICLE_SERVICE_MESSAGES.UPDATE'
+				response.message
 			);
 
 			// Rerender component since a new vehicle
@@ -121,15 +119,13 @@ export default function Dashboard(props) {
 		} else {
 			handleNotifier(
 				response.statusType,
-				response.message,
-				response.errorCode
+				response.message
 			);
 		}
 	}
 
 	// Notifier
-	const handleNotifier = (statusType, serverMsg, msgName) => {
-		const message = getMessage(statusType, serverMsg, msgName);
+	const handleNotifier = (statusType, message) => {
 		notifierRef.current.openNotifier(statusType, message);
 	}
 
@@ -155,8 +151,8 @@ export default function Dashboard(props) {
 						onHandleNotifier={ handleNotifier }
 					/>
 				} />
-				<Route path='details/:key/*' element={
-					<Details />
+				<Route path='information/:key/*' element={
+					<Information />
 				} />
 			</Routes>
 		</React.Fragment>

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AppContext from '../../../appcontext';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
@@ -42,8 +41,7 @@ export default function SignIn(props) {
 		submitted: false,
 		statusType: '',
 		statusType: '',
-		errorCode: '',
-		serverMsg: ''
+		message: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
@@ -64,8 +62,7 @@ export default function SignIn(props) {
 			...values,
 			submitted: true,
 			statusType: response.statusType,
-			errorCode: response.errorCode,
-			serverMsg: response.message
+			message: response.message
 		});
 	}
 
@@ -74,13 +71,7 @@ export default function SignIn(props) {
 			{ (values.submitted && values.statusType === 'success') && (<Navigate to={ redirectUrl } />)}
 			{ (values.submitted && values.statusType === 'error') && (
 				<Alert variant='filled' severity='error'>
-					{
-						getMessage(
-							values.statusType,
-							values.serverMsg,
-							values.errorCode
-						)
-					}
+					{ values.message }
 				</Alert>
 			)}
 			<div className={classes.root}>

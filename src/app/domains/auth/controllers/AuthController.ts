@@ -7,7 +7,7 @@ import { AUTH_SERVICE_MESSAGES, AuthService } from '../services/AuthService';
 
 import { logger } from '../../../common/logging';
 
-const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
+const DEFAULT_AUTH_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the auth service.';
 
 @JsonController('/auth-svc')
 export class AuthController {
@@ -61,7 +61,7 @@ export class AuthController {
                 accessToken: signIn.accessToken,
                 refreshToken: signIn.refreshToken,
                 statusCode: 201,
-                message: 'User logged in.'
+                successCode: 'AUTH_SERVICE_ERROR_MESSAGE.LOGIN'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -73,12 +73,12 @@ export class AuthController {
                     case AUTH_SERVICE_MESSAGES.UNACTIVATED_ACCOUNT:
                         return new ResponseError(401, err.key, '');
                     case AUTH_SERVICE_MESSAGES.TOKENS_NOT_CREATED:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -115,20 +115,19 @@ export class AuthController {
 
             return {
                 statusCode: 200,
-                message: 'Logout success.'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     case AUTH_SERVICE_MESSAGES.USER_NOT_FOUND:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -173,23 +172,22 @@ export class AuthController {
 
             return {
                 accessToken: refresh.accessToken,
-                statusCode: 200,
-                message: 'Token refreshed.'
+                statusCode: 200
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case AUTH_SERVICE_MESSAGES.USER_KEY_EMPTY:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     case AUTH_SERVICE_MESSAGES.USER_NOT_FOUND:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     case AUTH_SERVICE_MESSAGES.TOKEN_NOT_CREATED:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -238,8 +236,7 @@ export class AuthController {
 
             return {
                 user: signup.user,
-                statusCode: 201,
-                message: 'User successfully signed up.'
+                statusCode: 201
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -247,10 +244,10 @@ export class AuthController {
                     case AUTH_SERVICE_MESSAGES.USER_ALREADY_SIGNED_UP:
                         return new ResponseError(409, err.key, '');
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -342,8 +339,7 @@ export class AuthController {
             await this.authService.activatePasswordReset(body.email);
 
             response.send({
-                statusCode: 201,
-                message: 'Successful password reset activation.'
+                statusCode: 201
             });
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -351,10 +347,10 @@ export class AuthController {
                     case AUTH_SERVICE_MESSAGES.FAILED_RESET_PASSWORD:
                         return new ResponseError(401, err.key, '');
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -400,7 +396,7 @@ export class AuthController {
 
             response.send({
                 statusCode: 201,
-                message: 'Password reset successful.'
+                successCode: 'AUTH_SERVICE_MESSAGES.RESET'
             });
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -408,10 +404,10 @@ export class AuthController {
                     case AUTH_SERVICE_MESSAGES.INVALID_RESET_CODE:
                         return new ResponseError(500, err.key, '');
                     default:
-                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_ERROR_MESSAGE', DEFAULT_ERROR_MESSAGE);
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
             }
         }
     }

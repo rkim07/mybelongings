@@ -6,6 +6,30 @@ export enum ADDRESS_SERVICE_MESSAGES {
     ADDRESS_NOT_FOUND = 'ADDRESS_SERVICE_MESSAGES.ADDRESS_NOT_FOUND'
 }
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const addressMappingKeys = {
+    date: [
+        'created',
+        'modified'
+    ],
+    capitalizedText: [
+        'street',
+        'city',
+        'county',
+        'country'
+    ],
+    upperText: [
+      'state'
+    ],
+    phone: [
+        'landline',
+        'mobile'
+    ]
+};
+
 @Service()
 export class AddressService {
 

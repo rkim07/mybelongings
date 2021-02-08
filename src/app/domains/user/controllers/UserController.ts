@@ -110,7 +110,7 @@ export class UserController {
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY:
+                    case VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY:
                         logger.error('Empty vehicle key provide.');
                         return new ResponseError(500, err.key, DEFAULT_VEHICLE_ERROR_MESSAGE);
                     case VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND:

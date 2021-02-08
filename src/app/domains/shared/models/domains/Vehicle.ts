@@ -51,18 +51,20 @@ export class Vehicle {
     }
 }
 
-export class VehicleDealer {
+export class VehiclePurchase {
     key: Key;
-    userKey: Key;
     vehicleKey: Key;
     storeKey: Key;
     image: string;
     odometer: number;
     deposit: number;
-    vehiclePrice: number;
+    downPayment: number;
+    msrpPrice: number;
+    stickerPrice: number;
     purchasePrice: number;
     agreement: string;
-    purchaseDate: string;
+    purchaseType: string;
+    purchased: string;
     created: string;
     modified: string;
 
@@ -72,26 +74,30 @@ export class VehicleDealer {
      * @param data
      */
     constructor(data: {
-        userKey: Key;
         vehicleKey: Key;
         storeKey: Key,
         odometer: number,
         deposit: number,
-        vehiclePrice: number;
+        downPayment: number,
+        msrpPrice: number;
+        stickerPrice: number;
         purchasePrice: number;
         agreement: string,
-        purchaseDate: string
+        purchaseType: string;
+        purchased: string
     }) {
         this.key = Key.generate();
-        this.userKey = data.userKey;
         this.vehicleKey = data.vehicleKey;
         this.storeKey = data.storeKey;
         this.odometer = data.odometer;
         this.deposit = data.deposit;
-        this.vehiclePrice = data.vehiclePrice;
+        this.downPayment = data.downPayment;
+        this.msrpPrice = data.msrpPrice;
+        this.stickerPrice = data.stickerPrice;
         this.purchasePrice = data.purchasePrice;
         this.agreement = data.agreement;
-        this.purchaseDate = data.purchaseDate;
+        this.purchaseType = data.purchaseType;
+        this.purchased = data.purchased;
         this.modified = this.created = Datetime.getNow();
     }
 }

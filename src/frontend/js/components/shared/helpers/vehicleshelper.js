@@ -1,3 +1,8 @@
+/**
+ * Get vehicle most common colors
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
 export function getVehicleColors() {
 	return [
 		{
@@ -7,10 +12,73 @@ export function getVehicleColors() {
 		{
 			value: 'white',
 			label: 'White'
+		},
+		{
+			value: 'red',
+			label: 'Red'
+		},
+		{
+			value: 'blue',
+			label: 'Blue'
+		},
+		{
+			value: 'gray',
+			label: 'Gray'
+		},
+		{
+			value: 'silver',
+			label: 'Silver'
+		},
+		{
+			value: 'navy',
+			label: 'Navy'
+		},
+		{
+			value: 'beige',
+			label: 'Beige'
+		},
+		{
+			value: 'yellow',
+			label: 'Yellow'
+		},
+		{
+			value: 'orange',
+			label: 'Orange'
 		}
 	];
 }
 
+/**
+ * Get purchase price of a vehicle
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
+export function getVehiclePurchaseTypes() {
+	return [
+		{
+			value: 'lease',
+			label: 'Lease'
+		},
+		{
+			value: 'finance',
+			label: 'Finance'
+		},
+		{
+			value: 'cash',
+			label: 'Cash'
+		},
+		{
+			value: 'gift',
+			label: 'Gift'
+		}
+	];
+}
+
+/**
+ * Get vehicle body styles
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
 export function getVehicleStyles() {
 	return [
 		{
@@ -48,6 +116,6 @@ export function getVehicleStyles() {
 		{
 			value: 'wagon',
 			label: 'Station Wagon'
-		},
+		}
 	];
 }

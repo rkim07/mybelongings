@@ -3,7 +3,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import AppContext from '../../../appcontext';
 import { resetPassword } from '../../../apis/auth';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -46,7 +45,7 @@ export default function Reset() {
 		submitted: false,
 		statusType: '',
 		errorCode: '',
-		serverMsg: ''
+		message: ''
 	};
 
 	const [values, setValues] = useState(initialValues);
@@ -86,7 +85,7 @@ export default function Reset() {
 			submitted: true,
 			statusType: response.statusType,
 			errorCode: response.errorCode ,
-			serverMsg: response.message
+			message: response.message
 		});
 	}
 
@@ -98,13 +97,7 @@ export default function Reset() {
 					 values.statusType === 'success' ? (
 						<Box mt={2}>
 							<Typography variant='body1'>
-								{
-									getMessage(
-										values.statusType,
-										values.serverMsg,
-										'AUTH_SERVICE_MESSAGES.RESET'
-									)
-								}
+								{ values.message }
 							</Typography>
 							<Button
 								fullWidth
@@ -121,7 +114,7 @@ export default function Reset() {
 					) : (
 						<Box mt={2}>
 							<Typography variant='body1'>
-								{ displayErrorMsg(values.errorCode, values.serverMsg) }
+								{ displayErrorMsg(values.errorCode, values.message) }
 							</Typography>
 						</Box>
 					)

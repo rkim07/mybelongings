@@ -4,7 +4,7 @@ import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
 import { FileUploadService } from '../../shared/services/FileUploadService';
 import { VehicleApiService } from './VehicleApiService';
-import { VehicleDealershipService } from './VehicleDealershipService';
+import { VehiclePurchaseService } from './VehiclePurchaseService';
 import { VehicleCollectionService } from './collections/VehicleCollectionService';
 
 export enum VEHICLE_SERVICE_MESSAGES {
@@ -13,10 +13,37 @@ export enum VEHICLE_SERVICE_MESSAGES {
     VEHICLE_NOT_ADDED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED',
     VEHICLE_NOT_UPDATED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED',
     EXISTING_VIN = 'VEHICLE_SERVICE_MESSAGES.EXISTING_VIN',
-    VEHICLE_KEY_EMPTY = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY',
+    EMPTY_VEHICLE_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY',
     EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO',
-    USER_KEY_EMPTY = 'VEHICLE_SERVICE_MESSAGES.USER_KEY_EMPTY'
+    EMPTY_USER_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY'
 }
+
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const vehicleMappingKeys = {
+    date: [
+        'created',
+        'modified',
+        'purchased'
+    ],
+    decimals: [
+        'mileage'
+    ],
+    stringToNumber: [
+        'year'
+    ],
+    capitalizedText: [
+        'color',
+        'style',
+        'condition',
+    ],
+    upperText: [
+        'vin',
+        'plate'
+    ]
+};
 
 @Service()
 export class VehicleService {
@@ -28,7 +55,7 @@ export class VehicleService {
     private vehicleApiService: VehicleApiService = Container.get(VehicleApiService);
 
     @Inject()
-    private vehicleDealershipService: VehicleDealershipService = Container.get(VehicleDealershipService);
+    private vehiclePurchaseService: VehiclePurchaseService = Container.get(VehiclePurchaseService);
 
     @Inject()
     private fileUploadService: FileUploadService = Container.get(FileUploadService);
@@ -41,7 +68,7 @@ export class VehicleService {
      */
     public async getVehicle(vehicleKey: Key, host?: string): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
         const vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: vehicleKey }});
@@ -76,9 +103,9 @@ export class VehicleService {
      * @param userKey
      * @param host
      */
-    public async getUserVehicles(userKey: Key, host?: string): Promise<any> {
+    public async getVehiclesByUser(userKey: Key, host?: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         const vehicles = await this.vehicleCollectionService.find({ userKey: { $eq: userKey }});
@@ -107,7 +134,7 @@ export class VehicleService {
         }
 
         // Make sure VIN numbers are unique
-        const vinExists = await this.vehicleCollectionService.findOne({ vin: {$eq: vehicle.vin} });
+        const vinExists = await this.vehicleCollectionService.findOne({ vin: { $eq: vehicle.vin }});
 
         if (vinExists) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EXISTING_VIN);
@@ -131,7 +158,7 @@ export class VehicleService {
      */
     public async updateVehicle(vehicleKey: Key, vehicle: any, host?: string): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
         const results = await this.vehicleCollectionService.update(vehicleKey, vehicle);
@@ -144,13 +171,13 @@ export class VehicleService {
     }
 
     /**
-     * Deletes a vehicle by key
+     * Delete vehicle
      *
      * @param vehicleKey
      */
     public async deleteVehicle(vehicleKey: Key): Promise<any> {
         if (!vehicleKey) {
-            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_KEY_EMPTY);
+            throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
         const vehicle: Vehicle = await this.vehicleCollectionService.findOne({ key: { $eq: vehicleKey } });
@@ -175,13 +202,13 @@ export class VehicleService {
     private async addDependencies(vehicle: any, host?: string): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
-        const dealer = await this.vehicleDealershipService.getDealerByVehicle(vehicle.key);
+        const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key);
         //const finance = await this.financeService.getFinanceByVehicle(vehicle.key);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
 
         vehicle = { ...vehicle, mfrName: mfr.mfrName };
         vehicle = { ...vehicle, model: model.model };
-        vehicle = { ...vehicle, dealer: dealer };
+        vehicle = { ...vehicle, purchase: purchase };
         //vehicle = { ...vehicle, finance: finance };
         //vehicle = { ...vehicle, insurance: insurance };
         vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };

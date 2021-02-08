@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppContext from '../../../appcontext';
 import { getVehicleColors, getVehicleStyles } from '../../shared/helpers/vehicleshelper';
-import { currentYear, getYearsRange } from '../../shared/helpers/date';
+import { currentYear, getYearsRange } from '../../../../../helpers/date';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -181,16 +181,21 @@ export default function Modify(props) {
 	// Handle select and input changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
+		let newValue;
 
 		if (name === 'mfrKey') {
 			values.vehicle.modelKey = '';
+		}
+
+		if (name === 'mileage') {
+			newValue = value.toLocaleString('en');
 		}
 
 		setValues({
 			...values,
 			vehicle: {
 				...values.vehicle,
-				[name]: value
+				[name]: newValue ? newValue : value
 			}
 		});
 	}
@@ -235,7 +240,7 @@ export default function Modify(props) {
 								fullWidth
 								variant='outlined'
 								label='Select condition'
-								value={ values.vehicle.condition }
+								value={ values.vehicle.condition.toLowerCase() }
 								onChange={ handleChange }
 								name='condition'
 								validators={['required']}
@@ -317,7 +322,7 @@ export default function Modify(props) {
 								fullWidth
 								variant='outlined'
 								label='Select color'
-								value={ colors ? values.vehicle.color : '' }
+								value={ colors ? values.vehicle.color.toLowerCase() : '' }
 								onChange={ handleChange }
 								name='color'
 								validators={['required']}
@@ -338,7 +343,7 @@ export default function Modify(props) {
 								fullWidth
 								variant='outlined'
 								label='Select style'
-								value={ styles ? values.vehicle.style : '' }
+								value={ styles ? values.vehicle.style.toLowerCase() : '' }
 								onChange={ handleChange }
 								name='style'
 								validators={['required']}

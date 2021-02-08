@@ -38,39 +38,3 @@ export function routeNeedsAuth(url) {
 export function getHeaderAuthorization() {
 	return `Bearer ${localStorage.getItem('accessToken')}`;
 }
-
-/**
- * Add status type to response data object
- *
- * @param response
- * @returns {*}
- */
-export function parseResponse(response) {
-	if (!response.data || !response.data.statusCode) {
-		response.data = {
-			statusType: 'error',
-			statusCode: 500,
-			status: 500,
-			message: 'An unexpected error occurred in the application.'
-		}
-
-		return response;
-	}
-
-	const statusCodeTypes = {
-		200: 'success',
-		201: 'success',
-		204: 'success',
-		400: 'error',
-		401: 'error',
-		403: 'error',
-		404: 'warning',
-		422: 'warning',
-		500: 'error'
-	};
-
-	response.data.status = response.status;
-	response.data.statusType = statusCodeTypes[response.data.statusCode];
-
-	return response;
-}

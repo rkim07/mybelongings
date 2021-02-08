@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import TwoColumnsTable from "../../shared/view/twocolumnstable";
+import TwoColumnsTable from '../../shared/view/twocolumnstable';
 import Box from '@material-ui/core/Box';
-import Skeleton from "@material-ui/lab/Skeleton";
+import Skeleton from '@material-ui/lab/Skeleton';
 
 /**
- * Child component of details
+ * Child component of information
  *
  * @returns {JSX.Element}
  * @constructor
  */
-export default function Dealer(props) {
+export default function Purchase(props) {
 	const { key } = useParams();
 	const { ...other } = props;
 
@@ -18,10 +18,13 @@ export default function Dealer(props) {
 	const tableCells = {
 		odometer: 'Odometer',
 		deposit: 'Deposit',
-		vehiclePrice: 'Vehicle Price',
-		purchasePrice: 'Purchase Price',
-		purchaseDate: 'Purchase Date',
-		agreement: 'Purchase Agreement'
+		downPayment: 'Down payment',
+		msrpPrice: 'MSRP price',
+		stickerPrice: 'Sticker price',
+		purchasePrice: 'Purchase price',
+		purchaseType: 'Purchase type',
+		purchased: 'Purchase date',
+		agreement: 'Purchase agreement'
 	};
 
 	return (

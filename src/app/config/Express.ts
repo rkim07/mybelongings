@@ -11,6 +11,7 @@ import * as stoppable from 'stoppable';
 import { Container } from 'typedi';
 import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
 import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
+import { DataConversionMiddleware } from '../middleware/DataConversionMiddleware';
 
 import { logger } from '../common/logging';
 
@@ -52,6 +53,11 @@ export class ExpressConfig {
         this.app.use('/ping', (req, res) => {
             res.sendStatus(200);
         });
+
+        this.app.use(
+            DataConversionMiddleware.requestInterceptor,
+            DataConversionMiddleware.responseInterceptor
+        );
 
         SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {
             this.app.use(

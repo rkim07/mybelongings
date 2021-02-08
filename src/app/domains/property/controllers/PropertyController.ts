@@ -106,7 +106,7 @@ export class PropertyController {
         } catch (error) {
             if (error instanceof HandleUpstreamError) {
                 switch(error.key) {
-                    case PROPERTY_SERVICE_MESSAGES.USER_KEY_EMPTY:
+                    case PROPERTY_SERVICE_MESSAGES.EMPTY_USER_KEY:
                         throw new ResponseError(500, error.key, 'Empty user key provided in order to get property.');
                     case PROPERTY_SERVICE_MESSAGES.PROPERTY_NOT_FOUND:
                         throw new ResponseError(404, error.key, 'No property was found for the user key provided.');

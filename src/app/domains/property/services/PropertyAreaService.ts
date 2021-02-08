@@ -4,6 +4,25 @@ import { FileUploadService } from '../../shared/services/FileUploadService';
 import { PropertyAreaCollectionService } from "./collections/PropertyAreaCollectionService";
 import { Key, Property, PropertyArea } from '../../shared/models/models';
 
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const propertyAreaMappingKeys = {
+    date: [
+        'created',
+        'modified',
+        'painted'
+    ],
+    decimals: [
+        'sqFt'
+    ],
+    capitalizedText: [
+        'name',
+        'location'
+    ]
+};
+
 @Service()
 export class PropertyAreaService {
 

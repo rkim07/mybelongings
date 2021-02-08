@@ -46,7 +46,7 @@ export function getVehicles() {
  *
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
  */
-export function getUserVehicles() {
+export function getVehiclesByUser() {
 	return axios
 		.get(`/vehicle-svc/vehicles/by/user`)
 		.then((response) => {
@@ -138,9 +138,6 @@ export function deleteVehicle(key) {
  * @returns {*}
  */
 function prepareSubmitData(vehicle, key = null) {
-	vehicle.year = parseInt(vehicle.year);
-	vehicle.mileage = parseInt(vehicle.mileage);
-
 	if (key) {
 		delete (vehicle.mfrName);
 		delete (vehicle.model);

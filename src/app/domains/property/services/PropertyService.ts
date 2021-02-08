@@ -8,8 +8,31 @@ import { HandleUpstreamError, Key, Property } from '../../shared/models/models';
 
 export enum PROPERTY_SERVICE_MESSAGES {
     PROPERTY_NOT_FOUND = 'PROPERTY_SERVICE_MESSAGES.PROPERTY_NOT_FOUND',
-    USER_KEY_EMPTY = 'PROPERTY_SERVICE_MESSAGES.USER_KEY_EMPTY'
+    EMPTY_USER_KEY = 'PROPERTY_SERVICE_MESSAGES.EMPTY_USER_KEY'
 }
+
+/**
+ * Key values that will be converted
+ * both on request and response
+ */
+export const propertyMappingKeys = {
+    date: [
+        'created',
+        'modified',
+    ],
+    decimals: [
+        'lotSize'
+    ],
+    stringToNumber: [
+        'year'
+    ],
+    'capitalize-text': [
+        'type',
+        'style',
+        'features',
+        'subdivision'
+    ]
+};
 
 @Service()
 export class PropertyService {
@@ -60,7 +83,7 @@ export class PropertyService {
      */
     public async getUserProperties(userKey: Key, host: string): Promise<any> {
         if (!userKey) {
-            throw new HandleUpstreamError(PROPERTY_SERVICE_MESSAGES.USER_KEY_EMPTY);
+            throw new HandleUpstreamError(PROPERTY_SERVICE_MESSAGES.EMPTY_USER_KEY);
         }
 
         const results = await this.propertyCollectionService.find({ userKey: { $eq: userKey }});

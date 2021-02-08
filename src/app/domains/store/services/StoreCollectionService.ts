@@ -42,7 +42,8 @@ export class StoreCollectionService extends DatabaseCollectionService {
                 updateFields: {
                     addressKey: store.addressKey,
                     name: store.name,
-                    phone: store.phone,
+                    landline: store.landline,
+                    mobile: store.mobile,
                     email: store.email,
                     website: store.website,
                     salesPerson: store.salesPerson,
@@ -54,7 +55,8 @@ export class StoreCollectionService extends DatabaseCollectionService {
             return await this.addOne(new Store({
                 addressKey: store.addressKey,
                 name: store.name,
-                phone: store.phone,
+                landline: store.landline,
+                mobile: store.mobile,
                 email: store.email,
                 website: store.website,
                 salesPerson: store.salesPerson,

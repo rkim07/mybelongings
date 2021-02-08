@@ -1,27 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import AppContext from '../../../appcontext';
+import TwoColumnsTable from '../../shared/view/twocolumnstable';
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 /**
- * Child component of details
+ * Child component of information
  *
  * @returns {JSX.Element}
  * @constructor
  */
 export default function Finance() {
-	const apis = useContext(AppContext);
 	const { key } = useParams();
+	const { ...other } = props;
 
-	const [loading, setLoading] = useState(true);
+	// Needs to be implemented
+	const tableCells = {
+	};
 
 	return (
 		<React.Fragment>
-			<Box>
-				This is insurance tab.
-			</Box>
+			<TwoColumnsTable tableCells={ tableCells } { ...other } />
 		</React.Fragment>
 	)
 }

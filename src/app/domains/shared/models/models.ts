@@ -11,6 +11,7 @@ export * from './utilities/HandleUpstreamError';
 export * from './utilities/Hash';
 export * from './utilities/Key';
 export * from './utilities/ResponseError';
+export * from './utilities/Text';
 
 /**
  * @swagger
@@ -55,6 +56,9 @@ export * from './utilities/ResponseError';
  *         type: string
  *         minLength: 2
  *       lastName:
+ *         type: string
+ *         minLength: 1
+ *       mobile:
  *         type: string
  *         minLength: 1
  *       email:
@@ -125,6 +129,46 @@ export * from './utilities/ResponseError';
  *       - vin
  *       - plate
  *       - condition
+ *
+ *   VehiclePurchase:
+ *     type: object
+ *     properties:
+ *       key:
+ *         $ref: "#/definitions/Key"
+ *       vehicleKey:
+ *         $ref: "#/definitions/Key"
+ *       storeKey:
+ *         $ref: "#/definitions/Key"
+ *       odometer:
+ *         type: number
+ *       deposit:
+ *         type: number
+ *       downPayment:
+ *         type: number
+ *       msrpPrice:
+ *         type: number
+ *       stickerPrice:
+ *         type: number
+ *       purchasePrice:
+ *         type: number
+ *       agreement:
+ *         type: string
+ *       purchaseType:
+ *         type: string
+ *       purchased:
+ *         $ref: "#/definitions/Datetime"
+ *       created:
+ *         $ref: "#/definitions/Datetime"
+ *       modified:
+ *         $ref: "#/definitions/Datetime"
+ *     required:
+ *       - vehicleKey
+ *       - odometer
+ *       - msrpPrice
+ *       - purchasePrice
+ *       - agreement
+ *       - purchaseType
+ *       - purchased
  *
  *   Property:
  *     type: object
@@ -257,7 +301,10 @@ export * from './utilities/ResponseError';
  *       name:
  *         type: string
  *         minLength: 1
- *       phone:
+ *       landline:
+ *         type: string
+ *         minLength: 1
+ *       mobile:
  *         type: string
  *         minLength: 1
  *       email:

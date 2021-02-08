@@ -1,8 +1,8 @@
 import React from 'react';
 import { withStyles }  from '@material-ui/core/styles';
 import { withContext } from '../../../appcontext';
-import { getStates } from '../../shared/helpers/list';
-import { formatPhoneNumber, textMaskCustom } from '../../shared/helpers/utils';
+import { getStates } from '../../../../../helpers/list';
+import { formatPhoneNumber, textMaskCustom } from '../../../../../app/domains/shared/helpers/Text';
 import { prepareProfileData } from '../../shared/helpers/ajax';
 import Grid from '@material-ui/core/Grid';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -57,7 +57,7 @@ class Profile extends React.Component
 
 		this.state = {
 			user:           props.user ? props.user : '',
-			oldPhoneNumber: props.user.phone,
+			oldPhoneNumber: props.user.mobile,
 			newEmail:       '',
 			repeatEmail:    '',
 			expanded:       null,
@@ -240,9 +240,9 @@ class Profile extends React.Component
 								</ExpansionPanelSummary>
 								<ExpansionPanelDetails>
 									<Input
-										label='Phone'
-										name='phone'
-										value={user.phone}
+										label='Mobile'
+										name='mobile'
+										value={user.mobile}
 										onChange={this.handleChange}
 										id='formatted-text-mask-input'
 										inputComponent={textMaskCustom}

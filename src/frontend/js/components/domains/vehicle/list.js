@@ -92,7 +92,7 @@ export default function List(props) {
 										aria-label='view'
 										color='default'
 										component={Link}
-										to={ `/vehicles/details/${vehicle.key}` }
+										to={ `/vehicles/information/${vehicle.key}` }
 									>
 										<DirectionsCar />
 									</IconButton>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getMessage } from '../../shared/helpers/flashmessages';
 import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
@@ -36,17 +35,9 @@ export default function Activated() {
 				<AuthHeader title='Sign Up' />
 				<Typography variant='body1'>
 					{ param === 'signin' ?
-						getMessage(
-							'success',
-							'',
-							'AUTH_SERVICE_MESSAGES.ALREADY_ACTIVATED'
-						)
+						'You already activated your account.  Please click the sign in button below to proceed.'
 						:
-						getMessage(
-							'success',
-							'',
-							'AUTH_SERVICE_MESSAGES.ACTIVATED'
-						)
+						'Welcome, your account is ready to use.  Please click the sign in button below to proceed.'
 					}
 				</Typography>
 				<Button
