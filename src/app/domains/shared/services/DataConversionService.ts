@@ -43,12 +43,12 @@ export class DataConversionService {
      *
      * @param payload
      */
-    public process(payload) {
+    public process(payload: any): any {
         if (!_.isArray(payload)) {
             return this.findAndConvert(payload);
         } else {
             return payload.map((obj) => {
-                return this.findAndConvert(obj);
+                return this.findAndConvert(obj.mfrName);
             });
         }
     }
@@ -59,11 +59,10 @@ export class DataConversionService {
      *
      * @param target
      */
-    public findAndConvert(target) {
+    public findAndConvert(target: any): any {
         const clonedObj = { ...target };
-        const entries = Object.entries(clonedObj);
 
-        entries.forEach(([key, value]) => {
+        _.forIn(target, (value, key) => {
             if (typeof value === 'object') {
                 clonedObj[key] = this.findAndConvert(value);
             } else {
@@ -84,7 +83,7 @@ export class DataConversionService {
      * @param convertingKey
      * @param convertingValue
      */
-    public convert(convertingKey, convertingValue) {
+    public convert(convertingKey: string, convertingValue: any): any {
         let mappingType = '';
         const mappingKeys = this.getKeyMappers();
         _.forEach(mappingKeys, (keys, type) => {
@@ -135,7 +134,7 @@ export class DataConversionService {
      * Check if it's request route for conversion
      * @param path
      */
-    public isRequestRouteForConversion(path) {
+    public isReqRoute(path: string): boolean {
         const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,}))$/;
         return regex.test(path);
     }
@@ -145,7 +144,7 @@ export class DataConversionService {
      *
      * @param path
      */
-    public isResponseRouteForConversion(path) {
+    public isResRoute(path: string): boolean {
         const regex = /^\/(=?vehicle-svc|property-svc)/;
         return regex.test(path);
     }

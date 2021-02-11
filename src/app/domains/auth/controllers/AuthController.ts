@@ -61,7 +61,7 @@ export class AuthController {
                 accessToken: signIn.accessToken,
                 refreshToken: signIn.refreshToken,
                 statusCode: 201,
-                successCode: 'AUTH_SERVICE_ERROR_MESSAGE.LOGIN'
+                successCode: 'AUTH_SERVICE_MESSAGES.LOGIN'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {

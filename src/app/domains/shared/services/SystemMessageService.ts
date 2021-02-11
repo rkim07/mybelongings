@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { Service } from 'typedi';
+import { VEHICLE_PURCHASE_SERVICE_MESSAGES } from '../../vehicle/services/VehiclePurchaseService';
 
 @Service()
 export class SystemMessageService {
@@ -95,6 +96,24 @@ export class SystemMessageService {
                 },
                 warning: {
 
+                }
+            },
+            vehiclePurchase: {
+                success: {
+                    ADDED: 'Vehicle purchase information successfully added.'
+                },
+                error: {
+                }
+            },
+            vehicleApi: {
+                success: {
+                    SYNC: 'Finished sync successfully.',
+                    FETCHED_MFRS: 'Successfully retrieved all manufactures.',
+                    FETCHED_MODELS: 'Successfully retrieved all models for a particular manufacturer.'
+                },
+                error: {
+                    VEHICLE_MFRS_NOT_FOUND: 'No manufacturers were found for sync.',
+                    VEHICLE_MODELS_NOT_FOUND: 'No models for this particular manufacturer were found.'
                 }
             }
         };

@@ -1,16 +1,11 @@
-import { AlfaRomeo } from './filters/AlfaRomeo';
-import { AstonMartin } from './filters/AstonMartin';
-import { Audi } from './filters/Audi';
+
 import { Bmw } from './filters/Bmw';
-import { Cadillac } from './filters/Cadillac';
+import { MercedesBenz } from './filters/MercedesBenz';
 import { KarmaAutomotiveLlc } from './filters/KarmaAutomotiveLlc';
 
 const classes = {
-    AlfaRomeo,
-    AstonMartin,
-    Audi,
     Bmw,
-    Cadillac,
+    MercedesBenz,
     KarmaAutomotiveLlc
 };
 

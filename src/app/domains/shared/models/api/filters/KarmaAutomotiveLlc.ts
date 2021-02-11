@@ -10,7 +10,7 @@ export class KarmaAutomotiveLlc extends CommonFilter {
     }
 
     /**
-     * Extra validate by calling parent method
+     * Convert manufacturer's model name for front end
      *
      * @param name
      */

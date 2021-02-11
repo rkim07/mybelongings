@@ -462,7 +462,7 @@ export class VehicleController {
             return {
                 payload: vehicle,
                 statusCode: 201,
-                message: 'Vehicle purchase information successfully added.'
+                successCode: 'VEHICLE_PURCHASE_SERVICE_MESSAGES.ADDED'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {

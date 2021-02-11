@@ -53,12 +53,12 @@ nodemailer:
 
 email:
   host: 'http://www.mybelongings.com'
-  templatePath: '../../../../assets/templates/email'
+  templatePath: '../../shared/templates/email'
 
 fixtures:
   api:
-    blacklistedVehicleMfrs: './assets/fixtures/blacklistedVehicleMfrs.json'
-    whitelistedVehicleMfrs: './assets/fixtures/whitelistedVehicleMfrs.json'
+    blacklistedVehicleMfrs: '../../shared/fixtures/blacklistedVehicleMfrs.json'
+    whitelistedVehicleMfrs: '../../shared/fixtures/whitelistedVehicleMfrs.json'
 
 system:
   auth:

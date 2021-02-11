@@ -6,7 +6,7 @@
   "scripts": {
     "build": "yarn docker:start && yarn build:clean && yarn lint && yarn jwt:create && yarn build:assets && yarn build:swagger && tsc && webpack-cli src/frontend/js/index.js --config webpack-config.js",
     "build:ci": "yarn build:clean && yarn lint && yarn jwt:create && yarn build:assets && yarn build:swagger && tsc && webpack-cli ./src/frontend/js/index.js --config webpack-config.js",
-    "build:assets": "copyfiles -u 1 'src/**/*.json' 'src/**/*.yml' 'src/**/*.html' 'src/assets/templates/**/*.ejs' 'src/assets/files/**/*.pdf' 'src/assets/css/*.css' 'src/assets/images/*.jpg' 'src/assets/images/*.jpeg' 'src/assets/images/*.png' 'src/assets/images/*.ico' build",
+    "build:assets": "copyfiles -u 1 'src/**/*.json' 'src/**/*.yml' 'src/**/*.html' 'src/assets/css/*.css' 'src/assets/images/*.jpg' 'src/assets/images/*.jpeg' 'src/assets/images/*.png' 'src/assets/images/*.ico' build",
     "build:clean": "yarn clean:build",
     "build:swagger": "node ./src/tasks/swagger.js",
     "clean:build": "del ./build ./spec.json ./package/payload",
