@@ -26,7 +26,7 @@ export const propertyMappingKeys = {
     stringToNumber: [
         'year'
     ],
-    'capitalize-text': [
+    'capitalizedText': [
         'type',
         'style',
         'features',

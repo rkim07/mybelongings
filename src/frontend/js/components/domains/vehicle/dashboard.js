@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useReducer, useRef, useState } from 'reac
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
-import { currentYear } from '../../../../../helpers/date';
+import { currentYear } from '../../../helpers/date';
 import { modifyState, removeFromState } from '../../../apis/helpers/collection';
 import List from './list';
 import Modify from './modify';

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppContext from '../../../appcontext';
 import Dialogger from '../../shared/feedback/dialogger';
-import { getImageSource } from '../../shared/helpers/images';
+import { getImageSource } from '../../../helpers/images';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';

@@ -48,7 +48,7 @@ export class DataConversionService {
             return this.findAndConvert(payload);
         } else {
             return payload.map((obj) => {
-                return this.findAndConvert(obj.mfrName);
+                return this.findAndConvert(obj);
             });
         }
     }
@@ -60,7 +60,7 @@ export class DataConversionService {
      * @param target
      */
     public findAndConvert(target: any): any {
-        const clonedObj = { ...target };
+        const clonedObj = _.clone(target);
 
         _.forIn(target, (value, key) => {
             if (typeof value === 'object') {
@@ -86,11 +86,14 @@ export class DataConversionService {
     public convert(convertingKey: string, convertingValue: any): any {
         let mappingType = '';
         const mappingKeys = this.getKeyMappers();
+
         _.forEach(mappingKeys, (keys, type) => {
             if (_.includes(keys, convertingKey)) {
                 mappingType = type;
             }
         });
+
+        convertingValue = /%20|%22|%26|%27|%28|%29|%3A/g.test(convertingValue) ? convertingValue.replace(/%20|%22|%26|%27|%28|%29|%3A/g, ' ').trim() : convertingValue;
 
         // Map request data
         if (this.method === 'request') {

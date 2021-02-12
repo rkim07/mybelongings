@@ -38,6 +38,7 @@ export const vehicleMappingKeys = {
         'color',
         'style',
         'condition',
+        'model'
     ],
     upperText: [
         'vin',

@@ -2,8 +2,9 @@ import * as _ from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppContext from '../../../appcontext';
-import { getVehicleColors, getVehicleStyles } from '../../shared/helpers/vehicleshelper';
-import { currentYear, getYearsRange } from '../../../../../helpers/date';
+import { getVehicleColors, getVehicleStyles } from './models/vehicle';
+import { currentYear, getYearsRange } from '../../../helpers/date';
+import { decimalFormatter } from '../../../helpers/input';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -187,8 +188,8 @@ export default function Modify(props) {
 			values.vehicle.modelKey = '';
 		}
 
-		if (name === 'mileage') {
-			newValue = value.toLocaleString('en');
+		if (name === 'mileage' && value !== '') {
+			newValue = decimalFormatter(value);
 		}
 
 		setValues({
@@ -208,7 +209,7 @@ export default function Modify(props) {
 	}
 
 	return (
-		<Container component='main' maxWidth="sm">
+		<Container component='main' maxWidth='sm'>
 			<div className={classes.root}>
 				<Grid container justify='flex-start'>
 					<Grid item>
