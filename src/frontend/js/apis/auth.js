@@ -154,6 +154,26 @@ export function activatePasswordReset(formData) {
 }
 
 /**
+ * Determine if signed in user is an admin
+ *
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function isAdmin() {
+	return axios
+		.get('/auth-svc/account/is/admin')
+		.then((response) => {
+			if (response.status < 400) {
+				return response.data;
+			}
+
+			return response;
+		})
+		.catch((err) => {
+			return err;
+		});
+}
+
+/**
  * Check if token has been set after sign in
  *
  * @returns {boolean}

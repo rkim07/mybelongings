@@ -100,7 +100,7 @@ export class PropertyService {
     }
 
     /**
-     * Add or update property
+     * Stepper or update property
      *
      * @param host
      * @param body
@@ -111,7 +111,7 @@ export class PropertyService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param property

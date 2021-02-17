@@ -62,7 +62,7 @@ export function getVehiclesByUser() {
 }
 
 /**
- * Add vehicle
+ * Stepper vehicle
  *
  * @param vehicle
  * @returns {Promise<T>}

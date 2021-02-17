@@ -93,7 +93,7 @@ export class UserService {
     }
 
     /**
-     * Add user
+     * Stepper user
      *
      * @param user
      */

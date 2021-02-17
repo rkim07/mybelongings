@@ -50,7 +50,7 @@ export namespace AuthorizationMiddleware {
                 // Promise stack to verify, then authorize the user against required roles
                 try {
                     await verifyToken();
-                    await authorizeUserRoles();
+                    await authorizeUserRoles(req.path);
                     await authorizeUser();
                 } catch (err) {
                     logger.error(err);
@@ -78,16 +78,21 @@ export namespace AuthorizationMiddleware {
         /**
          * Authorizes the user in the JWT against the required authority for this request
          */
-        async function authorizeUserRoles(): Promise<any> {
+        async function authorizeUserRoles(path): Promise<any> {
             // Iterates through the request's security restrictions
             const authorizedUser: boolean = req.swagger.operation.security.some(function(requirement) {
                 // Find the associated OAuth security requirement
                 const oAuthRoles = requirement['OauthSecurity'];
 
+
                 // Ensure that the OAuth security requirement exists
                 if (oAuthRoles && oAuthRoles.length) {
                     // Finds which required authorities the user has
                     const validUserRoles = _.intersection(oAuthRoles, jwtUser.authorities);
+
+                    if (path === '/auth-svc/account/is/admin') {
+                        return _.includes(jwtUser.authorities, 'ROLE_ADMIN');
+                    }
 
                     // Returns if the user has at least one
                     return validUserRoles.length > 0;

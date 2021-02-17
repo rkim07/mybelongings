@@ -101,7 +101,6 @@ export default function Reset() {
 							</Typography>
 							<Button
 								fullWidth
-								type='button'
 								variant='contained'
 								color='default'
 								className={classes.button}

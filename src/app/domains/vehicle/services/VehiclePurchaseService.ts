@@ -101,7 +101,7 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Add purchase
+     * Stepper purchase
      *
      * @param vehicleKey
      * @param purchase
@@ -168,7 +168,7 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param purchase
      * @private

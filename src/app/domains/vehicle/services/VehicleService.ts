@@ -123,7 +123,7 @@ export class VehicleService {
     }
 
     /**
-     * Add vehicle
+     * Stepper vehicle
      *
      * @param userKey
      * @param host
@@ -141,13 +141,18 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EXISTING_VIN);
         }
 
-        const results = await this.vehicleCollectionService.add(userKey, vehicle);
+        const addedVehicle = await this.vehicleCollectionService.add(userKey, vehicle);
 
-        if (!results) {
+        if (!addedVehicle) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
-        return await this.addDependencies(results, host);
+        await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase);
+        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+
+        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
+        return vehicle;
     }
 
     /**
@@ -162,13 +167,18 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
-        const results = await this.vehicleCollectionService.update(vehicleKey, vehicle);
+        const updatedVehicle = await this.vehicleCollectionService.update(vehicleKey, vehicle);
 
-        if (!results) {
+        if (!updatedVehicle) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
-        return await this.addDependencies(results, host);
+        await this.vehiclePurchaseService.addPurchase(updatedVehicle.key, vehicle.purchase);
+        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+
+        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
+        return vehicle;
     }
 
     /**
@@ -194,7 +204,7 @@ export class VehicleService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param vehicle

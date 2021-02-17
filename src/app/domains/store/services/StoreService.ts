@@ -14,7 +14,8 @@ export enum STORE_SERVICE_MESSAGES {
 export const storeMappingKeys = {
     capitalizedText: [
         'name',
-        'salesPerson'
+        'salesPerson',
+        'type'
     ],
     phone: [
         'landline',
@@ -74,7 +75,7 @@ export class StoreService {
     }
 
     /**
-     * Add or update store
+     * Stepper or update store
      *
      * @param origin
      * @param body
@@ -85,7 +86,7 @@ export class StoreService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param origin
      * @param store

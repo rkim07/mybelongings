@@ -28,11 +28,13 @@ axios.interceptors.response.use(response => {
 		if (config.url === '/auth-svc/account/refresh') {
 			// At this poin, refresh token expired as well.  Force user to
 			// sign in again to get both new access and refresh tokens
-			console.error('Both access and refresh tokens have expired.');
-			console.info('Redirecting user to sign in again.');
 			localStorage.removeItem('accessToken');
 			window.location = '/account/signin';
 			return;
+		}
+
+		if (config.url === '/auth-svc/account/is/admin') {
+			window.location = '/admin/unauthorized';
 		}
 
 		console.info('Access token has expired.  Attempting to refresh the token...');
@@ -44,7 +46,6 @@ axios.interceptors.response.use(response => {
 			return axios(config);
 		}).catch(res => {
 			// System crashed somehow.  Force use to sign in again.
-			console.error('An unexpected error occurred while trying to refresh the token.');
 			localStorage.removeItem('accessToken');
 			window.location = '/account/signin';
 			return;

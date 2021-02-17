@@ -124,8 +124,8 @@ export class PropertyController {
      * paths:
      *   /property-svc/property:
      *     post:
-     *       summary: Add property
-     *       description: Add property
+     *       summary: Stepper property
+     *       description: Stepper property
      *       tags:
      *          - Property
      *       parameters:
@@ -162,8 +162,8 @@ export class PropertyController {
      * paths:
      *   /property-svc/property/area:
      *     post:
-     *       summary: Add property area
-     *       description: Add property area
+     *       summary: Stepper property area
+     *       description: Stepper property area
      *       tags:
      *          - PropertyArea
      *       parameters:

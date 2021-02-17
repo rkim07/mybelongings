@@ -26,7 +26,7 @@ export class StoreCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update store
+     * Stepper or update store
      *
      * @param store
      */
@@ -47,6 +47,7 @@ export class StoreCollectionService extends DatabaseCollectionService {
                     email: store.email,
                     website: store.website,
                     salesPerson: store.salesPerson,
+                    type: store.type,
                     notes: store.notes,
                     modified: Datetime.getNow()
                 }
@@ -60,6 +61,7 @@ export class StoreCollectionService extends DatabaseCollectionService {
                 email: store.email,
                 website: store.website,
                 salesPerson: store.salesPerson,
+                type: store.type,
                 notes: store.notes
             }));
         }

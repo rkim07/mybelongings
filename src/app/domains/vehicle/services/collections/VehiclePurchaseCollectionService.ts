@@ -26,15 +26,17 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
     }
 
     /**
-     * Add purchase
+     * Stepper purchase
      *
      * @param vehicleKey
      * @param purchase
      */
     public async add(vehicleKey: Key, purchase: any): Promise<any> {
+        await this.loadCollection();
+
         return await this.addOne(
             new VehiclePurchase({
-                vehicleKey: purchase.vehicleKey,
+                vehicleKey: vehicleKey,
                 storeKey: purchase.storeKey,
                 odometer: purchase.odometer,
                 deposit: purchase.deposit,

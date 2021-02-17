@@ -13,6 +13,7 @@ export class Store {
     email: string;
     website: string;
     salesPerson: string;
+    type: string;
     notes: string;
     created: string;
     modified: string;
@@ -30,6 +31,7 @@ export class Store {
         email: string;
         website: string;
         salesPerson: string;
+        type: string;
         notes: string;
     }) {
         this.key = Key.generate();
@@ -40,6 +42,7 @@ export class Store {
         this.email = data.email;
         this.website = data.website;
         this.salesPerson = data.salesPerson;
+        this.type = data.type;
         this.notes = data.notes;
         this.modified = this.created = Datetime.getNow();
     }

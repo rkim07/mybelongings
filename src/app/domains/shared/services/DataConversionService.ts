@@ -106,7 +106,7 @@ export class DataConversionService {
                 case 'capitalizedText':
                     return Text.toLowerCase(convertingValue);
                 case 'date':
-                    return Datetime.getUTCFormat(convertingValue);
+                    return Datetime.getUTCFormat(new Date(convertingValue));
                 case 'stringToNumber':
                     return Text.toInteger(convertingValue);
                 default:

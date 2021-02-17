@@ -26,7 +26,7 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
     }
 
     /**
-     * Add or update API manufacturer
+     * Stepper or update API manufacturer
      *
      * @param mfr
      */

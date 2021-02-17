@@ -40,7 +40,7 @@ export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionSer
     }
 
     /**
-     * Add or update vehicle model(s) by manufacturer ID
+     * Stepper or update vehicle model(s) by manufacturer ID
      *
      * @param mfrModel
      */

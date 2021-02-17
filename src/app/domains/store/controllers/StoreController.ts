@@ -70,8 +70,8 @@ export class StoreController {
      * paths:
      *   /store-svc/store:
      *     post:
-     *       summary: Add store
-     *       description: Add store
+     *       summary: Stepper store
+     *       description: Stepper store
      *       tags:
      *          - Store
      *       parameters:

@@ -151,6 +151,10 @@ export class ExpressConfig {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 
+        this.app.get('/admin/unauthorized', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
         this.app.get(/^\/(?!vehicle-svc)([a-z0-9]+)$/, (req, res) => {
             if (req.params[0] !== 'index.js') {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));

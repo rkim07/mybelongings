@@ -70,8 +70,8 @@ export class PaintController {
      * paths:
      *   /paint-svc/paint:
      *     post:
-     *       summary: Add paint
-     *       description: Add paint
+     *       summary: Stepper paint
+     *       description: Stepper paint
      *       tags:
      *          - Paint
      *       parameters:

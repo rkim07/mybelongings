@@ -196,8 +196,8 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicle:
      *     post:
-     *       summary: Add vehicle
-     *       description: Add vehicle
+     *       summary: Stepper vehicle
+     *       description: Stepper vehicle
      *       tags:
      *          - Vehicle
      *       security:
@@ -410,7 +410,7 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicle/{vehicle_key}/purchase:
      *     post:
-     *       description: Add vehicle purchase
+     *       description: Stepper vehicle purchase
      *       tags:
      *          - Vehicle Purchase
      *       security:

@@ -42,7 +42,6 @@ export default function Activated() {
 				</Typography>
 				<Button
 					fullWidth
-					type='button'
 					variant='contained'
 					color='default'
 					className={classes.button}

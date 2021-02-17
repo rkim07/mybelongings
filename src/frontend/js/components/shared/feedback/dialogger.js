@@ -1,47 +1,59 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
-import DeleteVehicle from "./dialogcontents/deletevehicle";
+import UpdateVehicle from './dialogcontents/updatevehicle';
+import DeleteVehicle from './dialogcontents/deletevehicle';
 import Dialog from '@material-ui/core/Dialog';
 
 const Dialogger = forwardRef((props, ref) => {
-	const [open, setOpen] = useState(false);
-	const [type, setType] = useState('');
-	const [params, setParams] = useState({});
+	const initialValues = {
+		open: false,
+		type: '',
+		params: {}
+	};
+
+	const [values, setValues] = useState(initialValues);
 
 	useImperativeHandle(ref, () => ({
 		openDialogger(type, params) {
-			setType(type);
-			setParams(params);
-			setOpen(!open);
+			setValues({
+				...values,
+				open: !values.open,
+				type: type,
+				params: params
+			});
 		},
 		closeDialogger() {
 			handleClose();
 		}
 	}));
 
+	// Handle close
 	const handleClose = () => {
-		setOpen(false);
+		setValues({...values, open: false});
 	};
 
 	return (
 		<Dialog
-			open={ open }
-			onClose={ handleClose }
-			aria-labelledby="alert-dialog-title"
-			aria-describedby="alert-dialog-description"
+			open={values.open}
+			onClose={handleClose}
+			aria-labelledby='alert-dialog-title'
+			aria-describedby='alert-dialog-description'
 		>
 			{
 				{
+					'update':
+						<UpdateVehicle
+							params={values.params}
+							onHandleClose={handleClose}
+						/>,
 					'delete':
 						<DeleteVehicle
-							vehicleKey={ params.vehicleKey }
-							onHandleClose={ handleClose }
-							{ ...props }
+							params={values.params}
+							onHandleClose={handleClose}
 						/>
-
-				}[type]
+				}[values.type]
 			}
 		</Dialog>
 	)
-});
+})
 
 export default Dialogger;

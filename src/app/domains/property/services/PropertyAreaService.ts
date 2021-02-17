@@ -63,7 +63,7 @@ export class PropertyAreaService {
     }
 
     /**
-     * Add or update property area
+     * Stepper or update property area
      *
      * @param host
      * @param body
@@ -74,7 +74,7 @@ export class PropertyAreaService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param area

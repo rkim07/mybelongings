@@ -180,7 +180,7 @@ export class VehicleApiService {
             throw new HandleUpstreamError(VEHICLE_API_SERVICE_MESSAGES.VEHICLE_MFRS_NOT_FOUND);
         }
 
-        // Add or update all manufacturers models
+        // Stepper or update all manufacturers models
         for (const mfr of savedMfrs) {
             const apiModels = await this.getNhtsaModelsByMfrId(mfr.mfrId);
 

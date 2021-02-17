@@ -26,7 +26,7 @@ export class PaintCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update property paint
+     * Stepper or update property paint
      *
      * @param paint
      */

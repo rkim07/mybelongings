@@ -85,7 +85,7 @@ export class PaintService {
     }
 
     /**
-     * Add or update paint
+     * Stepper or update paint
      *
      * @param host
      * @param body
@@ -96,7 +96,7 @@ export class PaintService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param paint

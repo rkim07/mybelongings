@@ -28,7 +28,7 @@ export class PropertyCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update property
+     * Stepper or update property
      *
      * @param property
      */

@@ -1,6 +1,6 @@
-import { activatePasswordReset, isSignedIn, signin, signout, resetPassword, signup } from "./auth";
+import { activatePasswordReset, isAdmin, isSignedIn, signin, signout, resetPassword, signup } from "./auth";
 import { uploadFile } from './upload';
-import { getVehiclesByUser, addVehicle, deleteVehicle, getVehicle, updateVehicle } from './vehicles';
+import { getVehiclesByUser, addVehicle, deleteVehicle, getVehicle, getVehicles, updateVehicle } from './vehicles';
 import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
 import { getUserProperties } from './properties';
 
@@ -8,6 +8,7 @@ const globalApis = {
 	signup,
 	signin,
 	signout,
+	isAdmin,
 	isSignedIn,
 	activatePasswordReset,
 	resetPassword,
@@ -16,6 +17,7 @@ const globalApis = {
 	getApiModelsByMfrKey,
 	getVehiclesByUser,
 	getVehicle,
+	getVehicles,
 	addVehicle,
 	updateVehicle,
 	deleteVehicle,

@@ -1,14 +1,18 @@
+# Site
 site:
   domain: mybelongings.com
   frontName: MyBelongings
 
+# Ports
 ports:
   http: 80
   debug: 5858
 
+# Logging
 logging:
   loglevel: debug
 
+# Maria DB
 db:
   port: 3306
   host: 'localhost'
@@ -17,6 +21,7 @@ db:
   password: 'bXlfc2VjcmV0X3Bhc3N3b3Jk'
   connectionLimit: 5
 
+# JWT token
 jwt:
   auth:
     # Public key for validating JWTs created by separate Auth Service
@@ -30,10 +35,12 @@ jwt:
       refresh:
         expiration: 3600 # 1 hour in seconds
 
+# Hash
 hash:
   bcrypt:
     saltRounds: 10
 
+# API
 api:
   vehicles:
     nhtsa:
@@ -55,11 +62,23 @@ email:
   host: 'http://www.mybelongings.com'
   templatePath: '../../shared/templates/email'
 
+# Fixtures
 fixtures:
   api:
     blacklistedVehicleMfrs: '../../shared/fixtures/blacklistedVehicleMfrs.json'
     whitelistedVehicleMfrs: '../../shared/fixtures/whitelistedVehicleMfrs.json'
 
+# Assets
+assets:
+  path:
+    source:
+      images: 'src/assets/images'
+      files: 'src/assets/files'
+    build:
+      images: 'build/assets/images'
+      files: 'build/assets/files'
+
+# System
 system:
   auth:
     signup:
