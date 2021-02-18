@@ -17,6 +17,8 @@ export class VehicleApiController {
      *   /vehicle-api-svc/sync/nhtsa:
      *     get:
      *       description: Sync with NHTSA API
+     *       tags:
+     *         - Vehicle API
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -66,6 +68,8 @@ export class VehicleApiController {
      *   /vehicle-api-svc/manufacturers:
      *     get:
      *       description: Retrieve manufacturers
+     *       tags:
+     *         - Vehicle API
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -113,6 +117,8 @@ export class VehicleApiController {
      *   /vehicle-api-svc/manufacturers/{mfr_key}/models:
      *     get:
      *       description: Fetch all models by manufacturer
+     *       tags:
+     *         - Vehicle API
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER

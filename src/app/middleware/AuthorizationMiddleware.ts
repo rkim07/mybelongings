@@ -54,7 +54,7 @@ export namespace AuthorizationMiddleware {
                     await authorizeUser();
                 } catch (err) {
                     logger.error(err);
-                    return handleUnauthorizedUser();
+                    return handleUnauthorizedUser(err);
                 }
             }
         }
@@ -127,9 +127,14 @@ export namespace AuthorizationMiddleware {
 
         /**
          * If the user is unauthorized, catch and store the error message
+         *
+         * @param err
          */
-        function handleUnauthorizedUser() {
-            res.status(401).json({ error: 'Unauthorized'});
+        function handleUnauthorizedUser(err?: any) {
+            res.status(401).json({
+                error: 'Unauthorized',
+                details: err
+            });
         }
     }
 }

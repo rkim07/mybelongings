@@ -132,7 +132,7 @@ export default function List(props) {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{ ( loading ? Array.from(new Array(1)) : vehicles).map((vehicle, index) => (
+						{ ( loading ? Array.from(new Array(5)) : vehicles).map((vehicle, index) => (
 							vehicle ? (
 								<TableRow className={classes.row} key={vehicle.key}>
 									<CustomTableCell component='th' scope='row'>{vehicle.year}</CustomTableCell>

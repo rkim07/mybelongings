@@ -143,6 +143,16 @@ export class ExpressConfig {
      * @private
      */
     private resolveReactRouters() {
+        // ADMIN
+        this.app.get('/admin/unauthorized', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
+        this.app.get('/admin/vehicles/list', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        });
+
+        // AUTH SERVICES
         this.app.get('/account/signin', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
@@ -151,10 +161,20 @@ export class ExpressConfig {
             res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
         });
 
-        this.app.get('/admin/unauthorized', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+        // Redirect from "/account/activate/:email/:signupCode" controller
+        this.app.get(/^\/account\/activated\/[a-zA-Z]/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
         });
 
+        this.app.get(/^\/account\/password\/reset\/\S+@\S+\.\S+\/[0-9a-zA-Z-]{1,}$/, (req, res) => {
+            if (req.params[0] !== 'index.js') {
+                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
+            }
+        });
+
+        // VEHICLES SERVICE
         this.app.get(/^\/(?!vehicle-svc)([a-z0-9]+)$/, (req, res) => {
             if (req.params[0] !== 'index.js') {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
@@ -172,19 +192,6 @@ export class ExpressConfig {
         });
 
         this.app.get(/^\/vehicles\/edit\/[0-9a-zA-Z]{1,}$/, (req, res) => {
-            if (req.params[0] !== 'index.js') {
-                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
-            }
-        });
-
-        // Redirect from "/account/activate/:email/:signupCode" controller
-        this.app.get(/^\/account\/activated\/[a-zA-Z]/, (req, res) => {
-            if (req.params[0] !== 'index.js') {
-                res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
-            }
-        });
-
-        this.app.get(/^\/account\/password\/reset\/\S+@\S+\.\S+\/[0-9a-zA-Z-]{1,}$/, (req, res) => {
             if (req.params[0] !== 'index.js') {
                 res.sendFile(path.join(__dirname, '../../frontend/views/index.html'));
             }

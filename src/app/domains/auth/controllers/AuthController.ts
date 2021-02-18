@@ -338,7 +338,8 @@ export class AuthController {
         @Req() req: any,
         @Param('email') email: string,
         @Param('signupCode') signupCode: string,
-        @Res() res: any): Promise<any> {
+        @Res() res: any
+    ): Promise<any> {
         try {
             await this.authService.activateSignup(email, signupCode);
 
@@ -384,7 +385,8 @@ export class AuthController {
     @Post('/account/password/reset/activate')
     public async activatePasswordReset(
         @Body() body: any,
-        @Res() response: any): Promise<any> {
+        @Res() response: any
+    ): Promise<any> {
         try {
             await this.authService.activatePasswordReset(body.email);
 
@@ -440,7 +442,8 @@ export class AuthController {
     @Post('/account/password/reset')
     public async resetPassword(
         @Body() body: any,
-        @Res() response: any): Promise<any> {
+        @Res() response: any
+    ): Promise<any> {
         try {
             await this.authService.resetPassword(body);
 

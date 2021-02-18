@@ -75,15 +75,16 @@ export default function Modify(props) {
 			image: '',
 			imagePath: '',
 			purchase: {
-				purchased: new Date(),
-				purchaseType: '',
+				storeKey: '',
 				odometer: '',
+				deposit: '',
+				downPayment: '',
 				msrpPrice: '',
 				stickerPrice: '',
 				purchasePrice: '',
-				deposit: '',
-				downPayment: '',
-				agreement: ''
+				agreement: '',
+				purchaseType: '',
+				purchased: new Date()
 			},
 			insurance: {}
 		},
@@ -288,11 +289,7 @@ export default function Modify(props) {
 						<React.Fragment>
 							{
 								{
-									'0': <Details
-										vehicle={ values.vehicle }
-										onHandleImageChange={ handleImageChange }
-										onHandleVehicleChange={ handleVehicleChange }
-									/>,
+									'0': <h1>Test</h1>,
 									'1': <Purchase
 										purchase={ values.vehicle.purchase }
 										onHandleFileChange={ handleFileChange }

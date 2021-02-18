@@ -1,7 +1,10 @@
-import { Body, Get, HttpCode, JsonController, Param, Post, Req } from 'routing-controllers';
+import { Body, Get, HttpCode, JsonController, Param, Post, Put, Req } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
-import {Key, ResponseError, Store, Vehicle} from '../../shared/models/models';
-import { StoreService } from '../services/StoreService';
+import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
+import { HandleUpstreamError, Key, ResponseError, Store } from '../../shared/models/models';
+import { STORE_SERVICE_MESSAGES, StoreService } from '../services/StoreService';
+
+const DEFAULT_STORE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the store service.';
 
 @JsonController('/store-svc')
 export class StoreController {
@@ -14,9 +17,18 @@ export class StoreController {
      * paths:
      *   /store-svc/stores/{store_key}:
      *     get:
-     *       summary: Retrieve a specific store.
-     *       description: Retrieve a specific store.
+     *       description: Fetch a specific store.
+     *       tags:
+     *         - Store
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
      *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *         - in: path
      *           name: store_key
      *           description: The store key being queried.
@@ -32,12 +44,18 @@ export class StoreController {
      */
     @Get('/stores/:store_key')
     public async getStore(
-        @Param('store_key') storeKey: Key,
-        @Req() req: any): Promise<any> {
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
+        @Param('store_key') storeKey: Key
+    ): Promise<any> {
         try {
-            return await this.storeService.getStore(storeKey, req.requestor.referrer);
+            const store = await this.storeService.getStore(storeKey, host);
+
+            return {
+                payload: store,
+                statusCode: 200
+            }
         } catch (err) {
-            throw new ResponseError(500, err.key, 'An unexpected error occurred in the store service.');
+            throw new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
         }
     }
 
@@ -46,8 +64,18 @@ export class StoreController {
      * paths:
      *   /store-svc/stores:
      *     get:
-     *       summary: Get all stores
-     *       description: Get all stores
+     *       description: Fetch all stores
+     *       tags:
+     *         - Store
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
@@ -57,11 +85,74 @@ export class StoreController {
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/stores')
-    public async getStores(@Req() req: any): Promise<any> {
+    public async getStores(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
-            return await this.storeService.getStores(req.requestor.referrer);
+            const stores = await this.storeService.getStores(host);
+
+            return {
+                payload: stores || [],
+                statusCode: 200,
+                successCode: stores.length === 0 ? 'STORE_SERVICE_MESSAGES.EMPTY_LIST' : ''
+            };
         } catch (err) {
-            throw new ResponseError(500, err.key, 'An unexpected error occurred in the store service.');
+            throw new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /store-svc/stores/by/type/{type}:
+     *     get:
+     *       description: Fetch all stores by a specific type
+     *       tags:
+     *         - Store
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *         - name: type
+     *           in: path
+     *           description: The type associated to the store.
+     *           type: string
+     *           required: true
+     *       responses:
+     *         200:
+     *           description: Data has been retrieved successfully.
+     *         500:
+     *           description: An unexpected error occurred in the store service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Get('/stores/by/type/:type')
+    public async getStoresByType(
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
+        @Param('type') type: string
+    ): Promise<any> {
+        try {
+            const stores = await this.storeService.getStoresByType(type, host);
+
+            return {
+                payload: stores || [],
+                statusCode: 200,
+                successCode: stores.length === 0 ? 'STORE_SERVICE_MESSAGES.STORES_BY_TYPE_EMPTY_LIST' : ''
+            };
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case STORE_SERVICE_MESSAGES.EMPTY_STORE_TYPE:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+            }
         }
     }
 
@@ -70,22 +161,33 @@ export class StoreController {
      * paths:
      *   /store-svc/store:
      *     post:
-     *       summary: Stepper store
-     *       description: Stepper store
+     *       description: Add store
      *       tags:
      *          - Store
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
      *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
      *         - in: body
      *           name: request
-     *           description: The store information.
+     *           description: New store information.
      *           required: true
      *           schema:
      *             $ref: '#/definitions/Store'
      *       responses:
      *         201:
-     *           description: Data has been posted successfully.
+     *           description: Data has been added successfully.
      *           schema:
-     *              $ref: '#/definitions/Store'
+     *             $ref: '#/definitions/Store'
+     *         422:
+     *           description: Restrictions for adding store.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the store service.
      *           schema:
@@ -94,12 +196,98 @@ export class StoreController {
     @HttpCode(201)
     @Post('/store')
     public async postStore(
-        @Req() req: any,
-        @Body() body: any): Promise<any> {
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
+        @Body() body: any
+    ): Promise<any> {
         try {
-            return await this.storeService.updateStore(req.requestor.referrer, body);
+            const store = await this.storeService.addStore(body, host);
+
+            return {
+                payload: store,
+                statusCode: 201,
+                successCode: 'STORE_SERVICE_MESSAGES.NEW'
+            };
         } catch (err) {
-            throw new ResponseError(500, err.key, 'An unexpected error occurred in the store service.');
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case STORE_SERVICE_MESSAGES.EMPTY_NEW_STORE_INFO:
+                        return new ResponseError(422, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', '');
+                    case STORE_SERVICE_MESSAGES.STORE_NOT_ADDED:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /store-svc/stores/{store_key}:
+     *     put:
+     *       description: Update store.
+     *       tags:
+     *          - Store
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *         - name: store_key
+     *           in: path
+     *           description: The key associated to the store.
+     *           type: string
+     *           required: true
+     *         - in: body
+     *           name: request
+     *           description: Request with store to be added.
+     *           required: true
+     *           schema:
+     *             $ref: '#/definitions/Store'
+     *       responses:
+     *         200:
+     *           description: The shipping address was updated successfully.
+     *           schema:
+     *             $ref: '#/definitions/Store'
+     *         500:
+     *           description: An unexpected error occurred in the seat service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Put('/stores/:store_key')
+    public async putStore(
+        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
+        @Param('store_key') storeKey: string,
+        @Body() body: any
+    ): Promise<any> {
+        try {
+            const store = await this.storeService.updateStore(storeKey, body, host);
+
+            return {
+                payload: store,
+                statusCode: 200,
+                successCode: 'STORE_SERVICE_MESSAGES.UPDATED'
+            };
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case STORE_SERVICE_MESSAGES.EMPTY_STORE_KEY:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                    case STORE_SERVICE_MESSAGES.STORE_NOT_UPDATED:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'STORE_SERVICE_MESSAGES.DEFAULT_STORE_SERVICE_ERROR_MESSAGE', DEFAULT_STORE_SERVICE_ERROR_MESSAGE);
+            }
         }
     }
 }

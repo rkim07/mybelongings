@@ -85,13 +85,13 @@ export class SystemMessageService {
                     NEW: 'Vehicle successfully added.',
                     UPDATED: 'Vehicle successfully updated.',
                     DELETED: 'Vehicle successfully deleted.',
-                    EMPTY_LIST: 'There are no vehicles at this time.',
-                    USER_VEHICLES_EMPTY_LIST: 'No vehicles were found for the user.'
+                    EMPTY_LIST: 'The system did not find any saved vehicles.',
+                    USER_VEHICLES_EMPTY_LIST: 'The system did not find any vehicles for the user.'
                 },
                 error: {
                     VEHICLE_NOT_FOUND: 'User does not have any vehicle at this time.',
                     VEHICLES_NOT_FOUND: 'User does not have any vehicles at this time.',
-                    EMPTY_NEW_VEHICLE_INFO: 'You need to provide all the information to add a new vehicle.',
+                    EMPTY_NEW_VEHICLE_INFO: 'Full information needs to be provided to add new vehicle.',
                     EXISTING_VIN: 'VIN already used on another vehicle. Please check your entry'
                 },
                 warning: {
@@ -114,6 +114,17 @@ export class SystemMessageService {
                 error: {
                     VEHICLE_MFRS_NOT_FOUND: 'No manufacturers were found for sync.',
                     VEHICLE_MODELS_NOT_FOUND: 'No models for this particular manufacturer were found.'
+                }
+            },
+            store: {
+                success: {
+                    NEW: 'Store successfully added.',
+                    UPDATED: 'Store successfully updated.',
+                    EMPTY_LIST: 'The system did not find any saved properties.',
+                    STORES_BY_TYPE_EMPTY_LIST: 'The system did not find any stores by this type.'
+                },
+                error: {
+                    EMPTY_NEW_STORE_INFO: 'Full information needs to be provided to add new store.',
                 }
             }
         };

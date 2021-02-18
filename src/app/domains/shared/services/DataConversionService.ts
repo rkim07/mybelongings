@@ -135,20 +135,25 @@ export class DataConversionService {
 
     /**
      * Check if it's request route for conversion
+     * Service needs to be listed here if data
+     * conversion is necessary
+     *
      * @param path
      */
     public isReqRoute(path: string): boolean {
-        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,}))$/;
+        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,})|store-svc\/store(s?|s?\/[0-9a-zA-Z-]{1,}))$/;
         return regex.test(path);
     }
 
     /**
      * Check if it's response route for conversion
+     * Service needs to be listed here if data
+     * conversion is necessary
      *
      * @param path
      */
     public isResRoute(path: string): boolean {
-        const regex = /^\/(=?vehicle-svc|property-svc)/;
+        const regex = /^\/(=?vehicle-svc|property-svc|store-svc)/;
         return regex.test(path);
     }
 

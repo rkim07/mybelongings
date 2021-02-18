@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
-import { Store } from '../../shared/models/models';
-import { DatabaseCollectionService } from '../../shared/services/DatabaseCollectionService';
-import { Datetime } from '../../shared/models/utilities/Datetime';
+import { Key, Store } from '../../../shared/models/models';
+import { Datetime } from '../../../shared/models/utilities/Datetime';
+import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
 
 @Service()
 export class StoreCollectionService extends DatabaseCollectionService {
@@ -16,7 +16,7 @@ export class StoreCollectionService extends DatabaseCollectionService {
     /**
      * Get all stores
      */
-    public async getStores(): Promise<Store[]> {
+    public async getAll(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -26,14 +26,38 @@ export class StoreCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Stepper or update store
+     * Add store
      *
      * @param store
      */
-    public async updateStore(store: any) {
+    public async add(store: any): Promise<any> {
         await this.loadCollection();
 
-        const existingStore = await this.findOne({ key: { $eq: store.key }});
+        return await this.addOne(
+            new Store({
+                addressKey: store.addressKey,
+                name: store.name,
+                landline: store.landline,
+                mobile: store.mobile,
+                email: store.email,
+                website: store.website,
+                salesPerson: store.salesPerson,
+                type: store.type,
+                notes: store.notes
+            })
+        );
+    }
+
+    /**
+     * Update store
+     *
+     * @param storeKey
+     * @param store
+     */
+    public async update(storeKey: Key, store: any): Promise<any> {
+        await this.loadCollection();
+
+        const existingStore = await this.findOne({ key: { $eq: storeKey }});
 
         if (existingStore) {
             return await this.updateManyFields({
@@ -52,18 +76,6 @@ export class StoreCollectionService extends DatabaseCollectionService {
                     modified: Datetime.getNow()
                 }
             });
-        } else {
-            return await this.addOne(new Store({
-                addressKey: store.addressKey,
-                name: store.name,
-                landline: store.landline,
-                mobile: store.mobile,
-                email: store.email,
-                website: store.website,
-                salesPerson: store.salesPerson,
-                type: store.type,
-                notes: store.notes
-            }));
         }
     }
 }

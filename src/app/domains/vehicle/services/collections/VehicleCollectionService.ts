@@ -26,7 +26,7 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Stepper vehicle
+     * Add vehicle
      *
      * @param userKey
      * @param vehicle

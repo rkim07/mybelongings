@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import * as _ from 'lodash';
 import moment from 'moment';
-import {  useParams } from 'react-router-dom';
+import AppContext from '../../../../appcontext';
 import { decimalFormatter } from '../../../../helpers/input';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Container from '@material-ui/core/Container';
@@ -9,8 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import {SelectValidator, TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +56,7 @@ const theme = createMuiTheme({
  * @constructor
  */
 export default function Purchase(props) {
-	const { key } = useParams();
+	const apis = useContext(AppContext);
 	const classes = useStyles();
 
 	const {
@@ -64,6 +64,24 @@ export default function Purchase(props) {
 		onHandleFileChange, // parent call
 		onHandlePurchaseChange, // parent call
 	} = props;
+
+	const initialValues = {
+		stores: []
+	};
+
+	const [values, setValues] = useState(initialValues);
+
+	// Determine if user is an admin
+	useEffect(() => {
+		apis.getStoresByType('dealership').then(response => {
+			if (response.statusCode < 400) {
+				setValues(prevState => ({
+					...prevState,
+					stores: response.payload
+				}));
+			}
+		});
+	}, []);
 
 	// Handle dropdown and input changes
 	const handleChange = (e) => {
@@ -89,6 +107,26 @@ export default function Purchase(props) {
 
 	return (
 		<Grid container spacing={2}>
+			<Grid item xs={12}>
+				<SelectValidator
+					fullWidth
+					variant='outlined'
+					label='Store'
+					name='storeKey'
+					value={ values.stores ? purchase.storeKey : '' }
+					onChange={ handleChange }
+				>
+					<MenuItem aria-label='None' value='' />
+					{ values.stores && values.stores.map((store) => (
+						<MenuItem
+							key={ store.key }
+							value={ store.key }
+						>
+							{ store.name }
+						</MenuItem>
+					))}
+				</SelectValidator>
+			</Grid>
 			<Grid item xs={12} sm={6}>
 				<MuiPickersUtilsProvider utils={ DateFnsUtils }>
 					<KeyboardDatePicker
@@ -96,7 +134,7 @@ export default function Purchase(props) {
 						disableToolbar
 						variant='inline'
 						label='Purchased date'
-						format="MM/dd/yyyy"
+						format='MM/dd/yyyy'
 						value={ purchase.purchased }
 						onChange={ handleDateChange }
 						KeyboardButtonProps={{
@@ -207,7 +245,7 @@ export default function Purchase(props) {
 						showPreviews={false}
 						showPreviewsInDropzone={true}
 						clearOnUnmount={true}
-						dropzoneText="Add your purchase agreement here"
+						dropzoneText='Add your purchase agreement here'
 						onChange={ onHandleFileChange }
 					/>
 				</ThemeProvider>

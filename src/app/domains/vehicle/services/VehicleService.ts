@@ -123,7 +123,7 @@ export class VehicleService {
     }
 
     /**
-     * Stepper vehicle
+     * Add vehicle
      *
      * @param userKey
      * @param host
@@ -204,7 +204,7 @@ export class VehicleService {
     }
 
     /**
-     * Stepper dependencies when returning object
+     * Dependencies when returning object
      *
      * @param host
      * @param vehicle

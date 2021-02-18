@@ -1,10 +1,15 @@
 import { Container, Inject, Service } from 'typedi';
 import { AddressService } from '../../address/services/AddressService';
-import { StoreCollectionService } from './StoreCollectionService';
+import { StoreCollectionService } from './collections/StoreCollectionService';
 import { HandleUpstreamError, Key, Store } from '../../shared/models/models';
 
 export enum STORE_SERVICE_MESSAGES {
-    STORE_NOT_FOUND = 'STORE_SERVICE_MESSAGES.STORE_NOT_FOUND'
+    STORE_NOT_FOUND = 'STORE_SERVICE_MESSAGES.STORE_NOT_FOUND',
+    STORE_NOT_ADDED = 'STORE_SERVICE_MESSAGES.STORE_NOT_ADDED',
+    STORE_NOT_UPDATED = 'STORE_SERVICE_MESSAGES.STORE_NOT_UPDATED',
+    EMPTY_STORE_KEY = 'STORE_SERVICE_MESSAGES.EMPTY_STORE_KEY',
+    EMPTY_NEW_STORE_INFO = 'STORE_SERVICE_MESSAGES.EMPTY_NEW_STORE_INFO',
+    EMPTY_STORE_TYPE = 'STORE_SERVICE_MESSAGES.EMPTY_STORE_TYPE'
 }
 
 /**
@@ -39,59 +44,107 @@ export class StoreService {
     /**
      * Get store by key
      *
-     * @param key
-     * @param origin
+     * @param storeKey
+     * @param host
      */
-    public async getStore(key: Key, origin?: string): Promise<any> {
-        const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
+    public async getStore(storeKey: Key, host?: string): Promise<any> {
+        const store = await this.storeCollectionService.findOne({ key: { $eq: storeKey }});
 
         if (!store) {
             return {};
         }
 
-        return await this.addDependencies(origin, store);
+        return await this.addDependencies(host, store);
     }
 
     /**
      * Get all stores
+     *
+     * @param host
      */
-    public async getStores(origin: string): Promise<any> {
-        const stores = await this.storeCollectionService.getStores();
+    public async getStores(host?: string): Promise<any> {
+        const stores = await this.storeCollectionService.getAll();
+
+        if (stores.length === 0) {
+            return [];
+        }
 
         return await Promise.all(stores.map(async (store) => {
-            return await this.addDependencies(origin, store);
+            return await this.addDependencies(store, host);
         }));
     }
 
     /**
-     * Get store by key
+     * Get all stores by type
      *
-     * @param key
-     * @param origin
+     * @param type
+     * @param host
      */
-    public async getStoreByKey(key: Key, origin: string): Promise<any> {
-        const store = await this.storeCollectionService.findOne({ key: { $eq: key }});
-        return await this.addDependencies(origin, store);
+    public async getStoresByType(type: string, host?: string): Promise<any> {
+        if (!type) {
+            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.EMPTY_STORE_TYPE);
+        }
+
+        const stores = await this.storeCollectionService.find({ type: { $eq: type }});
+
+        if (stores.length === 0) {
+            return [];
+        }
+
+        return await Promise.all(stores.map(async (store) => {
+            return await this.addDependencies(store, host);
+        }));
     }
 
     /**
-     * Stepper or update store
+     * Add store
      *
-     * @param origin
-     * @param body
-     */
-    public async updateStore(origin: string, body: any): Promise<any> {
-        const store = await this.storeCollectionService.updateStore(body);
-        return await this.addDependencies(origin, store);
-    }
-
-    /**
-     * Stepper dependencies when returning object
-     *
-     * @param origin
      * @param store
+     * @param host
      */
-    private async addDependencies(origin, store) {
+    public async addStore(store: any, host?: string): Promise<any> {
+        if (!store) {
+            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.EMPTY_NEW_STORE_INFO);
+        }
+
+        const addedStore = await this.storeCollectionService.add(store);
+
+        if (!addedStore) {
+            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.STORE_NOT_ADDED);
+        }
+
+        return await this.addDependencies(addedStore, host);
+    }
+
+    /**
+     * Update store
+     *
+     * @param storeKey
+     * @param store
+     * @param host
+     */
+    public async updateStore(storeKey: Key, store: any, host?: string): Promise<any> {
+        if (!storeKey) {
+            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.EMPTY_STORE_KEY);
+        }
+
+        const updatedStore = await this.storeCollectionService.update(storeKey, store);
+
+        if (!updatedStore) {
+            throw new HandleUpstreamError(STORE_SERVICE_MESSAGES.STORE_NOT_UPDATED);
+        }
+
+        return await this.addDependencies(updatedStore, host);
+    }
+
+    /**
+     * Dependencies when returning object
+     *
+     * @param store
+     * @param host
+     * @private
+     */
+    private async addDependencies(store: any, host?: string): Promise<any> {
         return { ...store, address: await this.addressService.getAddress(store.addressKey) };
     }
 }
