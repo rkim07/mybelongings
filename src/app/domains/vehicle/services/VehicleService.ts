@@ -217,13 +217,14 @@ export class VehicleService {
         //const finance = await this.financeService.getFinanceByVehicle(vehicle.key);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
 
-        vehicle = { ...vehicle, mfrName: mfr.mfrName };
-        vehicle = { ...vehicle, model: model.model };
-        vehicle = { ...vehicle, purchase: purchase };
-        //vehicle = { ...vehicle, finance: finance };
-        //vehicle = { ...vehicle, insurance: insurance };
-        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
-
-        return vehicle;
+        return {
+            ...vehicle,
+            mfrName: mfr.mfrName,
+            model: model.model,
+            purchase: purchase,
+            // finance: finance,
+            // insurance: insurance,
+            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+        };
     }
 }

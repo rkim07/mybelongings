@@ -102,9 +102,10 @@ export class PaintService {
      * @param paint
      */
     private async addDependencies(host, paint) {
-        paint = { ...paint, imagePath: this.fileUploadService.setImagePath(host, paint.image) };
-        paint = { ...paint, store: paint.storeKey ? await this.storeService.getStore(paint.storeKey, host) : {} };
-
-        return paint;
+        return {
+            ...paint,
+            store: paint.storeKey ? await this.storeService.getStore(paint.storeKey, host) : {},
+            imagePath: this.fileUploadService.setImagePath(host, paint.image)
+        };
     }
 }

@@ -122,7 +122,7 @@ export default function Purchase(props) {
 							key={ store.key }
 							value={ store.key }
 						>
-							{ store.name }
+							{ store.customName }
 						</MenuItem>
 					))}
 				</SelectValidator>

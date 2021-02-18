@@ -117,10 +117,11 @@ export class PropertyService {
      * @param property
      */
     private async addDependencies(host, property) {
-        property = { ...property, imagePath: this.fileUploadService.setImagePath(host, property.image) };
-        property = { ...property, address: await this.addressService.getAddress(property.addressKey) };
-        property = { ...property, areas: await this.propertyAreaService.getAreasByPropertyKey(property.key, host) };
-
-        return property;
+        return {
+            ...property,
+            address: await this.addressService.getAddress(property.addressKey),
+            areas: await this.propertyAreaService.getAreasByPropertyKey(property.key, host),
+            imagePath: this.fileUploadService.setImagePath(host, property.image)
+        };
     }
 }
