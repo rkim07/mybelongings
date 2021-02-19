@@ -155,12 +155,12 @@ export default function Modify(props) {
 			// was added to the list
 			if (isNewVehicle) {
 				navigate('/admin/vehicles/list');
+			} else {
+				dispatchVehicles({
+					type: 'update',
+					payload: response.payload
+				});
 			}
-
-			dispatchVehicles({
-				type: 'update',
-				payload: response.payload
-			});
 		} else {
 			/*handleNotifier(
 				response.statusType,
