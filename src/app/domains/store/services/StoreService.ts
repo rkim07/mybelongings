@@ -55,7 +55,7 @@ export class StoreService {
             return {};
         }
 
-        return await this.addDependencies(host, store);
+        return await this.addDependencies(store, host);
     }
 
     /**
@@ -93,7 +93,7 @@ export class StoreService {
         }
 
         return await Promise.all(stores.map(async (store) => {
-            return await this.addDependencies(store, type, host);
+            return await this.addDependencies(store, host);
         }));
     }
 
@@ -142,19 +142,19 @@ export class StoreService {
      * Dependencies when returning object
      *
      * @param store
-     * @param type
      * @param host
      * @private
      */
-    private async addDependencies(store: any, type: string, host?: string): Promise<any> {
+    private async addDependencies(store: any, host?: string): Promise<any> {
         const address = await this.addressService.getAddress(store.addressKey);
 
         // Name that will be shown in dropdown selection.  Depending of store type, name will be shown differently
         let customName = `${store.name}, ${address.street}, ${address.city}, ${address.state}, ${address.zip}`;
 
-        if (type === 'dealership') {
+        if (store.type === 'dealership') {
             customName = `${store.name} - ${address.city}`
         }
+
         return {
             ...store,
             customName: customName,

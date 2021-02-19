@@ -1,12 +1,12 @@
-import * as _ from 'lodash';
 import React from 'react';
+import * as _ from 'lodash';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
-import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 // Table cell CSS
 const StyledTableCell = withStyles((theme) => ({

@@ -117,6 +117,8 @@ export default function Main() {
 								<ListItemText primary='Main' />
 							</ListItem>
 							<VehiclesMenu />
+							<PropertiesMenu />
+							<StoresMenu />
 						</List>
 
 						<Divider />

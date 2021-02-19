@@ -151,8 +151,10 @@ export class VehicleService {
         //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
         //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
 
-        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
-        return vehicle;
+        return {
+            ...vehicle,
+            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+        };
     }
 
     /**
@@ -177,8 +179,10 @@ export class VehicleService {
         //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
         //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
 
-        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
-        return vehicle;
+        return {
+            ...vehicle,
+            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+        };
     }
 
     /**

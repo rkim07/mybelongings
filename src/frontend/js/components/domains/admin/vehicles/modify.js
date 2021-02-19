@@ -289,7 +289,11 @@ export default function Modify(props) {
 						<React.Fragment>
 							{
 								{
-									'0': <h1>Test</h1>,
+									'0': <Details
+										vehicle={ values.vehicle }
+										onHandleImageChange={ handleImageChange }
+										onHandleVehicleChange={ handleVehicleChange }
+									/>,
 									'1': <Purchase
 										purchase={ values.vehicle.purchase }
 										onHandleFileChange={ handleFileChange }

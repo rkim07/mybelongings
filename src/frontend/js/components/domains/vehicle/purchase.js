@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { useParams } from 'react-router-dom';
-import TwoColumnsTable from '../../shared/view/twocolumnstable';
+import VehiclePurchaseTable from '../../shared/view/vehiclepurchasetable';
 import Box from '@material-ui/core/Box';
 import Skeleton from '@material-ui/lab/Skeleton';
+import AppContext from "../../../appcontext";
 
 /**
  * Child component of information
@@ -12,6 +13,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
  */
 export default function Purchase(props) {
 	const { key } = useParams();
+	const apis = useContext(AppContext);
 	const { ...other } = props;
 
 	// Needs to be implemented
@@ -27,9 +29,18 @@ export default function Purchase(props) {
 		agreement: 'Purchase agreement'
 	};
 
+	// Handle download
+	const handleDownload = (fileName) => {
+		apis.downloadFile(fileName).then(response => {});
+	};
+
 	return (
 		<React.Fragment>
-			<TwoColumnsTable tableCells={ tableCells } { ...other } />
+			<VehiclePurchaseTable
+				tableCells={ tableCells }
+				onHandleDownload={ handleDownload }
+				{ ...other }
+			/>
 		</React.Fragment>
 	)
 }

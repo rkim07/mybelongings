@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, VehiclePurchase } from '../../shared/models/models';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { StoreService } from '../../store/services/StoreService';
 import { VehiclePurchaseCollectionService } from './collections/VehiclePurchaseCollectionService';
 import { VEHICLE_SERVICE_MESSAGES } from './VehicleService';
@@ -36,6 +37,9 @@ export const vehiclePurchaseMappingKeys = {
         'stickerPrice',
         'purchasePrice'
     ],
+    capitalizedText: [
+        'purchaseType'
+    ],
 };
 
 @Service()
@@ -46,6 +50,9 @@ export class VehiclePurchaseService {
 
     @Inject()
     private vehiclePurchaseCollectionService: VehiclePurchaseCollectionService = Container.get(VehiclePurchaseCollectionService);
+
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
 
     /**
      * Get purchase by key
@@ -174,7 +181,9 @@ export class VehiclePurchaseService {
      * @private
      */
     private async addDependencies(purchase: any): Promise<any> {
-        const store = await this.storeService.getStore(purchase.storeKey);
-        return { ...purchase, store: store };
+        return {
+            ...purchase,
+            store: await this.storeService.getStore(purchase.storeKey)
+        };
     }
 }

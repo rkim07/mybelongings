@@ -70,6 +70,24 @@ export class FileUploadService {
     }
 
     /**
+     * Set file path other than images
+     *
+     * @param file
+     * @param host
+     */
+    public setFilePath(file: string, host?: string) {
+        if (host === '') {
+            return '';
+        }
+
+        const dir = this.getFileType(file);
+        const filePath = file !== '' ? `${host}/${dir}/${file}` : `${host}`;
+        const extension = path.extname(file);
+
+        return [ filePath, extension ];
+    }
+
+    /**
      * Get source and build paths
      *
      * @param file
