@@ -183,9 +183,9 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
-        await this.vehiclePurchaseService.addPurchase(updatedVehicle.key, vehicle.purchase, host);
-        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
-        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+        await this.vehiclePurchaseService.updatePurchase(vehicle.purchase.key, vehicle.purchase, host);
+        //await this.vehicleFinancialService.updateFinancial(vehicle.financial.key, vehicle.financial);
+        //await this.vehicleInsuranceService.updateInsurance(vehicle.insurance.key, vehicle.insurance);
 
         return {
             ...vehicle,

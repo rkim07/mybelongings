@@ -71,7 +71,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
                     storeKey: purchase.storeKey,
                     odometer: purchase.odometer,
                     deposit: purchase.deposit,
-                    downPayment: purchase.donwPayment,
+                    downPayment: purchase.downPayment,
                     msrpPrice: purchase.msrpPrice,
                     stickerPrice: purchase.stickerPrice,
                     purchasePrice: purchase.purchasePrice,

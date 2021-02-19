@@ -45,46 +45,51 @@ const Dialogger = forwardRef((props, ref) => {
 			aria-labelledby='alert-dialog-title'
 			aria-describedby='alert-dialog-description'
 		>
-			{
-				{
-					'update':
-						<React.Fragment>
-							<DialogContent>
-								<Modify
-									onHandleClose={ handleClose }
-									{ ...values.params }
-								/>
-							</DialogContent>
-						</React.Fragment>,
-					'delete':
-						<React.Fragment>
-							<DialogTitle id='alert-dialog-title'>{ 'Delete vehicle' }</DialogTitle>
-							<DialogContent>
-								<DialogContentText id='alert-dialog-description'>
-									This action will permanently remove the vehicle from the database.  Do you want to continue?
-								</DialogContentText>
-							</DialogContent>
-							<DialogActions>
-								<Button
-									onClick={ () => {
-										handleClose();
-										values.params.onHandleDelete(values.params.vehicleKey);
-									}}
-									color='primary'
-								>
-									Yes
-								</Button>
-								<Button
-									onClick={ () => handleClose() }
-									color='primary'
-									autoFocus
-								>
-									No
-								</Button>
-							</DialogActions>
-						</React.Fragment>
-				}[values.type]
-			}
+			{(() => {
+				switch (values.type) {
+					case 'add':
+					case 'update':
+						return (
+							<React.Fragment>
+								<DialogContent>
+									<Modify
+										onHandleClose={ handleClose }
+										{ ...values.params }
+									/>
+								</DialogContent>
+							</React.Fragment>
+						)
+					case 'delete':
+						return (
+							<React.Fragment>
+								<DialogTitle id='alert-dialog-title'>{ 'Delete vehicle' }</DialogTitle>
+								<DialogContent>
+									<DialogContentText id='alert-dialog-description'>
+										This action will permanently remove the vehicle from the database.  Do you want to continue?
+									</DialogContentText>
+								</DialogContent>
+								<DialogActions>
+									<Button
+										onClick={ () => {
+											handleClose();
+											values.params.onHandleDelete(values.params.vehicleKey);
+										}}
+										color='primary'
+									>
+										Yes
+									</Button>
+									<Button
+										onClick={ () => handleClose() }
+										color='primary'
+										autoFocus
+									>
+										No
+									</Button>
+								</DialogActions>
+							</React.Fragment>
+						)
+				}
+			})}
 		</Dialog>
 	)
 })

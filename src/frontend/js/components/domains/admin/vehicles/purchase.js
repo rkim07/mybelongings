@@ -163,7 +163,7 @@ export default function Purchase(props) {
 					value={ purchase.purchaseType ? purchase.purchaseType.toLowerCase() : '' }
 					onChange={ handleChange }
 					validators={['required']}
-					errorMessages={['Model is required']}
+					errorMessages={['Purchase type is required']}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position="start">

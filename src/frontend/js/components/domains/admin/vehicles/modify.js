@@ -1,7 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import * as _ from 'lodash';
-import AppContext from '../../../../appcontext';
 import { currentYear } from '../../../../helpers/date';
 import { decimalFormatter } from '../../../../helpers/input';
 import Details from './details';
@@ -51,14 +49,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Modify(props) {
-	const navigate = useNavigate();
-	const apis = useContext(AppContext);
 	const classes = useStyles();
 	const form = useRef();
 	const steps = 4;
 	const {
 		vehicleKey,
 		activeStep,
+		onHandleSubmit,
 		onHandleClose
 	} = props;
 
@@ -120,55 +117,7 @@ export default function Modify(props) {
 	// Add or update vehicle
 	const handleSubmit = async(e) => {
 		e.preventDefault();
-		const vehicle = values.vehicle;
-
-		const isNewVehicle = vehicle.key ? false : true;
-
-		// Make REST call to upload file
-		if (values.image.length) {
-			const upload = await apis.uploadFile(values.image[0]);
-
-			if (upload) {
-				vehicle.image = upload.payload;
-			}
-		}
-
-		if (values.file.length) {
-			const upload = await apis.uploadFile(values.file[0]);
-
-			if (upload) {
-				vehicle.purchase.agreement = upload.payload;
-			}
-		}
-
-		// Make REST call to add or update and modify state
-		const response = isNewVehicle ?
-			await apis.addVehicle(vehicle)
-			:
-			await apis.updateVehicle(vehicle);
-
-		if (response.statusCode < 400) {
-			/*handleNotifier(
-				response.statusType,
-				response.message
-			);*/
-
-			// Rerender component since a new vehicle
-			// was added to the list
-			if (isNewVehicle) {
-				navigate('/admin/vehicles/list');
-			} else {
-				dispatchVehicles({
-					type: 'update',
-					payload: response.payload
-				});
-			}
-		} else {
-			/*handleNotifier(
-				response.statusType,
-				response.message
-			);*/
-		}
+		onHandleSubmit(values);
 	}
 
 	// Handle vehicle step changes
@@ -295,7 +244,7 @@ export default function Modify(props) {
 					{ values.activeStep === steps ? (
 						<React.Fragment>
 							<Typography className={classes.instructions}>All steps completed</Typography>
-							<Button onClick={handleReset}>Reset</Button>
+							<Button onClick={ handleReset }>Reset</Button>
 						</React.Fragment>
 					) : (
 						<React.Fragment>
@@ -311,8 +260,8 @@ export default function Modify(props) {
 										onHandleFileChange={ handleFileChange }
 										onHandlePurchaseChange={ handlePurchaseChange }
 									/>,
-									'2': <h1>sInsurance</h1>,
-									'3': <h1>sInsurance</h1>
+									'2': <h1>Finance</h1>,
+									'3': <h1>Insurance</h1>
 								}[values.activeStep]
 							}
 							{ vehicleKey ? (

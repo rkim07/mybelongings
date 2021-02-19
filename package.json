@@ -60,7 +60,7 @@
     "jsonwebtoken": "7.4.3",
     "lodash": "^4.17.4",
     "map-factory": "^3.8.1",
-    "mariadb": "^2.4.1",
+    "mariadb": "^2.5.3",
     "material-ui-dropzone": "^3.5.0",
     "material-ui-image": "^3.3.1",
     "module-alias": "^2.2.2",

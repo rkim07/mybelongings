@@ -5,6 +5,7 @@ import { modifyState, removeFromState } from '../../../../apis/helpers/collectio
 import Dialogger from './dialogger';
 import Notifier from '../../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,10 +13,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
 import DirectionsCar from '@material-ui/icons/DirectionsCar';
-import Edit from '@material-ui/icons/Edit';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
 import StoreIcon from '@material-ui/icons/Store';
-import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -66,13 +65,12 @@ const vehiclesReducer = (state, action) => {
 }
 
 /**
- * Child component of dashboard
+ * Main component
  *
- * @param props
  * @returns {JSX.Element}
  * @constructor
  */
-export default function List(props) {
+export default function Main() {
 	const notifierRef = useRef();
 	const dialoggerRef = useRef();
 	const apis = useContext(AppContext);
@@ -85,10 +83,7 @@ export default function List(props) {
 	useEffect(() => {
 		apis.getVehicles().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
-				dispatchVehicles({
-					type: 'add',
-					payload: response.payload
-				});
+				handleAdd(response);
 
 				setLoading(false);
 			} else if (response.payload.length === 0) {
@@ -97,8 +92,70 @@ export default function List(props) {
 		});
 	}, []);
 
-	// Delete vehicle
-	const hanleDelete = async(key) => {
+	// Handle submit
+	const handleSubmit = async(values) => {
+		const vehicle = values.vehicle;
+
+		const isNewVehicle = vehicle.key ? false : true;
+
+		// Make REST call to upload file
+		if (values.image.length) {
+			const upload = await apis.uploadFile(values.image[0]);
+
+			if (upload) {
+				vehicle.image = upload.payload;
+			}
+		}
+
+		if (values.file.length) {
+			const upload = await apis.uploadFile(values.file[0]);
+
+			if (upload) {
+				vehicle.purchase.agreement = upload.payload;
+			}
+		}
+
+		// Make REST call to add or update and modify state
+		const response = isNewVehicle ?
+			await apis.addVehicle(vehicle)
+			:
+			await apis.updateVehicle(vehicle);
+
+		if (response.statusCode < 400) {
+			// Rerender component since a new vehicle
+			// was added to the list
+			if (isNewVehicle) {
+				handleAdd(response);
+			} else {
+				handleUpdate(response);
+			}
+		} else {
+			handleNotifier(response.statusType, response.message);
+		}
+	}
+
+	// Handle add vehicle to collection
+	const handleAdd = (response) => {
+		dispatchVehicles({
+			type: 'add',
+			payload: response.payload
+		});
+
+		handleNotifier(response.statusType, response.message);
+	}
+
+	// Handle update vehicle from collection
+	const handleUpdate = (response) => {
+		dispatchVehicles({
+			type: 'update',
+			payload: response.payload
+		});
+
+		handleNotifier(response.statusType, response.message);
+	}
+
+	// Handle delete vehicle from collection
+	const handleDelete = async(key) => {
 		const response = await apis.deleteVehicle(key);
 
 		if (response.statusCode < 400) {
@@ -119,11 +176,26 @@ export default function List(props) {
 	return (
 		<Container maxWidth='lg' className={classes.container}>
 			<div className={classes.paper}>
-				<Notifier ref={ notifierRef }/>
-				<Dialogger
-					ref={ dialoggerRef }
-					{ ...props }
-				/>
+				<Notifier ref={ notifierRef } />
+				<Dialogger ref={ dialoggerRef } />
+				<Grid container justify='flex-end'>
+					<Grid item>
+						<Button
+							size='small'
+							type='button'
+							variant='contained'
+							color='default'
+							className={classes.button}
+							startIcon={<DirectionsCarTwoToneIcon />}
+							onClick={ () => dialoggerRef.current.openDialogger('add', {
+								activeStep: 0,
+								onHandleSubmit: handleSubmit
+							})}
+						>
+							Add new vehicle
+						</Button>
+					</Grid>
+				</Grid>
 				<Table className={classes.table}>
 					<TableHead>
 						<TableRow>
@@ -150,8 +222,8 @@ export default function List(props) {
 											color='default'
 											onClick={ () => dialoggerRef.current.openDialogger('update', {
 												vehicleKey: vehicle.key,
-												updateType: 'vehicle',
-												activeStep: 0
+												activeStep: 0,
+												onHandleSubmit: handleSubmit
 											})}
 										>
 											<DirectionsCarIcon />
@@ -161,8 +233,8 @@ export default function List(props) {
 											color='default'
 											onClick={ () => dialoggerRef.current.openDialogger('update', {
 												vehicleKey: vehicle.key,
-												updateType: 'purchase',
-												activeStep: 1
+												activeStep: 1,
+												onHandleSubmit: handleSubmit
 											})}
 										>
 											<StoreIcon />
@@ -172,7 +244,7 @@ export default function List(props) {
 											color='default'
 											onClick={ () => dialoggerRef.current.openDialogger('delete', {
 												vehicleKey: vehicle.key,
-												onHandleDelete: hanleDelete
+												onHandleDelete: handleDelete
 											})}
 										>
 											<DeleteIcon />

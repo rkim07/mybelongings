@@ -22,7 +22,7 @@ export class Text {
 	 * @param number
 	 */
 	static numberWithCommas(number) {
-		return number > 0 ? number.toLocaleString('en') : number;
+		return number !== 0 ? number.toLocaleString('en') : parseInt(number);
 	}
 
 	/**
@@ -31,7 +31,7 @@ export class Text {
 	 * @param number
 	 */
 	static numberWithoutCommas(number) {
-		return number > 0 ? parseInt(number.replace(',', '')) : number;
+		return number !== 0 ? parseInt(number.replace(',', '')) : parseInt(number);
 	}
 
 	/**
@@ -40,7 +40,7 @@ export class Text {
 	 * @param number
 	 */
 	static getNumericOnly(number) {
-		return parseInt(number.replace(/\D/g, ''));
+		return parseInt(number.replace(/\D/g, ' '));
 	}
 
 	/**
@@ -74,7 +74,7 @@ export class Text {
 	 * @param text
 	 */
 	static toInteger(text) {
-		return text !== '' ? parseInt(text) : text;
+		return parseInt(text);
 	}
 
 	/**

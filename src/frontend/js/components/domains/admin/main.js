@@ -7,7 +7,7 @@ import VehiclesMenu from './leftmenu/vehiclesmenu';
 import PropertiesMenu from './leftmenu/propertiesmenu';
 import StoresMenu from './leftmenu/storesmenu';
 import VehiclesModify from './vehicles/modify';
-import VehiclesList from './vehicles/list';
+import VehiclesMain from './vehicles/main';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -128,8 +128,7 @@ export default function Main() {
 					<div className={classes.appBarSpacer} />
 					<Routes>
 						<Route path='vehicles/dashboard' element={<VehiclesDashboard />} />
-						<Route path='vehicles/add' element={<VehiclesModify />} />
-						<Route path='vehicles/list' element={<VehiclesList />} />
+						<Route path='vehicles/main' element={<VehiclesMain />} />
 					</Routes>
 				</React.Fragment>
 			)}

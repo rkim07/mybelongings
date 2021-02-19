@@ -70,18 +70,18 @@ export default function VehiclesMenu() {
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/add'
+						to='vehicles/dashboard'
 					>
 						<ListItemIcon>
 							<AddBox />
 						</ListItemIcon>
-						<ListItemText primary='Add' />
+						<ListItemText primary='Dashboard' />
 					</ListItem>
 					<ListItem
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/list'
+						to='vehicles/main'
 					>
 						<ListItemIcon>
 							<Ballot />
