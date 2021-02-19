@@ -200,6 +200,7 @@ export default function Details(props) {
 					validators={['required']}
 					errorMessages={['Year is required']}
 				>
+					<MenuItem aria-label='None' value='' />
 					{ years && years.map((year) => (
 						<MenuItem
 							key={ year.value }
@@ -267,6 +268,7 @@ export default function Details(props) {
 					validators={['required']}
 					errorMessages={['Color is required']}
 				>
+					<MenuItem aria-label='None' value='' />
 					{ colors && colors.map((color) => (
 						<MenuItem
 							key={ color.value }

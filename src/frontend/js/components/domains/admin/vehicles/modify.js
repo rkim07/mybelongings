@@ -15,7 +15,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import  { ArrowBack, ArrowForward } from '@material-ui/icons';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import SkipNextIcon from '@material-ui/icons/SkipNext';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -70,19 +72,19 @@ export default function Modify(props) {
 			model: '',
 			color: '',
 			style: '',
-			mileage: '',
+			mileage: 0,
 			vin: '',
 			plate: '',
 			image: '',
 			imagePath: '',
 			purchase: {
 				storeKey: '',
-				odometer: '',
-				deposit: '',
-				downPayment: '',
-				msrpPrice: '',
-				stickerPrice: '',
-				purchasePrice: '',
+				odometer: 0,
+				deposit: 0,
+				downPayment: 0,
+				msrpPrice: 0,
+				stickerPrice: 0,
+				purchasePrice: 0,
 				agreement: '',
 				purchaseType: '',
 				purchased: new Date()
@@ -234,6 +236,15 @@ export default function Modify(props) {
 		});
 	}
 
+	// Allow selected sections to be skipped.
+	// Could be added later
+	const handleSkip = () => {
+		setValues(prevState => ({
+			...prevState,
+			activeStep: prevState.activeStep + 1
+		}));
+	}
+
 	// Move backwards in stepper
 	const handleBack = () => {
 		setValues(prevState => ({
@@ -339,20 +350,34 @@ export default function Modify(props) {
 											size='small'
 											variant='contained'
 											className={classes.button}
-											startIcon={<ArrowBack />}
+											startIcon={<NavigateBeforeIcon />}
 											onClick={ handleBack }
 											disabled={ values.activeStep === 0 }
 										>
 											Back
 										</Button>
 									</Grid>
+									{ (values.activeStep > 0 && values.activeStep !== steps - 1) && (
+										<Grid item>
+											<Button
+												fullWidth
+												size='small'
+												variant='contained'
+												className={classes.button}
+												endIcon={<SkipNextIcon />}
+												onClick={ handleSkip }
+											>
+												Skip
+											</Button>
+										</Grid>
+									)}
 									<Grid item>
 										<Button
 											fullWidth
 											size='small'
 											variant='contained'
 											className={classes.button}
-											endIcon={<ArrowForward />}
+											endIcon={<NavigateNextIcon />}
 											onClick={ values.activeStep === steps - 1 ? (e) => handleSubmit(e) : handleNext }
 										>
 											{ values.activeStep === steps - 1 ? 'Finish' : 'Next' }

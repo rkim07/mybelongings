@@ -128,11 +128,11 @@ export default function List(props) {
 					<TableHead>
 						<TableRow>
 							<CustomTableCell>Year</CustomTableCell>
-							<CustomTableCell align='right'>Manufacturer</CustomTableCell>
-							<CustomTableCell align='right'>Model</CustomTableCell>
-							<CustomTableCell align='right'>VIN</CustomTableCell>
-							<CustomTableCell align='right'>Created</CustomTableCell>
-							<CustomTableCell align='right'></CustomTableCell>
+							<CustomTableCell align='left'>Manufacturer</CustomTableCell>
+							<CustomTableCell align='left'>Model</CustomTableCell>
+							<CustomTableCell align='left'>VIN</CustomTableCell>
+							<CustomTableCell align='left'>Created</CustomTableCell>
+							<CustomTableCell align='left'></CustomTableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -140,11 +140,11 @@ export default function List(props) {
 							vehicle ? (
 								<TableRow className={classes.row} key={vehicle.key}>
 									<CustomTableCell component='th' scope='row'>{vehicle.year}</CustomTableCell>
-									<CustomTableCell align='right'>{ vehicle.mfrName}</CustomTableCell>
-									<CustomTableCell align='right'>{ vehicle.model}</CustomTableCell>
-									<CustomTableCell align='right'>{ vehicle.vin}</CustomTableCell>
-									<CustomTableCell align='right'>{ vehicle.created}</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>{ vehicle.mfrName}</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.model}</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.vin}</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.created}</CustomTableCell>
+									<CustomTableCell align='left'>
 										<IconButton
 											aria-label='edit-details'
 											color='default'
@@ -184,19 +184,19 @@ export default function List(props) {
 									<CustomTableCell component='th' scope='row'>
 										<Skeleton width={210} />
 									</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>
 										<Skeleton width={210} />
 									</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>
 										<Skeleton width={210} />
 									</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>
 										<Skeleton width={210} />
 									</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>
 										<Skeleton width={210} />
 									</CustomTableCell>
-									<CustomTableCell align='right'>
+									<CustomTableCell align='left'>
 										<Skeleton width={210} />
 									</CustomTableCell>
 								</TableRow>

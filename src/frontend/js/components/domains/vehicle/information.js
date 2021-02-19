@@ -18,7 +18,7 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
-import ArrowBack from '@material-ui/icons/ArrowBack';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { makeStyles } from '@material-ui/core/styles';
 import * as _ from "lodash";
 
@@ -192,7 +192,7 @@ export default function Information() {
 						<Button
 							variant='contained'
 							className={classes.button}
-							startIcon={<ArrowBack />}
+							startIcon={<NavigateBeforeIcon />}
 							onClick={ () => navigate('/vehicles') }
 						>
 							Back

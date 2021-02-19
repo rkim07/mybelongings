@@ -10,6 +10,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';

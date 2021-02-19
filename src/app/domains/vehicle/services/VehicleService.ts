@@ -147,9 +147,17 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
-        await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase, host);
-        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
-        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+        if (!_.isEmpty(vehicle.purchase)) {
+            await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase, host);
+        }
+
+        /*if (!_.isEmpty(vehicle.financial)) {
+            await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        }
+
+        if (!_.isEmpty(vehicle.insurance)) {
+            await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+        }*/
 
         return {
             ...vehicle,

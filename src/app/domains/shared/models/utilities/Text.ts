@@ -22,7 +22,7 @@ export class Text {
 	 * @param number
 	 */
 	static numberWithCommas(number) {
-		return number.toLocaleString('en');
+		return number > 0 ? number.toLocaleString('en') : number;
 	}
 
 	/**
@@ -31,7 +31,7 @@ export class Text {
 	 * @param number
 	 */
 	static numberWithoutCommas(number) {
-		return parseInt(number.replace(',', ''));
+		return number > 0 ? parseInt(number.replace(',', '')) : number;
 	}
 
 	/**
@@ -47,7 +47,7 @@ export class Text {
 	 * Capitalize first letters in a sentecte
 	 */
 	static capitalizeWords(sentence) {
-		return sentence.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+		return sentence !== '' ? sentence.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) : sentence;
 	}
 
 	/**
@@ -56,7 +56,7 @@ export class Text {
 	 * @param text
 	 */
 	static toUpperCase(text) {
-		return text.toUpperCase();
+		return text !== '' ? text.toUpperCase() : text;
 	}
 
 	/**
@@ -65,7 +65,7 @@ export class Text {
 	 * @param text
 	 */
 	static toLowerCase(text) {
-		return text.toLowerCase();
+		return text !== '' ? text.toLowerCase(): text;
 	}
 
 	/**
@@ -74,7 +74,7 @@ export class Text {
 	 * @param text
 	 */
 	static toInteger(text) {
-		return parseInt(text);
+		return text !== '' ? parseInt(text) : text;
 	}
 
 	/**
