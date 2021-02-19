@@ -14,7 +14,7 @@ export class AddressCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update address
+     * Stepper or update address
      *
      * @param address
      */

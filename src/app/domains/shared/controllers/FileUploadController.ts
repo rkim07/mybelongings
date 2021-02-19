@@ -1,6 +1,7 @@
-import { Body, Get, HttpCode, JsonController, Post, Req, UseBefore } from 'routing-controllers';
+import { Body, Get, HttpCode, JsonController, Param, Post, Req, Res, UseBefore } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { logger } from '../../../common/logging';
+import { AuthorisedRequest } from '../interfaces/AuthorisedRequest';
 import { HandleUpstreamError, ResponseError } from '../models/models';
 import { FILE_UPLOAD_SERVICE_MESSAGES, FileUploadService } from '../services/FileUploadService';
 
@@ -29,7 +30,6 @@ export class FileUploadController {
      * paths:
      *   /file-upload-svc/upload:
      *     post:
-     *       summary: Upload file.
      *       description: Upload file.
      *       consumes:
      *         - multipart/form-data

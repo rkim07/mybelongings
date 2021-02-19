@@ -26,14 +26,14 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
     }
 
     /**
-     * Add or update API manufacturer
+     * Stepper or update API manufacturer
      *
      * @param mfr
      */
     public async updateMfrs(mfr: any): Promise<any> {
         await this.loadCollection();
 
-        const existingMfr = await this.findOne({ key: { $eq: mfr.key }});
+        const existingMfr = await this.findOne({ mfrId: { $eq: mfr.mfrId }});
 
         if (existingMfr && existingMfr.mfrId) {
             return await this.updateManyFields({

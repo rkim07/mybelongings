@@ -57,7 +57,8 @@ export class VehicleController {
     @Get('/vehicles/:vehicle_key')
     public async getVehicle(
         @Req() { requestor: { host }}: AuthorisedRequest,
-        @Param('vehicle_key') vehicleKey: string): Promise<any> {
+        @Param('vehicle_key') vehicleKey: string
+    ): Promise<any> {
         try {
             const vehicle = await this.vehicleService.getVehicle(vehicleKey, host);
 
@@ -88,7 +89,7 @@ export class VehicleController {
      *     get:
      *       description: Fetch all vehicles.
      *       tags:
-     *          - Vehicle
+     *         - Vehicle
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -101,36 +102,23 @@ export class VehicleController {
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
-     *         404:
-     *           description: No vehicles found for user key provided.
-     *           schema:
-     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/vehicles')
-    public async getAllVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
+    public async getVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
             const vehicles = await this.vehicleService.getVehicles(host);
 
             return {
                 payload: vehicles || [],
                 statusCode: 200,
-                successCode: 'VEHICLE_SERVICE_MESSAGES.EMPTY_LIST'
+                successCode: vehicles.length === 0 ? 'VEHICLE_SERVICE_MESSAGES.EMPTY_LIST' : ''
             };
         } catch (err) {
-            if (err instanceof HandleUpstreamError) {
-                switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND:
-                        return new ResponseError(404, err.key, '');
-                    default:
-                        return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
-                }
-            } else {
-                return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
-            }
+            return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
         }
     }
 
@@ -156,30 +144,24 @@ export class VehicleController {
      *           description: Data has been retrieved successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
-     *         404:
-     *           description: No vehicles found for user key provided.
-     *           schema:
-     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the vehicle service.
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
     @Get('/vehicles/by/user')
-    public async getVehicles(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
+    public async getVehiclesByUser(@Req() { requestor: { userKey, host }}: AuthorisedRequest): Promise<any> {
         try {
             const vehicles = await this.vehicleService.getVehiclesByUser(userKey, host);
 
             return {
                 payload: vehicles || [],
                 statusCode: 200,
-                successCode: 'VEHICLE_SERVICE_MESSAGES.USER_VEHICLES_EMPTY_LIST'
+                successCode: vehicles.length === 0 ? 'VEHICLE_SERVICE_MESSAGES.USER_VEHICLES_EMPTY_LIST' : ''
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND:
-                        return new ResponseError(404, err.key, '');
                     case VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY:
                         return new ResponseError(500, 'VEHICLE_SERVICE_MESSAGES.DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE);
                     default:
@@ -196,7 +178,6 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicle:
      *     post:
-     *       summary: Add vehicle
      *       description: Add vehicle
      *       tags:
      *          - Vehicle
@@ -235,9 +216,10 @@ export class VehicleController {
      */
     @HttpCode(201)
     @Post('/vehicle')
-    public async addVehicle(
+    public async postVehicle(
         @Req() { requestor: { userKey, host }}: AuthorisedRequest,
-        @Body() body: any): Promise<any> {
+        @Body() body: any
+    ): Promise<any> {
         try {
             const vehicle = await this.vehicleService.addVehicle(userKey, body, host);
 
@@ -269,10 +251,9 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     put:
-     *       summary: Update vehicle.
      *       description: Update vehicle.
      *       tags:
-     *          - Vehicle
+     *         - Vehicle
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -298,10 +279,6 @@ export class VehicleController {
      *           description: The shipping address was updated successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
-     *         404:
-     *           description: Vehicle not found for update.
-     *           schema:
-     *             $ref: '#/definitions/ResponseError'
      *         500:
      *           description: An unexpected error occurred in the seat service.
      *           schema:
@@ -343,10 +320,9 @@ export class VehicleController {
      * paths:
      *   /vehicle-svc/vehicles/{vehicle_key}:
      *     delete:
-     *       summary: Delete vehicle.
      *       description: Delete vehicle.
      *       tags:
-     *          - Vehicle
+     *         - Vehicle
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -378,7 +354,8 @@ export class VehicleController {
     public async deleteVehicle(
         @Req() { requestor: { userKey }}: AuthorisedRequest,
         @Param('vehicle_key') vehicleKey: string,
-        @Res() response: any): Promise<any> {
+        @Res() response: any
+    ): Promise<any> {
         try {
             const vehicle = await this.vehicleService.deleteVehicle(vehicleKey);
 
@@ -412,7 +389,7 @@ export class VehicleController {
      *     post:
      *       description: Add vehicle purchase
      *       tags:
-     *          - Vehicle Purchase
+     *         - Vehicle Purchase
      *       security:
      *         - OauthSecurity:
      *           - ROLE_USER
@@ -453,16 +430,17 @@ export class VehicleController {
      */
     @HttpCode(201)
     @Post('/vehicle/:vehicle_key/purchase')
-    public async addVehiclePurchase(
+    public async postVehiclePurchase(
         @Param('vehicle_key') vehicleKey: string,
-        @Body() body: any): Promise<any> {
+        @Body() body: any
+    ): Promise<any> {
         try {
             const vehicle = await this.vehiclePurchaseService.addPurchase(vehicleKey, body);
 
             return {
                 payload: vehicle,
                 statusCode: 201,
-                message: 'Vehicle purchase information successfully added.'
+                successCode: 'VEHICLE_PURCHASE_SERVICE_MESSAGES.ADDED'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {

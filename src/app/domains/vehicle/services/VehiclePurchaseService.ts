@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, VehiclePurchase } from '../../shared/models/models';
+import { FileUploadService } from '../../shared/services/FileUploadService';
 import { StoreService } from '../../store/services/StoreService';
 import { VehiclePurchaseCollectionService } from './collections/VehiclePurchaseCollectionService';
 import { VEHICLE_SERVICE_MESSAGES } from './VehicleService';
@@ -36,6 +37,9 @@ export const vehiclePurchaseMappingKeys = {
         'stickerPrice',
         'purchasePrice'
     ],
+    capitalizedText: [
+        'purchaseType'
+    ],
 };
 
 @Service()
@@ -47,12 +51,16 @@ export class VehiclePurchaseService {
     @Inject()
     private vehiclePurchaseCollectionService: VehiclePurchaseCollectionService = Container.get(VehiclePurchaseCollectionService);
 
+    @Inject()
+    private fileUploadService: FileUploadService = Container.get(FileUploadService);
+
     /**
      * Get purchase by key
      *
      * @param purchaseKey
+     * @param host
      */
-    public async getPurchase(purchaseKey: Key): Promise<any> {
+    public async getPurchase(purchaseKey: Key, host?: string): Promise<any> {
         if (!purchaseKey) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_PURCHASE_KEY);
         }
@@ -63,13 +71,15 @@ export class VehiclePurchaseService {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_FOUND);
         }
 
-        return await this.addDependencies(purchase);
+        return await this.addDependencies(purchase, host);
     }
 
     /**
      * Get all purchases
+     *
+     * @param host
      */
-    public async getPurchases(): Promise<any> {
+    public async getPurchases(host?: string): Promise<any> {
         const purchases = await this.vehiclePurchaseCollectionService.getAll();
 
         if (purchases.length === 0) {
@@ -77,7 +87,7 @@ export class VehiclePurchaseService {
         }
 
         return await Promise.all(purchases.map(async (purchase) => {
-            return await this.addDependencies(purchase);
+            return await this.addDependencies(purchase, host);
         }));
     }
 
@@ -85,8 +95,9 @@ export class VehiclePurchaseService {
      * Get purchase by vehicle key
      *
      * @param vehicleKey
+     * @param host
      */
-    public async getPurchaseByVehicle(vehicleKey: Key): Promise<any> {
+    public async getPurchaseByVehicle(vehicleKey: Key, host?: string): Promise<any> {
         if (!vehicleKey) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
@@ -97,7 +108,7 @@ export class VehiclePurchaseService {
             return {};
         }
 
-        return await this.addDependencies(purchase);
+        return await this.addDependencies(purchase, host);
     }
 
     /**
@@ -105,8 +116,9 @@ export class VehiclePurchaseService {
      *
      * @param vehicleKey
      * @param purchase
+     * @param host
      */
-    public async addPurchase(vehicleKey: Key, purchase: any): Promise<any> {
+    public async addPurchase(vehicleKey: Key, purchase: any, host?: string): Promise<any> {
         if (!purchase) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO);
         }
@@ -123,7 +135,7 @@ export class VehiclePurchaseService {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_ADDED);
         }
 
-        return await this.addDependencies(results);
+        return await this.addDependencies(results, host);
     }
 
     /**
@@ -131,8 +143,9 @@ export class VehiclePurchaseService {
      *
      * @param purchaseKey
      * @param purchase
+     * @param host
      */
-    public async updatePurchase(purchaseKey: Key, purchase: any): Promise<any> {
+    public async updatePurchase(purchaseKey: Key, purchase: any, host?: string): Promise<any> {
         if (!purchaseKey) {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.EMPTY_PURCHASE_KEY);
         }
@@ -143,7 +156,7 @@ export class VehiclePurchaseService {
             throw new HandleUpstreamError(VEHICLE_PURCHASE_SERVICE_MESSAGES.PURCHASE_NOT_UPDATED);
         }
 
-        return await this.addDependencies(results);
+        return await this.addDependencies(results, host);
     }
 
     /**
@@ -168,13 +181,17 @@ export class VehiclePurchaseService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Dependencies when returning object
      *
      * @param purchase
+     * @param host
      * @private
      */
-    private async addDependencies(purchase: any): Promise<any> {
-        const store = await this.storeService.getStore(purchase.storeKey);
-        return { ...purchase, store: store };
+    private async addDependencies(purchase: any, host?: string): Promise<any> {
+        return {
+            ...purchase,
+            store: await this.storeService.getStore(purchase.storeKey),
+            filePath: this.fileUploadService.setFilePath(purchase.agreement, host)
+        };
     }
 }

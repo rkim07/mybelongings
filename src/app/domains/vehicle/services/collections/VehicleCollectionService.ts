@@ -32,6 +32,8 @@ export class VehicleCollectionService extends DatabaseCollectionService {
      * @param vehicle
      */
     public async add(userKey: Key, vehicle: any): Promise<any> {
+        await this.loadCollection();
+
         return await this.addOne(
             new Vehicle({
                 userKey: userKey,

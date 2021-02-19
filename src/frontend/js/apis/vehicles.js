@@ -62,14 +62,12 @@ export function getVehiclesByUser() {
 }
 
 /**
- * Add vehicle
+ * Stepper vehicle
  *
  * @param vehicle
  * @returns {Promise<T>}
  */
 export function addVehicle(vehicle) {
-	vehicle = prepareSubmitData(vehicle);
-
 	return axios
 		.post('/vehicle-svc/vehicle', vehicle)
 		.then((response) => {
@@ -92,9 +90,6 @@ export function addVehicle(vehicle) {
  * @returns {Promise<T>}
  */
 export function updateVehicle(vehicle) {
-	// Prepare data for backend
-	vehicle = prepareSubmitData(vehicle, vehicle.key);
-
 	return axios
 		.put(`/vehicle-svc/vehicles/${vehicle.key}`, vehicle)
 		.then((response) => {
@@ -128,23 +123,4 @@ export function deleteVehicle(key) {
 		.catch((err) => {
 			return err;
 		});
-}
-
-/**
- * Prepare data for submit
- *
- * @param vehicle
- * @param key
- * @returns {*}
- */
-function prepareSubmitData(vehicle, key = null) {
-	if (key) {
-		delete (vehicle.mfrName);
-		delete (vehicle.model);
-		delete (vehicle.imagePath);
-		delete (vehicle.created);
-		delete (vehicle.modified);
-	}
-
-	return vehicle;
 }

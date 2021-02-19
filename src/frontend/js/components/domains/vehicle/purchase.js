@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import TwoColumnsTable from '../../shared/view/twocolumnstable';
+import VehiclePurchaseTable from '../../shared/view/vehiclepurchasetable';
 import Box from '@material-ui/core/Box';
-import Skeleton from '@material-ui/lab/Skeleton';
+import AppContext from "../../../appcontext";
 
 /**
  * Child component of information
@@ -26,10 +26,12 @@ export default function Purchase(props) {
 		purchased: 'Purchase date',
 		agreement: 'Purchase agreement'
 	};
-
 	return (
 		<React.Fragment>
-			<TwoColumnsTable tableCells={ tableCells } { ...other } />
+			<VehiclePurchaseTable
+				tableCells={ tableCells }
+				{ ...other }
+			/>
 		</React.Fragment>
 	)
 }

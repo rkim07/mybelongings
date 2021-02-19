@@ -118,6 +118,7 @@ export const schema: Array<TableSchema> = [
             { name: 'email', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'website', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'salesPerson', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'type', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'notes', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }

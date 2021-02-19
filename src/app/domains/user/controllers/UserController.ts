@@ -30,6 +30,8 @@ export class UserController {
      *   /user-svc/users:
      *     get:
      *       description: Retrieve all signed up users
+     *       tags:
+     *         - User
      *       responses:
      *         200:
      *           description: Fetched all users successfully

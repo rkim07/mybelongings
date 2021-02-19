@@ -22,7 +22,7 @@ export class UserCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add user
+     * Stepper user
      *
      * @param user
      */

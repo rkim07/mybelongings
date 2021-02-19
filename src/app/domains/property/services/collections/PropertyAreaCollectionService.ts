@@ -14,7 +14,7 @@ export class PropertyAreaCollectionService extends DatabaseCollectionService {
     }
 
     /**
-     * Add or update property area
+     * Stepper or update property area
      *
      * @param area
      */

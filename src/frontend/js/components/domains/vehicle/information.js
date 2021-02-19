@@ -13,10 +13,9 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
-import BuildIcon from '@material-ui/icons/Build';
-import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import StoreIcon from '@material-ui/icons/Store';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
@@ -191,7 +190,6 @@ export default function Information() {
 				<Grid container justify='flex-end'>
 					<Grid item>
 						<Button
-							type='button'
 							variant='contained'
 							className={classes.button}
 							startIcon={<ArrowBack />}

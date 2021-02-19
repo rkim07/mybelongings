@@ -8,7 +8,8 @@ export function routeNeedsAuth(url) {
 	// Routes that are protected and already includes
 	// authorization header
 	const routesToSkip = [
-		'/auth-svc/account/refresh'
+		'/auth-svc/account/refresh',
+		'/auth-svc/account/isadmin'
 	];
 
 	// Routes that don't need authorization

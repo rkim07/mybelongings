@@ -6,6 +6,8 @@ import ProtectedRoute from './components/structure/protectedroute';
 import Header from './components/structure/default/header';
 import Footer from './components/structure/default/footer';
 import LandingPage from './components/structure/default/landing';
+import AdminMain from './components/domains/admin/main';
+import AdminUnauthorized from "./components/structure/adminunauthorized";
 import Login from './components/domains/auth/signin';
 import ResetEmail from './components/domains/auth/resetemail';
 import Reset from './components/domains/auth/reset';
@@ -30,7 +32,9 @@ export default function App() {
 					<Route path='account/activated/:param' element={ <Activated />} />
 					<Route path='account/password/lost' element={ <ResetEmail />} />
 					<Route path='account/password/reset/:email/:resetCode' element={ <Reset redirectUrl='/account/signin' />} />
-					<ProtectedRoute path='vehicles/*' element={ <VehiclesDashboard/> } />
+					<Route path='admin/unauthorized' element={ <AdminUnauthorized />} />
+					<ProtectedRoute path='admin/*' element={ <AdminMain />} />
+					<ProtectedRoute path='vehicles/*' element={ <VehiclesDashboard /> } />
 					{/*<ProtectedRoute path='properties/*' element={ <PropertiesDashboard/> } />*/}
 					<Route path='/*' element={<NotFound/> } />
 				</Routes>

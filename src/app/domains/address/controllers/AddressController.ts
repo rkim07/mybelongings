@@ -71,8 +71,8 @@ export class AddressController {
      * paths:
      *   /address-svc/address:
      *     post:
-     *       summary: Add address
-     *       description: Add address
+     *       summary: Stepper address
+     *       description: Stepper address
      *       tags:
      *          - Address
      *       parameters:

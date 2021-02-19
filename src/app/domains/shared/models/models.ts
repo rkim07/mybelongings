@@ -313,6 +313,8 @@ export * from './utilities/Text';
  *         type: string
  *       salesPerson:
  *         type: string
+ *       type:
+ *         type: string
  *       notes:
  *         type: string
  *       created:

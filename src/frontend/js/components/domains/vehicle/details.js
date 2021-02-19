@@ -23,8 +23,8 @@ export default function Details(props) {
 		color: 'Color',
 		style: 'Style',
 		mileage: 'Mileage',
-		vin: 'VIN',
-		plate: 'Plate'
+		plate: 'Plate',
+		vin: 'VIN'
 	};
 
 	return (

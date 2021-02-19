@@ -40,14 +40,14 @@ export class NhtsaApiVehicleModelCollectionService extends DatabaseCollectionSer
     }
 
     /**
-     * Add or update vehicle model(s) by manufacturer ID
+     * Stepper or update vehicle model(s) by manufacturer ID
      *
      * @param mfrModel
      */
     public async updateModel(mfrModel: any): Promise<any> {
         await this.loadCollection();
 
-        const existingModel = await this.findOne({ key: { $eq: mfrModel.key }});
+        const existingModel = await this.findOne({ modelId: { $eq: mfrModel.modelId }});
 
         if (existingModel && existingModel.modelId) {
             return await this.updateManyFields({

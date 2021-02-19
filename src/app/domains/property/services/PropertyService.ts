@@ -26,7 +26,7 @@ export const propertyMappingKeys = {
     stringToNumber: [
         'year'
     ],
-    'capitalize-text': [
+    'capitalizedText': [
         'type',
         'style',
         'features',
@@ -100,7 +100,7 @@ export class PropertyService {
     }
 
     /**
-     * Add or update property
+     * Stepper or update property
      *
      * @param host
      * @param body
@@ -111,16 +111,17 @@ export class PropertyService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param property
      */
     private async addDependencies(host, property) {
-        property = { ...property, imagePath: this.fileUploadService.setImagePath(host, property.image) };
-        property = { ...property, address: await this.addressService.getAddress(property.addressKey) };
-        property = { ...property, areas: await this.propertyAreaService.getAreasByPropertyKey(property.key, host) };
-
-        return property;
+        return {
+            ...property,
+            address: await this.addressService.getAddress(property.addressKey),
+            areas: await this.propertyAreaService.getAreasByPropertyKey(property.key, host),
+            imagePath: this.fileUploadService.setFilePath(host, property.image)
+        };
     }
 }

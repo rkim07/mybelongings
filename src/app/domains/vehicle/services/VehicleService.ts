@@ -38,6 +38,7 @@ export const vehicleMappingKeys = {
         'color',
         'style',
         'condition',
+        'model'
     ],
     upperText: [
         'vin',
@@ -140,13 +141,20 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EXISTING_VIN);
         }
 
-        const results = await this.vehicleCollectionService.add(userKey, vehicle);
+        const addedVehicle = await this.vehicleCollectionService.add(userKey, vehicle);
 
-        if (!results) {
+        if (!addedVehicle) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
-        return await this.addDependencies(results, host);
+        await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase, host);
+        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+
+        return {
+            ...vehicle,
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
+        };
     }
 
     /**
@@ -161,13 +169,20 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY);
         }
 
-        const results = await this.vehicleCollectionService.update(vehicleKey, vehicle);
+        const updatedVehicle = await this.vehicleCollectionService.update(vehicleKey, vehicle);
 
-        if (!results) {
+        if (!updatedVehicle) {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
-        return await this.addDependencies(results, host);
+        await this.vehiclePurchaseService.addPurchase(updatedVehicle.key, vehicle.purchase, host);
+        //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+
+        return {
+            ...vehicle,
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
+        };
     }
 
     /**
@@ -193,7 +208,7 @@ export class VehicleService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Dependencies when returning object
      *
      * @param host
      * @param vehicle
@@ -202,17 +217,18 @@ export class VehicleService {
     private async addDependencies(vehicle: any, host?: string): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
-        const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key);
+        const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key, host);
         //const finance = await this.financeService.getFinanceByVehicle(vehicle.key);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
 
-        vehicle = { ...vehicle, mfrName: mfr.mfrName };
-        vehicle = { ...vehicle, model: model.model };
-        vehicle = { ...vehicle, purchase: purchase };
-        //vehicle = { ...vehicle, finance: finance };
-        //vehicle = { ...vehicle, insurance: insurance };
-        vehicle = { ...vehicle, imagePath: this.fileUploadService.setImagePath(vehicle.image, host) };
-
-        return vehicle;
+        return {
+            ...vehicle,
+            mfrName: mfr.mfrName,
+            model: model.model,
+            purchase: purchase,
+            // finance: finance,
+            // insurance: insurance,
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
+        };
     }
 }

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 /**
- * Add or update object in c
+ * Stepper or update object in c
  *
  * @param obj
  * @param collection

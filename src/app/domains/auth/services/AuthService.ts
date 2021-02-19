@@ -148,6 +148,26 @@ export class AuthService {
     }
 
     /**
+     * Determine if signed in user is an admin
+     *
+     * @param userKey
+     * @param jwt
+     */
+    public async isAdmin(userKey: Key): Promise<any> {
+        if (!userKey) {
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY);
+        }
+
+        const user = await this.userService.getUser(userKey);
+
+        if (!user) {
+            throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_NOT_FOUND);
+        }
+
+        return _.includes(user.authorities, 'ROLE_ADMIN');
+    }
+
+    /**
      * Send new access token
      *
      * @param userKey
@@ -188,7 +208,7 @@ export class AuthService {
             throw new HandleUpstreamError(AUTH_SERVICE_MESSAGES.USER_ALREADY_SIGNED_UP);
         }
 
-        // Add new user
+        // Stepper new user
         const newUser = await this.userService.addUser(info);
 
         if (!newUser) {

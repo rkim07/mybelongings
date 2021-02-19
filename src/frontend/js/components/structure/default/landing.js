@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
-	heroContent: {
+	main: {
 		padding: theme.spacing(8, 0, 6)
 	},
 	paper: {
@@ -21,7 +21,7 @@ export default function Landing() {
 	const classes = useStyles();
 
 	return (
-		<Container maxWidth='sm' component='main' className={classes.heroContent}>
+		<Container maxWidth='sm' component='main' className={classes.main}>
 			<Paper elevation={1} className={classes.paper}>
 				<Typography variant='h5' component='h3'>
 					My Belongings

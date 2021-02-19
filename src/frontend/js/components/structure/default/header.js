@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
+import * as _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import AppContext from '../../../appcontext';
-import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
 	appBar: {
@@ -49,19 +50,45 @@ export default function Header() {
 	const apis = useContext(AppContext);
 	const classes = useStyles();
 
-	const [anchor, setAnchor] = useState(null);
-	const [mobileAnchor, setMobileAnchor] = useState(null);
+	const initialValues = {
+		anchor: null,
+		mobileAnchor: null,
+	}
 
-	const isMenuOpen = Boolean(anchor);
-	const isMobileMenuOpen = Boolean(mobileAnchor);
+	const [values, setValues] = useState(initialValues);
 
-	function onHandleSignOut() {
-		setAnchor('');
-		setMobileAnchor('');
+	// Handle anchor
+	const handleAnchor = (value) => {
+		setValues({
+			...values,
+			anchor: value
+		})
+	}
+
+	// Handle mobile anchor
+	const handleMobileAnchor = (value) => {
+		setValues({
+			...values,
+			mobileAnchor: value
+		})
+	}
+
+	// Reset anchors
+	const resetAnchors = () => {
+		setValues({
+			...values,
+			anchor: '',
+			mobileAnchor: ''
+		})
+	}
+
+	// Handle signout
+	const handleSignOut = () => {
+		resetAnchors();
 		apis.signout().then(response => {
 			navigate('/');
 		});
-	}
+	};
 
 	return (
 		<React.Fragment>
@@ -95,9 +122,9 @@ export default function Header() {
 									Vehicles
 								</Button>
 								<IconButton
-									aria-owns={ isMenuOpen && 'material-appbar' }
+									aria-owns={ Boolean(values.anchor) && 'material-appbar' }
 									aria-haspopup='true'
-									onClick={ e => setAnchor(e.currentTarget) }
+									onClick={ e => handleAnchor(e.currentTarget) }
 									color='inherit'>
 									<AccountCircle />
 								</IconButton>
@@ -109,7 +136,7 @@ export default function Header() {
 								<IconButton
 								aria-haspopup='true'
 								color='inherit'
-								onClick={ e => setMobileAnchor(e.currentTarget) }
+								onClick={ e => handleMobileAnchor(e.currentTarget) }
 								>
 								<MoreIcon/>
 								</IconButton>
@@ -118,33 +145,35 @@ export default function Header() {
 							{/* Desktop & mobile menu */}
 
 							<Menu
-								anchorEl={ mobileAnchor }
+								anchorEl={ values.mobileAnchor }
 								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-								open={ isMobileMenuOpen }
-								onClose={ e => setMobileAnchor('') }>
+								open={ Boolean(values.mobileAnchor) }
+								onClose={ e => handleMobileAnchor('') }>
 								<MenuItem
 									component={Link}
 									to='/properties'
-									onClick={ e => setMobileAnchor('') }
+									onClick={ e => handleMobileAnchor('') }
 								>
 									Properties
 								</MenuItem>
 								<MenuItem
 									component={Link}
 									to='/vehicles'
-									onClick={ e => setMobileAnchor('') }
+									onClick={ e => handleMobileAnchor('') }
 								>
 									Vehicles
 								</MenuItem>
 								<MenuItem
 									component={Link}
 									to='/profile'
-									onClick={ e => setMobileAnchor('') }
+									onClick={ e => handleMobileAnchor('') }
 								>
-									Profile
+									My Account
 								</MenuItem>
-								<MenuItem onClick={ onHandleSignOut }>
+								<MenuItem
+									onClick={ handleSignOut }
+								>
 									Logout
 								</MenuItem>
 							</Menu>
@@ -152,24 +181,22 @@ export default function Header() {
 							{/* Mobile menu */}
 
 							<Menu
-								anchorEl={ anchor }
+								anchorEl={ values.anchor }
 								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-								open={ isMenuOpen }
-								onClose={ () => {
-									setAnchor('');
-									setMobileAnchor('')
-								}}>
+								open={ Boolean(values.anchor) }
+								onClose={ resetAnchors }
+							>
 								<MenuItem
 									component={Link}
 									to='/profile'
-									onClick={ () => {
-										setAnchor('');
-										setMobileAnchor('');
-									}}>
+									onClick={ resetAnchors }
+								>
 									My Account
 								</MenuItem>
-								<MenuItem onClick={ onHandleSignOut }>
+								<MenuItem
+									onClick={ handleSignOut }
+								>
 									Logout
 								</MenuItem>
 							</Menu>

@@ -43,7 +43,7 @@ export class DataConversionService {
      *
      * @param payload
      */
-    public process(payload) {
+    public process(payload: any): any {
         if (!_.isArray(payload)) {
             return this.findAndConvert(payload);
         } else {
@@ -59,11 +59,10 @@ export class DataConversionService {
      *
      * @param target
      */
-    public findAndConvert(target) {
-        const clonedObj = { ...target };
-        const entries = Object.entries(clonedObj);
+    public findAndConvert(target: any): any {
+        const clonedObj = _.clone(target);
 
-        entries.forEach(([key, value]) => {
+        _.forIn(target, (value, key) => {
             if (typeof value === 'object') {
                 clonedObj[key] = this.findAndConvert(value);
             } else {
@@ -84,14 +83,17 @@ export class DataConversionService {
      * @param convertingKey
      * @param convertingValue
      */
-    public convert(convertingKey, convertingValue) {
+    public convert(convertingKey: string, convertingValue: any): any {
         let mappingType = '';
         const mappingKeys = this.getKeyMappers();
+
         _.forEach(mappingKeys, (keys, type) => {
             if (_.includes(keys, convertingKey)) {
                 mappingType = type;
             }
         });
+
+        convertingValue = /%20|%22|%26|%27|%28|%29|%3A/g.test(convertingValue) ? convertingValue.replace(/%20|%22|%26|%27|%28|%29|%3A/g, ' ').trim() : convertingValue;
 
         // Map request data
         if (this.method === 'request') {
@@ -104,7 +106,7 @@ export class DataConversionService {
                 case 'capitalizedText':
                     return Text.toLowerCase(convertingValue);
                 case 'date':
-                    return Datetime.getUTCFormat(convertingValue);
+                    return Datetime.getUTCFormat(new Date(convertingValue));
                 case 'stringToNumber':
                     return Text.toInteger(convertingValue);
                 default:
@@ -133,20 +135,25 @@ export class DataConversionService {
 
     /**
      * Check if it's request route for conversion
+     * Service needs to be listed here if data
+     * conversion is necessary
+     *
      * @param path
      */
-    public isRequestRouteForConversion(path) {
-        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,}))$/;
+    public isReqRoute(path: string): boolean {
+        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,})|store-svc\/store(s?|s?\/[0-9a-zA-Z-]{1,}))$/;
         return regex.test(path);
     }
 
     /**
      * Check if it's response route for conversion
+     * Service needs to be listed here if data
+     * conversion is necessary
      *
      * @param path
      */
-    public isResponseRouteForConversion(path) {
-        const regex = /^\/(=?vehicle-svc|property-svc)/;
+    public isResRoute(path: string): boolean {
+        const regex = /^\/(=?vehicle-svc|property-svc|store-svc)/;
         return regex.test(path);
     }
 

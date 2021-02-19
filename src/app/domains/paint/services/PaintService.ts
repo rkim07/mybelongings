@@ -85,7 +85,7 @@ export class PaintService {
     }
 
     /**
-     * Add or update paint
+     * Stepper or update paint
      *
      * @param host
      * @param body
@@ -96,15 +96,16 @@ export class PaintService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param paint
      */
     private async addDependencies(host, paint) {
-        paint = { ...paint, imagePath: this.fileUploadService.setImagePath(host, paint.image) };
-        paint = { ...paint, store: paint.storeKey ? await this.storeService.getStoreByKey(paint.storeKey, host) : {} };
-
-        return paint;
+        return {
+            ...paint,
+            store: paint.storeKey ? await this.storeService.getStore(paint.storeKey, host) : {},
+            imagePath: this.fileUploadService.setFilePath(host, paint.image)
+        };
     }
 }

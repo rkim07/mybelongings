@@ -61,7 +61,7 @@ export class AuthController {
                 accessToken: signIn.accessToken,
                 refreshToken: signIn.refreshToken,
                 statusCode: 201,
-                successCode: 'AUTH_SERVICE_ERROR_MESSAGE.LOGIN'
+                successCode: 'AUTH_SERVICE_MESSAGES.LOGIN'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
@@ -195,6 +195,56 @@ export class AuthController {
     /**
      * @swagger
      * paths:
+     *   /auth-svc/account/is/admin:
+     *     get:
+     *       description: Determine if signed in user is an admin
+     *       tags:
+     *         - Auth
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user
+     *           type: string
+     *           required: true
+     *       responses:
+     *         200:
+     *           description: User admin true or false
+     *         500:
+     *           description: An unexpected error occurred in the auth service
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @Get('/account/is/admin')
+    public async isAdmin(@Req() { requestor: { userKey }}: AuthorisedRequest): Promise<any> {
+        try {
+            const isAdmin = await this.authService.isAdmin(userKey);
+
+            return {
+                payload: isAdmin,
+                statusCode: 200
+            };
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case AUTH_SERVICE_MESSAGES.EMPTY_USER_KEY:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
+                    case AUTH_SERVICE_MESSAGES.USER_NOT_FOUND:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
+                    default:
+                        return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'AUTH_SERVICE_MESSAGES.DEFAULT_AUTH_SERVICE_ERROR_MESSAGE', DEFAULT_AUTH_SERVICE_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
      *   /auth-svc/account/signup:
      *     post:
      *       description: Sign up user
@@ -288,7 +338,8 @@ export class AuthController {
         @Req() req: any,
         @Param('email') email: string,
         @Param('signupCode') signupCode: string,
-        @Res() res: any): Promise<any> {
+        @Res() res: any
+    ): Promise<any> {
         try {
             await this.authService.activateSignup(email, signupCode);
 
@@ -334,7 +385,8 @@ export class AuthController {
     @Post('/account/password/reset/activate')
     public async activatePasswordReset(
         @Body() body: any,
-        @Res() response: any): Promise<any> {
+        @Res() response: any
+    ): Promise<any> {
         try {
             await this.authService.activatePasswordReset(body.email);
 
@@ -390,7 +442,8 @@ export class AuthController {
     @Post('/account/password/reset')
     public async resetPassword(
         @Body() body: any,
-        @Res() response: any): Promise<any> {
+        @Res() response: any
+    ): Promise<any> {
         try {
             await this.authService.resetPassword(body);
 

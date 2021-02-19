@@ -128,6 +128,7 @@ export class NhtsaApiVehicleMfr {
 export class NhtsaApiVehicleModel {
     key: Key;
     mfrKey: Key;
+    mfrName: string;
     modelId: number;
     model: string;
     created: string;

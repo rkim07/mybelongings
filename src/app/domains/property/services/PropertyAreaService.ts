@@ -63,7 +63,7 @@ export class PropertyAreaService {
     }
 
     /**
-     * Add or update property area
+     * Stepper or update property area
      *
      * @param host
      * @param body
@@ -74,13 +74,13 @@ export class PropertyAreaService {
     }
 
     /**
-     * Add dependencies when returning object
+     * Stepper dependencies when returning object
      *
      * @param host
      * @param area
      */
     private async addDependencies(host, area) {
-        area = { ...area, imagePath: this.fileUploadService.setImagePath(host, area.image) };
+        area = { ...area, imagePath: this.fileUploadService.setFilePath(host, area.image) };
         area = { ...area, paint: await this.paintService.getPaintByKey(area.paintKey, host) };
 
         return area;

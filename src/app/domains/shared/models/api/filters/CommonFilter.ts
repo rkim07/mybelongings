@@ -11,8 +11,8 @@ export class CommonFilter {
      *
      * @param name
      */
-    public formatFrontEndMfrName(name) {
-        return _.startCase(name);
+    public formatFrontEndMfrName(name: string): string {
+        return Text.capitalizeWords(name);
     }
 
     /**
@@ -20,7 +20,7 @@ export class CommonFilter {
      *
      * @param name
      */
-    public formatDbMfrName(name) {
+    public formatDbMfrName(name: string): string {
         return name.replace(/-/g, ' ').toLowerCase();
     }
 
@@ -29,19 +29,23 @@ export class CommonFilter {
      *
      * @param name
      */
-    public formatFrontEndModelName(name) {
-        let formatted;
-        const urlDecoded = /%20/g.test(name) ? name.replace(/%20/g, ' ').trim() : name;
+    public formatFrontEndModelName(name: string): string {
+        const urlDecoded = /%20|%22|%26|%27|%28|%29|%3A/g.test(name) ? name.replace(/%20|%22|%26|%27|%28|%29|%3A/g, ' ').trim() : name;
+        const reservedUpperCaseWords = ['car', 'new', 'van', 'low', 'cab', 'del', 'sol', 'max'];
 
-        if (/^\w+\d/i.test(urlDecoded)) {
-            formatted = urlDecoded.toUpperCase();
-        } else if (/^\d\w+$/i.test(urlDecoded)) {
-            formatted = urlDecoded.toUpperCase();
-        } else {
-            formatted = Text.capitalizeWords(urlDecoded);
-        }
-
-        return formatted;
+        return _.split(urlDecoded, ' ').map((word) => {
+            if (word === 'and') {
+                return word;
+            } else if (_.includes(reservedUpperCaseWords, word)) {
+                return _.startCase(word);
+            } else if (/^(\d+[a-zA-Z]|[a-zA-Z]+\d)/.test(word) || word.length <= 3) {
+                return word.toUpperCase();
+            } else if (/^[a-zA-Z]+$/.test(word) || /^[a-zA-Z]+-[a-zA-Z]+$/.test(word) || /^[a-zA-Z]+\/[a-zA-Z]+$/.test(word)) {
+                return _.startCase(word);
+            } else {
+                return word.toUpperCase()
+            }
+        }).join(' ');
     }
 
     /**
@@ -49,7 +53,7 @@ export class CommonFilter {
      *
      * @param name
      */
-    public formatDbModelName(name) {
+    public formatDbModelName(name: string): string {
         const urlDecoded = name.replace(/%20/g, ' ');
         return urlDecoded.toLowerCase().trim();
     }
