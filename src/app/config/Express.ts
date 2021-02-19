@@ -44,6 +44,7 @@ export class ExpressConfig {
         this.app.use(express.static(path.join(__dirname, '../../frontend/js/')));
         this.app.use(express.static(path.join(__dirname, '../../assets/css')));
         this.app.use(express.static(path.join(__dirname, '../../assets/images')));
+        this.app.use(express.static(path.join(__dirname, '../../assets/files')));
 
         this.app.use(cors());
         this.app.use(bodyParser.json());

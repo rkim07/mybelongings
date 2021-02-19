@@ -9,7 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import InputAdornment from "@material-ui/core/InputAdornment";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -133,6 +135,13 @@ export default function Reset() {
 							onChange={ handleChange }
 							validators={['required']}
 							errorMessages={['This field is required']}
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position='start'>
+										<VpnKeyIcon/>
+									</InputAdornment>
+								)
+							}}
 						/>
 						<TextValidator
 							fullWidth
@@ -145,6 +154,13 @@ export default function Reset() {
 							onChange={ handleChange }
 							validators={['required', 'isPasswordMatch']}
 							errorMessages={['This field is required', 'Password mismatch']}
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position='start'>
+										<VpnKeyIcon/>
+									</InputAdornment>
+								)
+							}}
 						/>
 						<Button
 							fullWidth

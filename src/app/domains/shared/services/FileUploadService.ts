@@ -55,42 +55,23 @@ export class FileUploadService {
     }
 
     /**
-     * Set image path, if file is missing, just return host
-     *
-     * @param image
-     * @param host
-     * @param type
-     */
-    public setImagePath(image: string, host?: string): string {
-        if (host === '') {
-            return '';
-        }
-
-        return image !== '' ? `${host}/${image}` : `${host}`;
-    }
-
-    /**
-     * Set file path other than images
+     * Set file path, if file is missing, just return host
      *
      * @param file
      * @param host
      */
-    public setFilePath(file: string, host?: string) {
+    public setFilePath(file: string, host?: string): string {
         if (host === '') {
             return '';
         }
 
-        const dir = this.getFileType(file);
-        const filePath = file !== '' ? `${host}/${dir}/${file}` : `${host}`;
-        const extension = path.extname(file);
-
-        return [ filePath, extension ];
+        return file !== '' ? `${host}/${file}` : `${host}`;
     }
 
     /**
      * Get source and build paths
      *
-     * @param file
+     * @param fileName
      * @private
      */
     private getPaths(fileName) {

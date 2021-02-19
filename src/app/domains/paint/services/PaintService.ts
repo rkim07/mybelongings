@@ -105,7 +105,7 @@ export class PaintService {
         return {
             ...paint,
             store: paint.storeKey ? await this.storeService.getStore(paint.storeKey, host) : {},
-            imagePath: this.fileUploadService.setImagePath(host, paint.image)
+            imagePath: this.fileUploadService.setFilePath(host, paint.image)
         };
     }
 }

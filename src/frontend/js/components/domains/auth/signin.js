@@ -5,11 +5,15 @@ import AuthHeader from './shared/authheader';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { TextValidator, ValidatorForm  } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -62,9 +66,23 @@ export default function SignIn(props) {
 			...values,
 			submitted: true,
 			statusType: response.statusType,
-			message: response.message
+			message: response.message,
+			showPassword: false
 		});
 	}
+
+	// Handle click show
+	const handleClickShowPassword = () => {
+		setValues({
+			...values,
+			showPassword: !values.showPassword
+		});
+	};
+
+	// Handle mouse down
+	const handleMouseDownPassword = (e) => {
+		e.preventDefault();
+	};
 
 	return (
 		<Container component='main' maxWidth='xs'>
@@ -96,12 +114,25 @@ export default function SignIn(props) {
 						variant='outlined'
 						margin='normal'
 						label='Password'
-						type='password'
+						type={ values.showPassword ? 'text' : 'password' }
 						name='password'
 						value={ values.password }
 						onChange={ handleChange }
 						validators={['required']}
 						errorMessages={['This field is required']}
+						InputProps={{
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton
+										aria-label="toggle password visibility"
+										onClick={ handleClickShowPassword }
+										onMouseDown={ handleMouseDownPassword }
+									>
+										{ values.showPassword ? <Visibility /> : <VisibilityOff /> }
+									</IconButton>
+								</InputAdornment>
+							)
+						}}
 					/>
 					<Button
 						type='submit'

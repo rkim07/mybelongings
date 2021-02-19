@@ -5,8 +5,8 @@ import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 // Table cell CSS
 const StyledTableCell = withStyles((theme) => ({

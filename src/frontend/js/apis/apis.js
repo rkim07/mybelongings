@@ -1,5 +1,5 @@
 import { activatePasswordReset, isAdmin, isSignedIn, signin, signout, resetPassword, signup } from "./auth";
-import { downloadFile, uploadFile } from './upload';
+import { uploadFile } from './upload';
 import { getVehiclesByUser, addVehicle, deleteVehicle, getVehicle, getVehicles, updateVehicle } from './vehicles';
 import { getStoresByType } from './stores';
 import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
@@ -14,7 +14,6 @@ const globalApis = {
 	activatePasswordReset,
 	resetPassword,
 	uploadFile,
-	downloadFile,
 	getApiMfrs,
 	getApiModelsByMfrKey,
 	getVehiclesByUser,

@@ -7,8 +7,13 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import PersonIcon from '@material-ui/icons/Person';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import EmailIcon from '@material-ui/icons/Email';
+import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid'
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -109,6 +114,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required']}
 									errorMessages={['This field is required']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<PersonIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -121,6 +133,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required']}
 									errorMessages={['This field is required']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<PersonIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -133,6 +152,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required']}
 									errorMessages={['This field is required']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<EmailIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -143,6 +169,13 @@ export default function Signup() {
 									name='mobile'
 									value={ values.mobile }
 									onChange={ handleChange }
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<PhoneAndroidIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -155,6 +188,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required']}
 									errorMessages={['This field is required']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<PersonIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -168,6 +208,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required']}
 									errorMessages={['This field is required']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<VpnKeyIcon/>
+											</InputAdornment>
+										)
+									}}											
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -181,6 +228,13 @@ export default function Signup() {
 									onChange={ handleChange }
 									validators={['required', 'isPasswordMatch']}
 									errorMessages={['This field is required', 'Password mismatch']}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<VpnKeyIcon/>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</Grid>
 						</Grid>

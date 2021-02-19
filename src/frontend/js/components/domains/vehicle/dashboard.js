@@ -1,20 +1,10 @@
-import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import * as _ from "lodash";
 import AppContext from '../../../appcontext';
 import Notifier from '../../shared/feedback/notifier';
 import List from './list';
 import Information from './information';
-
-const vehiclesReducer = (state, action) => {
-	const { payload } = action;
-
-	switch(action.type) {
-		case 'add':
-			return state.concat(payload);
-		default:
-			return state;
-	}
-}
 
 /**
  * Main component for vehicles
@@ -30,22 +20,27 @@ export default function Dashboard(props) {
 	const notifierRef = useRef();
 	const apis = useContext(AppContext);
 
-	const [loading, setLoading] = useState(true);
+	const initialValues = {
+		vehicles: [],
+		loading: true
+	};
 
-	// Get all user's vehicles
-	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
+	const [values, setValues] = useState(initialValues);
 
+	// Get all vehicles by user
 	useEffect(() => {
 		apis.getVehiclesByUser().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
-				dispatchVehicles({
-					type: 'add',
-					payload: response.payload
-				});
-
-				setLoading(false);
+				setValues(prevState => ({
+					...prevState,
+					vehicles: response.payload,
+					loading: false
+				}));
 			} else if (response.payload.length === 0) {
-				setLoading(false);
+				setValues(prevState => ({
+					...prevState,
+					loading: false
+				}));
 			}
 		});
 	}, []);
@@ -61,8 +56,8 @@ export default function Dashboard(props) {
 			<Routes>
 				<Route path='/' element={
 					<List
-						loading={ loading }
-						vehicles={ vehicles }
+						loading={ values.loading }
+						vehicles={ values.vehicles }
 					/>
 				} />
 				<Route path='information/:key/*' element={

@@ -1,8 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import VehiclePurchaseTable from '../../shared/view/vehiclepurchasetable';
 import Box from '@material-ui/core/Box';
-import Skeleton from '@material-ui/lab/Skeleton';
 import AppContext from "../../../appcontext";
 
 /**
@@ -13,7 +12,6 @@ import AppContext from "../../../appcontext";
  */
 export default function Purchase(props) {
 	const { key } = useParams();
-	const apis = useContext(AppContext);
 	const { ...other } = props;
 
 	// Needs to be implemented
@@ -28,17 +26,10 @@ export default function Purchase(props) {
 		purchased: 'Purchase date',
 		agreement: 'Purchase agreement'
 	};
-
-	// Handle download
-	const handleDownload = (fileName) => {
-		apis.downloadFile(fileName).then(response => {});
-	};
-
 	return (
 		<React.Fragment>
 			<VehiclePurchaseTable
 				tableCells={ tableCells }
-				onHandleDownload={ handleDownload }
 				{ ...other }
 			/>
 		</React.Fragment>

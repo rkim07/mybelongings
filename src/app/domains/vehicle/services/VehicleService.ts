@@ -147,13 +147,13 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
-        await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase);
+        await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase, host);
         //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
         //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
 
         return {
             ...vehicle,
-            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
         };
     }
 
@@ -175,13 +175,13 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
-        await this.vehiclePurchaseService.addPurchase(updatedVehicle.key, vehicle.purchase);
+        await this.vehiclePurchaseService.addPurchase(updatedVehicle.key, vehicle.purchase, host);
         //await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
         //await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
 
         return {
             ...vehicle,
-            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
         };
     }
 
@@ -217,7 +217,7 @@ export class VehicleService {
     private async addDependencies(vehicle: any, host?: string): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
-        const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key);
+        const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key, host);
         //const finance = await this.financeService.getFinanceByVehicle(vehicle.key);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
 
@@ -228,7 +228,7 @@ export class VehicleService {
             purchase: purchase,
             // finance: finance,
             // insurance: insurance,
-            imagePath: this.fileUploadService.setImagePath(vehicle.image, host)
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
         };
     }
 }

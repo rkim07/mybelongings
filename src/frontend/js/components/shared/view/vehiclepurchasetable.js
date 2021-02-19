@@ -1,12 +1,11 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import * as _ from 'lodash';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
-import Button from '@material-ui/core/Button';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Link from '@material-ui/core/Link';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
@@ -37,7 +36,6 @@ export default function VehiclePurchaseTable(props) {
 	const classes = useStyles();
 	const {
 		tableCells,
-		onHandleDownload,
 		model,
 		loading
 	} = props;
@@ -56,21 +54,27 @@ export default function VehiclePurchaseTable(props) {
 									{ tableCells[idx[0]] }
 								</StyledTableCell>
 								<StyledTableCell align='right'>
-									{
-										idx[0] === 'agreement' ? (
-											<Button
-												fullWidth
-												size='small'
-												variant='contained'
-												className={ classes.button }
-												startIcon={<CloudDownloadIcon/>}
-												onClick={ () => onHandleDownload(idx[1]) }
-											>
-												Download
-											</Button>
-										) :
-										idx[1]
-									}
+									{(() => {
+										switch (idx[0]) {
+											case 'deposit':
+											case 'downPayment':
+											case 'msrpPrice':
+											case 'stickerPrice':
+											case 'purchasePrice':
+												return `$${idx[1]}`
+											case 'agreement':
+												return (
+													<Link
+														href={ model.filePath }
+														download
+													>
+														Download Purchase Agreement
+													</Link>
+												)
+											default:
+												return idx[1];
+										}
+									})()}
 								</StyledTableCell>
 							</TableRow>
 						):(

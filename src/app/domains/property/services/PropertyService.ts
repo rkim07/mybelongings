@@ -121,7 +121,7 @@ export class PropertyService {
             ...property,
             address: await this.addressService.getAddress(property.addressKey),
             areas: await this.propertyAreaService.getAreasByPropertyKey(property.key, host),
-            imagePath: this.fileUploadService.setImagePath(host, property.image)
+            imagePath: this.fileUploadService.setFilePath(host, property.image)
         };
     }
 }

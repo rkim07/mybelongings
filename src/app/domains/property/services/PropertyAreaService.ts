@@ -80,7 +80,7 @@ export class PropertyAreaService {
      * @param area
      */
     private async addDependencies(host, area) {
-        area = { ...area, imagePath: this.fileUploadService.setImagePath(host, area.image) };
+        area = { ...area, imagePath: this.fileUploadService.setFilePath(host, area.image) };
         area = { ...area, paint: await this.paintService.getPaintByKey(area.paintKey, host) };
 
         return area;

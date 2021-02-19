@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as _ from 'lodash';
-import { useParams } from 'react-router-dom';
 import AppContext from '../../../../appcontext';
 import { currentYear } from '../../../../helpers/date';
 import { decimalFormatter } from '../../../../helpers/input';
@@ -49,9 +49,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Modify(props) {
-	const form = useRef();
+	const navigate = useNavigate();
 	const apis = useContext(AppContext);
 	const classes = useStyles();
+	const form = useRef();
 	const steps = 4;
 	const {
 		vehicleKey,
@@ -145,11 +146,6 @@ export default function Modify(props) {
 			await apis.updateVehicle(vehicle);
 
 		if (response.statusCode < 400) {
-			dispatchVehicles({
-				type: isNewVehicle ? 'add' : 'update',
-				payload: response.payload
-			});
-
 			/*handleNotifier(
 				response.statusType,
 				response.message
@@ -158,8 +154,13 @@ export default function Modify(props) {
 			// Rerender component since a new vehicle
 			// was added to the list
 			if (isNewVehicle) {
-				navigate('/vehicles/list');
+				navigate('/admin/vehicles/list');
 			}
+
+			dispatchVehicles({
+				type: 'update',
+				payload: response.payload
+			});
 		} else {
 			/*handleNotifier(
 				response.statusType,

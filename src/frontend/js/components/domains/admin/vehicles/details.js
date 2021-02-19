@@ -9,6 +9,10 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import KeyboardIcon from '@material-ui/icons/Keyboard';
+import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import SubtitlesIcon from '@material-ui/icons/Subtitles';
 import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
@@ -165,7 +169,7 @@ export default function Details(props) {
 						showPreviews={false}
 						showPreviewsInDropzone={true}
 						clearOnUnmount={true}
-						dropzoneText="Add your vehicle image here"
+						dropzoneText='Add your vehicle image here'
 						onChange={ onHandleImageChange }
 					/>
 				</ThemeProvider>
@@ -302,6 +306,13 @@ export default function Details(props) {
 					name='mileage'
 					value={ vehicle.mileage }
 					onChange={ handleChange }
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<EmojiTransportationIcon />
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -314,6 +325,13 @@ export default function Details(props) {
 					onChange={ handleChange }
 					validators={['isMaxPlateLength']}
 					errorMessages={['Plate number cannot exceed more than 8 characters']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<KeyboardIcon />
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12}>
@@ -332,6 +350,13 @@ export default function Details(props) {
 						'VIN is required',
 						'VIN length must be between 11 and 17 characters'
 					]}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<SubtitlesIcon />
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 		</Grid>

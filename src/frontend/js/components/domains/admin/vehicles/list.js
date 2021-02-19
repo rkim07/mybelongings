@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppContext from '../../../../appcontext';
-import Dialogger from '../../../shared/feedback/dialogger';
+import { modifyState, removeFromState } from '../../../../apis/helpers/collection';
+import Dialogger from './dialogger';
 import Notifier from '../../../shared/feedback/notifier';
 import Container from '@material-ui/core/Container';
 import Table from '@material-ui/core/Table';
@@ -55,6 +56,10 @@ const vehiclesReducer = (state, action) => {
 	switch(action.type) {
 		case 'add':
 			return state.concat(payload);
+		case 'update':
+			return modifyState(payload, state);
+		case 'delete':
+			return removeFromState(payload, state);
 		default:
 			return state;
 	}
@@ -74,10 +79,9 @@ export default function List(props) {
 	const classes = useStyles();
 
 	const [loading, setLoading] = useState(true);
-
-	// Get all vehicles
 	const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
 
+	// Get all vehicles
 	useEffect(() => {
 		apis.getVehicles().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {

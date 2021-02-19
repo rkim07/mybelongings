@@ -7,6 +7,10 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import StoreIcon from '@material-ui/icons/Store';
+import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -115,6 +119,13 @@ export default function Purchase(props) {
 					name='storeKey'
 					value={ values.stores ? purchase.storeKey : '' }
 					onChange={ handleChange }
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<StoreIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem aria-label='None' value='' />
 					{ values.stores && values.stores.map((store) => (
@@ -149,10 +160,17 @@ export default function Purchase(props) {
 					variant='outlined'
 					label='Purchase type'
 					name='purchaseType'
-					value={ purchase.purchaseType }
+					value={ purchase.purchaseType ? purchase.purchaseType.toLowerCase() : '' }
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Model is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<AccountBalanceIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem
 						key='lease'
@@ -178,6 +196,13 @@ export default function Purchase(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Odometer is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<EmojiTransportationIcon />
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -190,6 +215,13 @@ export default function Purchase(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['MSRP price is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								$
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -202,6 +234,13 @@ export default function Purchase(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Sticker price is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								$
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -214,6 +253,13 @@ export default function Purchase(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Purchase price is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								$
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -224,6 +270,13 @@ export default function Purchase(props) {
 					name='deposit'
 					value={ purchase.deposit }
 					onChange={ handleChange }
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								$
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
@@ -234,6 +287,13 @@ export default function Purchase(props) {
 					name='downPayment'
 					value={ purchase.downPayment }
 					onChange={ handleChange }
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								$
+							</InputAdornment>
+						)
+					}}
 				/>
 			</Grid>
 			<Grid item xs={12}>
