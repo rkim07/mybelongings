@@ -5,11 +5,13 @@ import AppContext from '../../../appcontext';
 import VehiclesDashboard from '../../domains/admin/vehicle/dashboard';
 import VehiclesList from '../../domains/admin/vehicle/list'
 import VehiclesModify from '../../domains/admin/vehicle/modify';
+import PropertiesDashboard from '../../domains/admin/property/dashboard';
 import BusinessesDashboard from '../../domains/admin/business/dashboard';
 import BusinessesList from '../../domains/admin/business/list';
 import VehiclesMenu from './leftmenu/vehiclesmenu';
 import PropertiesMenu from './leftmenu/propertiesmenu';
 import BusinessesMenu from './leftmenu/businessesmenu';
+import ApiMenu from './leftmenu/apimenu';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -21,7 +23,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
+import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
@@ -114,23 +116,27 @@ export default function Main() {
 						<List>
 							<ListItem button>
 								<ListItemIcon>
-									<MenuBookIcon />
+									<DeveloperBoardIcon />
 								</ListItemIcon>
-								<ListItemText primary='Main' />
+								<ListItemText primary='Admin' />
 							</ListItem>
 							<Divider />
-							<VehiclesMenu />
+								<VehiclesMenu />
 							<Divider />
-							<PropertiesMenu />
+								<PropertiesMenu />
 							<Divider />
-							<BusinessesMenu />
+								<BusinessesMenu />
 							<Divider />
+							<List>
+								<ApiMenu />
+							</List>								
 						</List>
 					</Drawer>
 					<div className={classes.appBarSpacer} />
 					<Routes>
 						<Route path='vehicles/dashboard' element={ <VehiclesDashboard /> } />
 						<Route path='vehicles/list' element={ <VehiclesList /> } />
+						<Route path='properties/dashboard' element={ <PropertiesDashboard /> } />
 						<Route path='businesses/dashboard' element={ <BusinessesDashboard /> } />
 						<Route path='businesses/list' element={ <BusinessesList /> } />
 					</Routes>

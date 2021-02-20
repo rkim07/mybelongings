@@ -277,22 +277,22 @@ export default function List(props) {
 							) : (
 								<TableRow className={classes.row} key={index}>
 									<CustomTableCell component='th' scope='row'>
-										<Skeleton width={210} />
+										<Skeleton width={100} />
 									</CustomTableCell>
 									<CustomTableCell align='left'>
-										<Skeleton width={210} />
+										<Skeleton width={100} />
 									</CustomTableCell>
 									<CustomTableCell align='left'>
-										<Skeleton width={210} />
+										<Skeleton width={100} />
 									</CustomTableCell>
 									<CustomTableCell align='left'>
-										<Skeleton width={210} />
+										<Skeleton width={100} />
 									</CustomTableCell>
 									<CustomTableCell align='left'>
-										<Skeleton width={210} />
+										<Skeleton width={100} />
 									</CustomTableCell>
 									<CustomTableCell align='left'>
-										<Skeleton width={210} />
+										<Skeleton width={150} />
 									</CustomTableCell>
 								</TableRow>
 							)

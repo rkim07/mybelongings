@@ -8,8 +8,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MyLocationIcon from '@material-ui/icons/MyLocation';
-import ExploreIcon from '@material-ui/icons/Explore';
+import WallpaperIcon from '@material-ui/icons/Wallpaper';
+import LocationCityIcon from '@material-ui/icons/LocationCity';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import MapIcon from '@material-ui/icons/Map';
+import PublicIcon from '@material-ui/icons/Public';
 import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -60,7 +63,7 @@ export default function Address(props) {
 
 	return (
 		<Grid container spacing={2}>
-			<Grid item xs={12} sm={2}>
+			<Grid item xs={12} sm={6}>
 				<SelectValidator
 					fullWidth
 					variant='outlined'
@@ -117,7 +120,7 @@ export default function Address(props) {
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
-								<ExploreIcon />
+								<LocationCityIcon />
 							</InputAdornment>
 						)
 					}}
@@ -136,7 +139,7 @@ export default function Address(props) {
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
-								<ExploreIcon />
+								<MapIcon />
 							</InputAdornment>
 						)
 					}}
@@ -180,7 +183,7 @@ export default function Address(props) {
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
-								<ExploreIcon />
+								<WallpaperIcon />
 							</InputAdornment>
 						)
 					}}
@@ -192,14 +195,14 @@ export default function Address(props) {
 					variant='outlined'
 					label='Country'
 					name='country'
-					value={ states ? address.state.toLowerCase() : '' }
+					value={ countries ? address.country.toLowerCase() : '' }
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Country is required']}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
-								<ExploreIcon />
+								<PublicIcon />
 							</InputAdornment>
 						)
 					}}

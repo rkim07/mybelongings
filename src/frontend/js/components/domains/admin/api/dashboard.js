@@ -22,7 +22,7 @@ export default function Dashboard() {
 		<Container maxWidth='lg' className={classes.container}>
 			<div className={classes.paper}>
 				<Typography variant='h5' component='h3'>
-					Business Dashboard
+					API Dashboard
 				</Typography>
 			</div>
 		</Container>

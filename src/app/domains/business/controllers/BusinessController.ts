@@ -1,7 +1,7 @@
 import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put, Req, Res } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
-import { HandleUpstreamError, Key, ResponseError, Business } from '../../shared/models/models';
+import { HandleUpstreamError, ResponseError, Business } from '../../shared/models/models';
 import { BUSINESS_SERVICE_MESSAGES, BusinessService } from '../services/BusinessService';
 
 const DEFAULT_BUSINESS_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the business service.';
@@ -29,11 +29,11 @@ export class BusinessController {
      *           description: The JWT token with claims about user.
      *           type: string
      *           required: true
-     *         - in: path
-     *           name: business_key
-     *           description: The business key being queried.
-     *           required: true
+     *         - name: business_key
+     *           in: path
+     *           description: The key associated to the business.
      *           type: string
+     *           required: true
      *       responses:
      *         200:
      *           description: Data has been retrieved successfully.
@@ -44,8 +44,8 @@ export class BusinessController {
      */
     @Get('/businesses/:business_key')
     public async getBusiness(
-        @Req() { requestor: { userKey, host }}: AuthorisedRequest,
-        @Param('business_key') businessKey: Key
+        @Req() { requestor: { host }}: AuthorisedRequest,
+        @Param('business_key') businessKey: string
     ): Promise<any> {
         try {
             const business = await this.businessService.getBusiness(businessKey, host);

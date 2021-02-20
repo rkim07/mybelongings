@@ -5,9 +5,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DirectionsCar from '@material-ui/icons/DirectionsCar';
+import ComputerIcon from '@material-ui/icons/Computer';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import ListIcon from '@material-ui/icons/List';
+import SyncIcon from '@material-ui/icons/Sync';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+const initialValues = {
+	openApiSubMenu: false
+};
+
 /**
  * Child component for admin menu
  *
@@ -24,55 +28,50 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  * @constructor
  */
-export default function VehiclesMenu() {
+export default function ApiMenu() {
 	const classes = useStyles();
-
-	const initialValues = {
-		openVehiclesSubMenu: false
-	};
-
 	const [values, setValues] = useState(initialValues);
 
 	// Handle when admin vehicle section opens
-	const handleVehiclesDrawerOpen = () => {
+	const handleApiDrawerOpen = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: true
+			openApiSubMenu: true
 		});
 	};
 
 	// Handle when admin vehicle section closes
-	const handleVehiclesDrawerClose = () => {
+	const handleApiDrawerClose = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: false
+			openApiSubMenu: false
 		});
 	};
 
 	// Handle when admin vehicle sub section opens and closes
-	const handleVehiclesSubMenuClick = () => {
+	const handleApiSubMenuClick = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: !values.openVehiclesSubMenu
+			openApiSubMenu: !values.openApiSubMenu
 		});
 	};
 
 	return (
 		<React.Fragment>
-			<ListItem button onClick={ handleVehiclesSubMenuClick }>
+			<ListItem button onClick={ handleApiSubMenuClick }>
 				<ListItemIcon>
-					<DirectionsCar />
+					<ComputerIcon />
 				</ListItemIcon>
-				<ListItemText primary='Vehicles' />
-				{ values.openVehiclesSubMenu ? <ExpandLess /> : <ExpandMore /> }
+				<ListItemText primary='Api' />
+				{ values.openApiSubMenu ? <ExpandLess /> : <ExpandMore /> }
 			</ListItem>
-			<Collapse in={ values.openVehiclesSubMenu } timeout='auto' unmountOnExit>
+			<Collapse in={ values.openApiSubMenu } timeout='auto' unmountOnExit>
 				<List component='div' disablePadding>
 					<ListItem
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/dashboard'
+						to='apis/dashboard'
 					>
 						<ListItemIcon>
 							<DashboardIcon />
@@ -83,12 +82,12 @@ export default function VehiclesMenu() {
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/list'
+						to='apis/sync'
 					>
 						<ListItemIcon>
-							<ListIcon />
+							<SyncIcon />
 						</ListItemIcon>
-						<ListItemText primary='List' />
+						<ListItemText primary='NHTSA Sync' />
 					</ListItem>
 				</List>
 			</Collapse>

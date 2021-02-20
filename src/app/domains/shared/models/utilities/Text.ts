@@ -7,11 +7,13 @@ export class Text {
 	 * Format phone number
 	 */
 	static formatPhoneNumber(phoneNumber) {
-		if (phoneNumber.length == 10) {
-			return phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+		phoneNumber = phoneNumber.toString().replace(/[^\d]/g, "");
+
+		if (phoneNumber.length === 10) {
+			return phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
 		}
 
-		return  phoneNumber;
+		return null;
 	}
 
 	/**
@@ -22,7 +24,7 @@ export class Text {
 			return parseInt(phoneNumberString.replace(/[^\d]/g, ''));
 		}
 
-		return phoneNumberString;
+		return null;
 	}
 
 	/**

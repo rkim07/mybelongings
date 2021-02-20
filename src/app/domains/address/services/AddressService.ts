@@ -48,14 +48,10 @@ export class AddressService {
      */
     public async getAddress(addressKey: Key): Promise<any> {
         if (!addressKey) {
-            throw new HandleUpstreamError(ADDRESS_SERVICE_MESSAGES.EMPTY_ADDRESS_KEY);
+            return {};
         }
 
         const address = await this.addressCollectionService.findOne({ key: { $eq: addressKey }});
-
-        if (!address) {
-            return {};
-        }
 
         return address
     }

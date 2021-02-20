@@ -6,7 +6,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import HouseIcon from '@material-ui/icons/House';
-import { AddBox, Ballot, ExpandLess, ExpandMore } from '@material-ui/icons';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import ListIcon from '@material-ui/icons/List';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -69,12 +71,12 @@ export default function PropertiesMenu() {
 						button
 						className={classes.nested}
 						component={ Link }
-						to='properties/add'
+						to='properties/dashboard'
 					>
 						<ListItemIcon>
-							<AddBox />
+							<DashboardIcon />
 						</ListItemIcon>
-						<ListItemText primary='Add' />
+						<ListItemText primary='Dahboard' />
 					</ListItem>
 					<ListItem
 						button
@@ -83,7 +85,7 @@ export default function PropertiesMenu() {
 						to='properties/list'
 					>
 						<ListItemIcon>
-							<Ballot />
+							<ListIcon />
 						</ListItemIcon>
 						<ListItemText primary='List' />
 					</ListItem>

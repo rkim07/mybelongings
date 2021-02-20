@@ -52,14 +52,10 @@ export class BusinessService {
      */
     public async getBusiness(businessKey: Key, host?: string): Promise<any> {
         if (!businessKey) {
-            throw new HandleUpstreamError(BUSINESS_SERVICE_MESSAGES.EMPTY_BUSINESS_KEY);
+            return {};
         }
 
         const business = await this.businessCollectionService.findOne({ key: { $eq: businessKey }});
-
-        if (!business) {
-            return {};
-        }
 
         return await this.addFetchDependencies(business, host);
     }
