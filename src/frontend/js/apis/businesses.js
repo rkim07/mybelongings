@@ -8,7 +8,7 @@ import axios from 'axios';
  */
 export function getBusiness(key) {
 	return axios
-		.get(`/business-svc/businesss/${key}`)
+		.get(`/business-svc/businesses/${key}`)
 		.then(response => {
 			if (response.status < 400) {
 				return response.data;
@@ -90,7 +90,7 @@ export function addBusiness(business) {
  */
 export function updateBusiness(business) {
 	return axios
-		.put(`/business-svc/businesss/${business.key}`, business)
+		.put(`/business-svc/businesses/${business.key}`, business)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;

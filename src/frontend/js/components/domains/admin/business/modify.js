@@ -99,7 +99,7 @@ export default function Modify(props) {
 					}));
 				} else {
 					onHandleNotifier(statusType, message);
-					navigate('/business');
+					navigate('/businesses');
 				}
 			});
 		}
