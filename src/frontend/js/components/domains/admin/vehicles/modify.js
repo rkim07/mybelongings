@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import * as _ from 'lodash';
 import { currentYear } from '../../../../helpers/date';
 import { decimalFormatter } from '../../../../helpers/input';
+import AppContext from '../../../../appcontext';
 import Details from './details';
 import Purchase from './purchase';
 import Container from '@material-ui/core/Container';
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Modify(props) {
+	const apis = useContext(AppContext);
 	const classes = useStyles();
 	const form = useRef();
 	const steps = 4;

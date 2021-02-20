@@ -11,10 +11,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DirectionsCar from '@material-ui/icons/DirectionsCar';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
 import StoreIcon from '@material-ui/icons/Store';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -32,7 +34,7 @@ const CustomTableCell = withStyles(theme => ({
 const useStyles = makeStyles((theme) => ({
 	container: {
 		paddingTop: theme.spacing(4),
-		paddingBottom: theme.spacing(4),
+		paddingBottom: theme.spacing(4)
 	},
 	paper: {
 		marginTop: theme.spacing(4),
@@ -40,13 +42,19 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center'
 	},
 	table: {
-		minWidth: 700,
+		minWidth: 700
 	},
 	row: {
 		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.background.default,
+			backgroundColor: theme.palette.background.default
 		},
 	},
+	button: {
+		background: '#404040',
+		color: 'white',
+		height: 36,
+		margin: theme.spacing(3, 0, 2)
+	}
 }));
 
 const vehiclesReducer = (state, action) => {
@@ -67,10 +75,11 @@ const vehiclesReducer = (state, action) => {
 /**
  * Main component
  *
+ * @param props
  * @returns {JSX.Element}
  * @constructor
  */
-export default function Main() {
+export default function Main(props) {
 	const notifierRef = useRef();
 	const dialoggerRef = useRef();
 	const apis = useContext(AppContext);
@@ -83,7 +92,7 @@ export default function Main() {
 	useEffect(() => {
 		apis.getVehicles().then(response => {
 			if ((response.statusCode < 400) && (response.payload.length > 0)) {
-				handleAdd(response);
+				handleDispatchAdd(response);
 
 				setLoading(false);
 			} else if (response.payload.length === 0) {
@@ -92,7 +101,19 @@ export default function Main() {
 		});
 	}, []);
 
-	// Handle submit
+	// Handle backend delete
+	const handleDelete = async(key) => {
+		const response = await apis.deleteVehicle(key);
+
+		if (response.statusCode < 400) {
+			handleDispatchDelete(response);
+		}
+
+		notifierRef.current.openNotifier(response.statusType, response.message);
+		dialoggerRef.current.closeDialogger();
+	}
+
+	// Handle backend submit
 	const handleSubmit = async(values) => {
 		const vehicle = values.vehicle;
 
@@ -125,59 +146,50 @@ export default function Main() {
 			// Rerender component since a new vehicle
 			// was added to the list
 			if (isNewVehicle) {
-				handleAdd(response);
+				handleDispatchAdd(response);
+				dialoggerRef.current.closeDialogger();
 			} else {
-				handleUpdate(response);
+				handleDispatchUpdate(response);
 			}
+
+			notifierRef.current.openNotifier(response.statusType, response.message);
 		} else {
-			handleNotifier(response.statusType, response.message);
+			notifierRef.current.openNotifier(response.statusType, response.message);
 		}
 	}
 
-	// Handle add vehicle to collection
-	const handleAdd = (response) => {
+	// Handle frontend add
+	const handleDispatchAdd = (response) => {
 		dispatchVehicles({
 			type: 'add',
 			payload: response.payload
 		});
-
-		handleNotifier(response.statusType, response.message);
 	}
 
-	// Handle update vehicle from collection
-	const handleUpdate = (response) => {
+	// Handle frontend update
+	const handleDispatchUpdate = (response) => {
 		dispatchVehicles({
 			type: 'update',
 			payload: response.payload
 		});
-
-		handleNotifier(response.statusType, response.message);
 	}
 
 	// Handle delete vehicle from collection
-	const handleDelete = async(key) => {
-		const response = await apis.deleteVehicle(key);
-
-		if (response.statusCode < 400) {
-			dispatchVehicles({
-				type: 'delete',
-				payload: response.payload.key
-			});
-		}
-
-		handleNotifier(response.statusType, response.message);
-	}
-
-	// Notifier
-	const handleNotifier = (statusType, message) => {
-		notifierRef.current.openNotifier(statusType, message);
+	const handleDispatchDelete = (response) => {
+		dispatchVehicles({
+			type: 'delete',
+			payload: response.payload.key
+		});
 	}
 
 	return (
 		<Container maxWidth='lg' className={classes.container}>
 			<div className={classes.paper}>
 				<Notifier ref={ notifierRef } />
-				<Dialogger ref={ dialoggerRef } />
+				<Dialogger
+					ref={ dialoggerRef }
+					{ ...props }
+				/>
 				<Grid container justify='flex-end'>
 					<Grid item>
 						<Button
@@ -186,7 +198,7 @@ export default function Main() {
 							variant='contained'
 							color='default'
 							className={classes.button}
-							startIcon={<DirectionsCarTwoToneIcon />}
+							startIcon={<AddIcon />}
 							onClick={ () => dialoggerRef.current.openDialogger('add', {
 								activeStep: 0,
 								onHandleSubmit: handleSubmit
@@ -204,7 +216,7 @@ export default function Main() {
 							<CustomTableCell align='left'>Model</CustomTableCell>
 							<CustomTableCell align='left'>VIN</CustomTableCell>
 							<CustomTableCell align='left'>Created</CustomTableCell>
-							<CustomTableCell align='left'></CustomTableCell>
+							<CustomTableCell align='left'/>
 						</TableRow>
 					</TableHead>
 					<TableBody>

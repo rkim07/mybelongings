@@ -127,8 +127,8 @@ export default function Main() {
 					</Drawer>
 					<div className={classes.appBarSpacer} />
 					<Routes>
-						<Route path='vehicles/dashboard' element={<VehiclesDashboard />} />
-						<Route path='vehicles/main' element={<VehiclesMain />} />
+						<Route path='vehicles/dashboard' element={ <VehiclesDashboard /> } />
+						<Route path='vehicles/main' element={ <VehiclesMain /> } />
 					</Routes>
 				</React.Fragment>
 			)}
