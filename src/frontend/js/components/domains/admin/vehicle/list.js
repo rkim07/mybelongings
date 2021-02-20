@@ -13,9 +13,9 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import DirectionsCar from '@material-ui/icons/DirectionsCar';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
-import StoreIcon from '@material-ui/icons/Store';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import BusinessIcon from '@material-ui/icons/Business';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -79,7 +79,7 @@ const vehiclesReducer = (state, action) => {
  * @returns {JSX.Element}
  * @constructor
  */
-export default function Main(props) {
+export default function List(props) {
 	const notifierRef = useRef();
 	const dialoggerRef = useRef();
 	const apis = useContext(AppContext);
@@ -222,12 +222,12 @@ export default function Main(props) {
 					<TableBody>
 						{ ( loading ? Array.from(new Array(5)) : vehicles).map((vehicle, index) => (
 							vehicle ? (
-								<TableRow className={classes.row} key={vehicle.key}>
-									<CustomTableCell component='th' scope='row'>{vehicle.year}</CustomTableCell>
-									<CustomTableCell align='left'>{ vehicle.mfrName}</CustomTableCell>
-									<CustomTableCell align='left'>{ vehicle.model}</CustomTableCell>
-									<CustomTableCell align='left'>{ vehicle.vin}</CustomTableCell>
-									<CustomTableCell align='left'>{ vehicle.created}</CustomTableCell>
+								<TableRow className={classes.row} key={ vehicle.key }>
+									<CustomTableCell component='th' scope='row'>{vehicle.year }</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.mfrName }</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.model }</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.vin }</CustomTableCell>
+									<CustomTableCell align='left'>{ vehicle.created }</CustomTableCell>
 									<CustomTableCell align='left'>
 										<IconButton
 											aria-label='edit-details'
@@ -249,7 +249,18 @@ export default function Main(props) {
 												onHandleSubmit: handleSubmit
 											})}
 										>
-											<StoreIcon />
+											<BusinessIcon />
+										</IconButton>
+										<IconButton
+											aria-label='edit-finance'
+											color='default'
+											onClick={ () => dialoggerRef.current.openDialogger('update', {
+												vehicleKey: vehicle.key,
+												activeStep: 2,
+												onHandleSubmit: handleSubmit
+											})}
+										>
+											<AttachMoneyIcon />
 										</IconButton>
 										<IconButton
 											aria-label='view'

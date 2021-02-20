@@ -5,8 +5,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DirectionsCar from '@material-ui/icons/DirectionsCar';
-import { AddBox, Ballot, ExpandLess, ExpandMore } from '@material-ui/icons';
+import BusinessIcon from '@material-ui/icons/Business';
+import ListIcon from '@material-ui/icons/List';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+const initialValues = {
+	openBusinessesSubMenu: false
+};
+
 /**
  * Child component for admin menu
  *
@@ -22,58 +28,53 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  * @constructor
  */
-export default function VehiclesMenu() {
+export default function BusinessesMenu() {
 	const classes = useStyles();
-
-	const initialValues = {
-		openVehiclesSubMenu: false
-	};
-
 	const [values, setValues] = useState(initialValues);
 
 	// Handle when admin vehicle section opens
-	const handleVehiclesDrawerOpen = () => {
+	const handleBusinessesDrawerOpen = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: true
+			openBusinessesSubMenu: true
 		});
 	};
 
 	// Handle when admin vehicle section closes
-	const handleVehiclesDrawerClose = () => {
+	const handleBusinessesDrawerClose = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: false
+			openBusinessesSubMenu: false
 		});
 	};
 
 	// Handle when admin vehicle sub section opens and closes
-	const handleVehiclesSubMenuClick = () => {
+	const handleBusinessesSubMenuClick = () => {
 		setValues({
 			...values,
-			openVehiclesSubMenu: !values.openVehiclesSubMenu
+			openBusinessesSubMenu: !values.openBusinessesSubMenu
 		});
 	};
 
 	return (
 		<React.Fragment>
-			<ListItem button onClick={ handleVehiclesSubMenuClick }>
+			<ListItem button onClick={ handleBusinessesSubMenuClick }>
 				<ListItemIcon>
-					<DirectionsCar />
+					<BusinessIcon />
 				</ListItemIcon>
-				<ListItemText primary='Vehicles' />
-				{ values.openVehiclesSubMenu ? <ExpandLess /> : <ExpandMore /> }
+				<ListItemText primary='Businesses' />
+				{ values.openBusinessesSubMenu ? <ExpandLess /> : <ExpandMore /> }
 			</ListItem>
-			<Collapse in={ values.openVehiclesSubMenu } timeout='auto' unmountOnExit>
+			<Collapse in={ values.openBusinessesSubMenu } timeout='auto' unmountOnExit>
 				<List component='div' disablePadding>
 					<ListItem
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/dashboard'
+						to='businesses/dashboard'
 					>
 						<ListItemIcon>
-							<AddBox />
+							<DashboardIcon />
 						</ListItemIcon>
 						<ListItemText primary='Dashboard' />
 					</ListItem>
@@ -81,10 +82,10 @@ export default function VehiclesMenu() {
 						button
 						className={classes.nested}
 						component={ Link }
-						to='vehicles/main'
+						to='businesses/list'
 					>
 						<ListItemIcon>
-							<Ballot />
+							<ListIcon />
 						</ListItemIcon>
 						<ListItemText primary='List' />
 					</ListItem>

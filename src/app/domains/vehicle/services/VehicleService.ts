@@ -5,17 +5,18 @@ import { Code, HandleUpstreamError, Key, Vehicle } from '../../shared/models/mod
 import { FileUploadService } from '../../shared/services/FileUploadService';
 import { VehicleApiService } from './VehicleApiService';
 import { VehiclePurchaseService } from './VehiclePurchaseService';
+import { VehicleFinanceService } from './VehicleFinanceService';
 import { VehicleCollectionService } from './collections/VehicleCollectionService';
 
 export enum VEHICLE_SERVICE_MESSAGES {
+    EMPTY_VEHICLE_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY',
+    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO',
+    EMPTY_USER_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY',
     VEHICLE_NOT_FOUND = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND',
     VEHICLES_NOT_FOUND = 'VEHICLE_SERVICE_MESSAGES.VEHICLES_NOT_FOUND',
     VEHICLE_NOT_ADDED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED',
     VEHICLE_NOT_UPDATED = 'VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED',
-    EXISTING_VIN = 'VEHICLE_SERVICE_MESSAGES.EXISTING_VIN',
-    EMPTY_VEHICLE_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_VEHICLE_KEY',
-    EMPTY_NEW_VEHICLE_INFO = 'VEHICLE_SERVICE_MESSAGES.EMPTY_NEW_VEHICLE_INFO',
-    EMPTY_USER_KEY = 'VEHICLE_SERVICE_MESSAGES.EMPTY_USER_KEY'
+    EXISTING_VIN = 'VEHICLE_SERVICE_MESSAGES.EXISTING_VIN'
 }
 
 /**
@@ -59,6 +60,9 @@ export class VehicleService {
     private vehiclePurchaseService: VehiclePurchaseService = Container.get(VehiclePurchaseService);
 
     @Inject()
+    private vehicleFinanceService: VehicleFinanceService = Container.get(VehicleFinanceService);
+
+    @Inject()
     private fileUploadService: FileUploadService = Container.get(FileUploadService);
 
     /**
@@ -78,7 +82,7 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_FOUND);
         }
 
-        return await this.addDependencies(vehicle, host);
+        return await this.addFetchDependencies(vehicle, host);
     }
 
     /**
@@ -94,7 +98,7 @@ export class VehicleService {
         }
 
         return await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(vehicle, host);
+            return await this.addFetchDependencies(vehicle, host);
         }));
     }
 
@@ -116,7 +120,7 @@ export class VehicleService {
         }
 
         const results = await Promise.all(vehicles.map(async (vehicle) => {
-            return await this.addDependencies(vehicle, host);
+            return await this.addFetchDependencies(vehicle, host);
         }));
 
         return _.sortBy(results, o => o.model);
@@ -147,19 +151,23 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_ADDED);
         }
 
+        let purchase = {}
         if (!_.isEmpty(vehicle.purchase)) {
-            await this.vehiclePurchaseService.addPurchase(addedVehicle.key, vehicle.purchase, host);
+            purchase = await this.vehiclePurchaseService.addPurchase(vehicle.key, vehicle.purchase, host);
         }
 
-        /*if (!_.isEmpty(vehicle.financial)) {
-            await this.vehicleFinancialService.addFinancial(addedVehicle.key, vehicle.financial);
+        let finance = {};
+        if (!_.isEmpty(vehicle.finance)) {
+            finance = await this.vehicleFinanceService.addFinance(vehicle.key, vehicle.finance, host);
         }
 
+        let insurance = {};
+        /*
         if (!_.isEmpty(vehicle.insurance)) {
-            await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance);
+            await this.vehicleInsuranceService.addInsurance(addedVehicle.key, vehicle.insurance, host);
         }*/
 
-        return await this.addDependencies(addedVehicle, host);
+        return await this.addCrudDependecies(addedVehicle, purchase, finance, insurance, host);
     }
 
     /**
@@ -180,11 +188,23 @@ export class VehicleService {
             throw new HandleUpstreamError(VEHICLE_SERVICE_MESSAGES.VEHICLE_NOT_UPDATED);
         }
 
-        await this.vehiclePurchaseService.updatePurchase(vehicle.purchase.key, vehicle.purchase, host);
-        //await this.vehicleFinancialService.updateFinancial(vehicle.financial.key, vehicle.financial);
-        //await this.vehicleInsuranceService.updateInsurance(vehicle.insurance.key, vehicle.insurance);
+        let purchase = {}
+        if (!_.isEmpty(vehicle.purchase)) {
+            purchase = await this.vehiclePurchaseService.updatePurchase(vehicle.purchase.key, vehicle.purchase, host);
+        }
 
-        return await this.addDependencies(updatedVehicle, host);
+        let finance = {};
+        if (!_.isEmpty(vehicle.finance)) {
+            finance = await this.vehicleFinanceService.updateFinance(vehicle.finance.key, vehicle.finance, host);
+        }
+
+        let insurance = {};
+        /*
+        if (!_.isEmpty(vehicle.insurance)) {
+            await this.vehicleInsuranceService.updateInsurance(vehicle.insurance.key, vehicle.insurance, host);
+        }*/
+
+        return await this.addCrudDependecies(updatedVehicle, purchase, finance, insurance, host);
     }
 
     /**
@@ -210,17 +230,18 @@ export class VehicleService {
     }
 
     /**
-     * Dependencies when returning object
+     * Fetch dependencies when returning object.
+     * Minimize DB fetches
      *
      * @param host
      * @param vehicle
      * @private
      */
-    private async addDependencies(vehicle: any, host?: string): Promise<any> {
+    private async addFetchDependencies(vehicle: any, host?: string): Promise<any> {
         const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
         const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
         const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key, host);
-        //const finance = await this.financeService.getFinanceByVehicle(vehicle.key);
+        const finance = await this.vehicleFinanceService.getFinanceByVehicle(vehicle.key, host);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
 
         return {
@@ -228,7 +249,33 @@ export class VehicleService {
             mfrName: mfr.mfrName,
             model: model.model,
             purchase: purchase,
-            // finance: finance,
+            finance: finance,
+            // insurance: insurance,
+            imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
+        };
+    }
+
+    /**
+     * CRUD dependencies when returning object.
+     * Minimize DB fetches
+     *
+     * @param vehicle
+     * @param purchase
+     * @param finance
+     * @param insurance
+     * @param host
+     * @private
+     */
+    private async addCrudDependecies(vehicle: any, purchase: any, finance: any, insurance: any, host?: string): Promise<any> {
+        const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
+        const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
+
+        return {
+            ...vehicle,
+            mfrName: mfr.mfrName,
+            model: model.model,
+            purchase: purchase,
+            finance: finance,
             // insurance: insurance,
             imagePath: this.fileUploadService.setFilePath(vehicle.image, host)
         };

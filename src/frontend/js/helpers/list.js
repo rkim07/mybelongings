@@ -1,3 +1,8 @@
+/**
+ * Get payment types
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
 export function getPaymentTypes() {
 	return [
 		{
@@ -15,74 +20,137 @@ export function getPaymentTypes() {
 	];
 }
 
+/**
+ * Get business types
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
+export function getBusinessTypes() {
+	return [
+		{
+			value: 'bank',
+			label: 'Bank'
+		},
+		{
+			value: 'dealership',
+			label: 'Dealership'
+		},
+		{
+			value: 'retail',
+			label: 'Retail'
+		}
+	];
+}
+
+/**
+ * Get address types
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string})[]}
+ */
+export function getAddressTypes() {
+	return [
+		{
+			value: 'commercial',
+			label: 'Commercial'
+		},
+		{
+			value: 'residential',
+			label: 'Residential'
+		}
+	];
+}
+
+/**
+ * Get countries
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string})[]}
+ */
+export function getCountries() {
+	return [
+		{
+			value: 'kor',
+			label: 'Korea'
+		},
+		{
+			value: 'us',
+			label: 'United States'
+		}
+	]
+}
+
+/**
+ * Get states
+ *
+ * @returns {({label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string}|{label: string, value: string})[]}
+ */
 export function getStates() {
 	return [
 		{
-			value: 'AL',
+			value: 'al',
 			label: 'Alabama'
 		},
 		{
-			value: 'AK',
+			value: 'ak',
 			label: 'Alaska'
 		},
 		{
-			value: 'AZ',
+			value: 'az',
 			label: 'Arizona'
 		},
 		{
-			value: 'AR',
+			value: 'ar',
 			label: 'Arkansas'
 		},
 		{
-			value: 'CA',
+			value: 'ca',
 			label: 'California'
 		},
 		{
-			value: 'CO',
+			value: 'co',
 			label: 'Colorado'
 		},
 		{
-			value: 'CT',
+			value: 'ct',
 			label: 'Connecticut'
 		},
 		{
-			value: 'DE',
+			value: 'de',
 			label: 'Delaware'
 		},
 		{
-			value: 'DC',
+			value: 'dc',
 			label: 'District Of Columbia'
 		},
 		{
-			value: 'FL',
+			value: 'fl',
 			label: 'Florida'
 		},
 		{
-			value: 'GA',
+			value: 'ga',
 			label: 'Georgia'
 		},
 		{
-			value: 'HI',
+			value: 'hi',
 			label: 'Hawaii'
 		},
 		{
-			value: 'ID',
+			value: 'id',
 			label: 'Idaho'
 		},
 		{
-			value: 'IL',
+			value: 'il',
 			label: 'Illinois'
 		},
 		{
-			value: 'IN',
+			value: 'in',
 			label: 'Indiana'
 		},
 		{
-			value: 'IA',
+			value: 'ia',
 			label: 'Iowa'
 		},
 		{
-			value: 'KS',
+			value: 'ks',
 			label: 'Kansas'
 		},
 		{
@@ -90,135 +158,135 @@ export function getStates() {
 			label: 'Kentucky'
 		},
 		{
-			value: 'LA',
+			value: 'la',
 			label: 'Louisiana'
 		},
 		{
-			value: 'ME',
+			value: 'me',
 			label: 'Maine'
 		},
 		{
-			value: 'MD',
+			value: 'md',
 			label: 'Maryland'
 		},
 		{
-			value: 'MA',
+			value: 'ma',
 			label: 'Massachusetts'
 		},
 		{
-			value: 'MI',
+			value: 'mi',
 			label: 'Michigan'
 		},
 		{
-			value: 'MN',
+			value: 'mn',
 			label: 'Minnesota'
 		},
 		{
-			value: 'MS',
+			value: 'ms',
 			label: 'Mississippi'
 		},
 		{
-			value: 'MO',
+			value: 'mo',
 			label: 'Missouri'
 		},
 		{
-			value: 'MT',
+			value: 'mt',
 			label: 'Montana'
 		},
 		{
-			value: 'NE',
+			value: 'ne',
 			label: 'Nebraska'
 		},
 		{
-			value: 'NV',
+			value: 'nv',
 			label: 'Nevada'
 		},
 		{
-			value: 'NH',
+			value: 'nh',
 			label: 'New Hampshire'
 		},
 		{
-			value: 'NJ',
+			value: 'nj',
 			label: 'New Jersey'
 		},
 		{
-			value: 'NM',
+			value: 'nm',
 			label: 'New Mexico'
 		},
 		{
-			value: 'NY',
+			value: 'ny',
 			label: 'New York'
 		},
 		{
-			value: 'NC',
+			value: 'nc',
 			label: 'North Carolina'
 		},
 		{
-			value: 'ND',
+			value: 'nd',
 			label: 'North Dakota'
 		},
 		{
-			value: 'OH',
+			value: 'oh',
 			label: 'Ohio'
 		},
 		{
-			value: 'OK',
+			value: 'ok',
 			label: 'Oklahoma'
 		},
 		{
-			value: 'OR',
+			value: 'or',
 			label: 'Oregon'
 		},
 		{
-			value: 'PA',
+			value: 'pa',
 			label: 'Pennsylvania'
 		},
 		{
-			value: 'RI',
+			value: 'ri',
 			label: 'Rhode Island'
 		},
 		{
-			value: 'SC',
+			value: 'sc',
 			label: 'South Carolina'
 		},
 		{
-			value: 'SD',
+			value: 'sd',
 			label: 'South Dakota'
 		},
 		{
-			value: 'TN',
+			value: 'tn',
 			label: 'Tennessee'
 		},
 		{
-			value: 'TX',
+			value: 'tx',
 			label: 'Texas'
 		},
 		{
-			value: 'UT',
+			value: 'ut',
 			label: 'Utah'
 		},
 		{
-			value: 'VT',
+			value: 'vt',
 			label: 'Vermont'
 		},
 		{
-			value: 'VA',
+			value: 'va',
 			label: 'Virginia'
 		},
 		{
-			value: 'WA',
+			value: 'wa',
 			label: 'Washington'
 		},
 		{
-			value: 'WV',
+			value: 'wv',
 			label: 'West Virginia'
 		},
 		{
-			value: 'WI',
+			value: 'wi',
 			label: 'Wisconsin'
 		},
 		{
-			value: 'WY',
+			value: 'wy',
 			label: 'Wyoming'
 		}
 	];

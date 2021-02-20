@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 /**
- * Get vehicle by key
+ * Get business by key
  *
  * @param key
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
-export function getVehicle(key) {
+export function getBusiness(key) {
 	return axios
-		.get(`/vehicle-svc/vehicles/${key}`)
+		.get(`/business-svc/businesss/${key}`)
 		.then(response => {
 			if (response.status < 400) {
 				return response.data;
@@ -22,13 +22,13 @@ export function getVehicle(key) {
 }
 
 /**
- * Get all vehicles
+ * Get all businesses
  *
  * @returns {Promise<T>}
  */
-export function getVehicles() {
+export function getBusinesses() {
 	return axios
-		.get('/vehicle-svc/vehicles')
+		.get('/business-svc/businesses')
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;
@@ -42,34 +42,13 @@ export function getVehicles() {
 }
 
 /**
- * Get vehicles by user key
+ * Get all businesses by specific type
  *
- * @returns {Promise<T | string | "rejected" | number | "fulfilled">|any}
- */
-export function getVehiclesByUser() {
-	return axios
-		.get(`/vehicle-svc/vehicles/by/user`)
-		.then((response) => {
-			if (response.status < 400) {
-				return response.data;
-			}
-
-			return response;
-		})
-		.catch((err) => {
-			return err;
-		});
-}
-
-/**
- * Add vehicle
- *
- * @param vehicle
  * @returns {Promise<T>}
  */
-export function addVehicle(vehicle) {
+export function getBusinessesByType(type) {
 	return axios
-		.post('/vehicle-svc/vehicle', vehicle)
+		.get(`/business-svc/businesses/by/type/${type}`)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;
@@ -83,14 +62,14 @@ export function addVehicle(vehicle) {
 }
 
 /**
- * Update vehicle
+ * Add business
  *
- * @param vehicle
+ * @param business
  * @returns {Promise<T>}
  */
-export function updateVehicle(vehicle) {
+export function addBusiness(business) {
 	return axios
-		.put(`/vehicle-svc/vehicles/${vehicle.key}`, vehicle)
+		.post('/business-svc/business', business)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;
@@ -104,14 +83,35 @@ export function updateVehicle(vehicle) {
 }
 
 /**
- * Delete vehicle
+ * Update business
+ *
+ * @param business
+ * @returns {Promise<T>}
+ */
+export function updateBusiness(business) {
+	return axios
+		.put(`/business-svc/businesss/${business.key}`, business)
+		.then((response) => {
+			if (response.status < 400) {
+				return response.data;
+			}
+
+			return response;
+		})
+		.catch((err) => {
+			return err;
+		});
+}
+
+/**
+ * Delete business
  *
  * @param key
  * @returns {Promise<T>}
  */
-export function deleteVehicle(key) {
+export function deleteBusiness(key) {
 	return axios
-		.delete(`/vehicle-svc/vehicles/${key}`)
+		.delete(`/business-svc/businesses/${key}`)
 		.then((response) => {
 			if (response.status < 400) {
 				return response.data;

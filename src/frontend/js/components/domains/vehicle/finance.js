@@ -14,8 +14,14 @@ export default function Finance() {
 	const { key } = useParams();
 	const { ...other } = props;
 
-	// Needs to be implemented
 	const tableCells = {
+		accountNumber: 'Account number',
+		originalLoan: 'Original loan',
+		currentPrincipal: 'Current principal',
+		paymentAmount: 'Payment amount',
+		interestRate: 'Interest rate',
+		term: 'Term',
+		originated: 'Origination date'
 	};
 
 	return (

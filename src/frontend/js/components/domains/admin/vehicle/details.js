@@ -6,12 +6,16 @@ import { getVehicleColors, getVehicleStyles } from '../../vehicle/models/vehicle
 import { getYearsRange } from '../../../../helpers/date';
 import { decimalFormatter } from '../../../../helpers/input';
 import { DropzoneArea } from 'material-ui-dropzone';
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
-import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import BusinessIcon from '@material-ui/icons/Business';
+import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
+import GradeIcon from '@material-ui/icons/Grade';
 import SubtitlesIcon from '@material-ui/icons/Subtitles';
 import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -184,6 +188,13 @@ export default function Details(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Condition is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<GradeIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem value='new'>New</MenuItem>
 					<MenuItem value='used'>Used</MenuItem>
@@ -199,6 +210,13 @@ export default function Details(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Year is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<CalendarTodayIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem aria-label='None' value='' />
 					{ years && years.map((year) => (
@@ -222,6 +240,13 @@ export default function Details(props) {
 					disabled={ key ? true : false }
 					validators={['required']}
 					errorMessages={['Manufacturer is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<BusinessIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem aria-label='None' value='' />
 					{ values.manufacturers && values.manufacturers.map((mfr) => (
@@ -245,6 +270,13 @@ export default function Details(props) {
 					disabled={ key ? true : false }
 					validators={['required']}
 					errorMessages={['Model is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<DirectionsCarIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem aria-label='Select a manufacturer first' value='' />
 					{ values.models && values.models.map((model) => (
@@ -267,6 +299,13 @@ export default function Details(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Color is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<FormatColorFillIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					<MenuItem aria-label='None' value='' />
 					{ colors && colors.map((color) => (
@@ -289,6 +328,13 @@ export default function Details(props) {
 					onChange={ handleChange }
 					validators={['required']}
 					errorMessages={['Style is required']}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position='start'>
+								<DirectionsCarIcon />
+							</InputAdornment>
+						)
+					}}
 				>
 					{ styles && styles.map((style) => (
 						<MenuItem
@@ -311,7 +357,7 @@ export default function Details(props) {
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
-								<EmojiTransportationIcon />
+								<AccessTimeIcon />
 							</InputAdornment>
 						)
 					}}

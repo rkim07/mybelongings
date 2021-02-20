@@ -40,7 +40,7 @@ export class PaintCollectionService extends DatabaseCollectionService {
                 uniqueField: 'key',
                 uniqueFieldValue: existingPaint.key,
                 updateFields: {
-                    storeKey: paint.storeKey,
+                    businessKey: paint.businessKey,
                     image: paint.image,
                     name: paint.name,
                     number: paint.number,
@@ -56,7 +56,7 @@ export class PaintCollectionService extends DatabaseCollectionService {
             });
         } else {
             return await this.addOne(new Paint({
-                storeKey: paint.storeKey,
+                businessKey: paint.businessKey,
                 image: paint.image,
                 name: paint.name,
                 number: paint.number,

@@ -258,7 +258,7 @@ export abstract class DatabaseCollectionService {
     }
 
     /**
-     * Loads the collection and stores locally for future use
+     * Loads the collection and businesses locally for future use
      *
      * @protected
      */

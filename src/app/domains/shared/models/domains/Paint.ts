@@ -2,11 +2,11 @@ import { Datetime } from '../utilities/Datetime';
 import { Key } from '../utilities/Key';
 
 /**
- * Store
+ * Business
  */
 export class Paint {
     key: Key;
-    storeKey: string;
+    businessKey: string;
     image: string;
     name: string;
     number: string;
@@ -26,7 +26,7 @@ export class Paint {
      * @param data
      */
     constructor(data: {
-        storeKey: string,
+        businessKey: string,
         image: string,
         name: string,
         number: string,
@@ -39,7 +39,7 @@ export class Paint {
         notes: string,
     }) {
         this.key = Key.generate();
-        this.storeKey = data.storeKey;
+        this.businessKey = data.businessKey;
         this.image = data.image;
         this.name = data.name;
         this.number = data.number;

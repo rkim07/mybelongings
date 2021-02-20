@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { Key, Vehicle, VehiclePurchase } from '../../../shared/models/models';
+import { Key, VehiclePurchase } from '../../../shared/models/models';
 import { Datetime } from '../../../shared/models/utilities/Datetime';
 import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
 
@@ -26,7 +26,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
     }
 
     /**
-     * Stepper purchase
+     * Add purchase
      *
      * @param vehicleKey
      * @param purchase
@@ -37,7 +37,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
         return await this.addOne(
             new VehiclePurchase({
                 vehicleKey: vehicleKey,
-                storeKey: purchase.storeKey,
+                businessKey: purchase.businessKey,
                 odometer: purchase.odometer,
                 deposit: purchase.deposit,
                 downPayment: purchase.downPayment,
@@ -68,7 +68,7 @@ export class VehiclePurchaseCollectionService extends DatabaseCollectionService 
                 uniqueFieldValue: existingPurchase.key,
                 updateFields: {
                     vehicleKey: purchase.vehicleKey,
-                    storeKey: purchase.storeKey,
+                    businessKey: purchase.businessKey,
                     odometer: purchase.odometer,
                     deposit: purchase.deposit,
                     downPayment: purchase.downPayment,

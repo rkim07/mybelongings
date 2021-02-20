@@ -3,13 +3,15 @@ import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put, Req, Res
 import { Container, Inject } from 'typedi';
 import { AuthorisedRequest } from '../../shared/interfaces/AuthorisedRequest';
 import { HandleUpstreamError, Key, ResponseError } from '../../shared/models/models';
-import { VEHICLE_PURCHASE_SERVICE_MESSAGES, VehiclePurchaseService } from '../services/VehiclePurchaseService';
 import { VEHICLE_SERVICE_MESSAGES, VehicleService } from '../services/VehicleService';
+import { VEHICLE_PURCHASE_SERVICE_MESSAGES, VehiclePurchaseService } from '../services/VehiclePurchaseService';
+import { VEHICLE_FINANCE_SERVICE_MESSAGES, VehicleFinanceService } from '../services/VehicleFinanceService';
 
 import { logger } from '../../../common/logging';
 
 const DEFAULT_VEHICLE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
 const DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle purchase service.';
+const DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle finance service.';
 
 @JsonController('/vehicle-svc')
 export class VehicleController {
@@ -19,6 +21,9 @@ export class VehicleController {
 
     @Inject()
     private vehiclePurchaseService: VehiclePurchaseService = Container.get(VehiclePurchaseService);
+
+    @Inject()
+    private vehicleFinanceService: VehicleFinanceService = Container.get(VehicleFinanceService);
 
     /**
      * @swagger
@@ -276,7 +281,7 @@ export class VehicleController {
      *             $ref: '#/definitions/Vehicle'
      *       responses:
      *         200:
-     *           description: The shipping address was updated successfully.
+     *           description: The vehicle was updated successfully.
      *           schema:
      *             $ref: '#/definitions/Vehicle'
      *         500:
@@ -360,7 +365,7 @@ export class VehicleController {
             const vehicle = await this.vehicleService.deleteVehicle(vehicleKey);
 
             if (vehicle) {
-                response.send({
+                response.status(200).json({
                     payload: vehicle,
                     statusCode: 204,
                     successCode: 'VEHICLE_SERVICE_MESSAGES.DELETED'
@@ -406,7 +411,7 @@ export class VehicleController {
      *           type: string
      *         - in: body
      *           name: request
-     *           description: New vehicle purchase information.
+     *           description: Vehicle purchase information.
      *           required: true
      *           schema:
      *             $ref: '#/definitions/VehiclePurchase'
@@ -456,6 +461,84 @@ export class VehicleController {
                 }
             } else {
                 return new ResponseError(500, 'VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_PURCHASE_SERVICE_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * @swagger
+     * paths:
+     *   /vehicle-svc/vehicle/{vehicle_key}/finance:
+     *     post:
+     *       description: Add vehicle finance
+     *       tags:
+     *         - Vehicle Purchase
+     *       security:
+     *         - OauthSecurity:
+     *           - ROLE_USER
+     *       parameters:
+     *         - name: Authorization
+     *           in: header
+     *           description: The JWT token with claims about user.
+     *           type: string
+     *           required: true
+     *         - in: path
+     *           name: vehicle_key
+     *           description: The key for the vehicle that we're working with.
+     *           required: true
+     *           type: string
+     *         - in: body
+     *           name: request
+     *           description: Vehicle finance information.
+     *           required: true
+     *           schema:
+     *             $ref: '#/definitions/VehiclePurchase'
+     *       responses:
+     *         201:
+     *           description: Data has been added successfully.
+     *           schema:
+     *             $ref: '#/definitions/VehiclePurchase'
+     *         409:
+     *           description: Duplicate finance information.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         422:
+     *           description: Restrictions for adding vehicle finance.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     *         500:
+     *           description: An unexpected error occurred in the vehicle finance service.
+     *           schema:
+     *             $ref: '#/definitions/ResponseError'
+     */
+    @HttpCode(201)
+    @Post('/vehicle/:vehicle_key/finance')
+    public async postVehicleFinance(
+        @Param('vehicle_key') vehicleKey: string,
+        @Body() body: any
+    ): Promise<any> {
+        try {
+            const finance = await this.vehicleFinanceService.addFinance(vehicleKey, body);
+
+            return {
+                payload: finance,
+                statusCode: 201,
+                successCode: 'VEHICLE_FINANCE_SERVICE_MESSAGES.ADDED'
+            };
+        } catch (err) {
+            if (err instanceof HandleUpstreamError) {
+                switch(err.key) {
+                    case VEHICLE_FINANCE_SERVICE_MESSAGES.EXISTING_PURCHASE:
+                        return new ResponseError(409, err.key, '');
+                    case VEHICLE_FINANCE_SERVICE_MESSAGES.EMPTY_NEW_PURCHASE_INFO:
+                        return new ResponseError(422, 'VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE', '');
+                    case VEHICLE_FINANCE_SERVICE_MESSAGES.PURCHASE_NOT_ADDED:
+                        return new ResponseError(500, 'VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE', '');
+                    default:
+                        return new ResponseError(500, 'VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE);
+                }
+            } else {
+                return new ResponseError(500, 'VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE.DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE', DEFAULT_VEHICLE_FINANCE_SERVICE_ERROR_MESSAGE);
             }
         }
     }

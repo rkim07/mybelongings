@@ -116,15 +116,27 @@ export class SystemMessageService {
                     VEHICLE_MODELS_NOT_FOUND: 'No models for this particular manufacturer were found.'
                 }
             },
-            store: {
+            business: {
                 success: {
-                    NEW: 'Store successfully added.',
-                    UPDATED: 'Store successfully updated.',
-                    EMPTY_LIST: 'The system did not find any saved properties.',
-                    STORES_BY_TYPE_EMPTY_LIST: 'The system did not find any stores by this type.'
+                    NEW: 'Business successfully added.',
+                    UPDATED: 'Business successfully updated.',
+                    DELETED: 'Business successfully deleted.',
+                    EMPTY_LIST: 'The system did not find any saved businesses.',
+                    BUSINESSES_BY_TYPE_EMPTY_LIST: 'The system did not find any businesses by this type.'
                 },
                 error: {
-                    EMPTY_NEW_STORE_INFO: 'Full information needs to be provided to add new store.',
+                    EMPTY_NEW_BUSINESS_INFO: 'Full information needs to be provided to add new business.',
+                }
+            },
+            address: {
+                success: {
+                    NEW: 'Address successfully added.',
+                    UPDATED: 'Address successfully updated.',
+                    DELETED: 'Address successfully deleted.',
+                    EMPTY_LIST: 'The system did not find any saved addresses.',
+                },
+                error: {
+                    EMPTY_NEW_ADDRESS_INFO: 'Full information needs to be provided to add new address.',
                 }
             }
         };

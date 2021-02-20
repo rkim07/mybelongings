@@ -2,7 +2,7 @@ export * from './domains/User';
 export * from './domains/Property';
 export * from './domains/Vehicle';
 export * from './domains/Address';
-export * from './domains/Store';
+export * from './domains/Business';
 export * from './domains/Paint';
 
 export * from './utilities/CustomError';
@@ -137,7 +137,7 @@ export * from './utilities/Text';
  *         $ref: "#/definitions/Key"
  *       vehicleKey:
  *         $ref: "#/definitions/Key"
- *       storeKey:
+ *       businessKey:
  *         $ref: "#/definitions/Key"
  *       odometer:
  *         type: number
@@ -262,7 +262,7 @@ export * from './utilities/Text';
  *     properties:
  *       key:
  *         $ref: "#/definitions/Key"
- *       storeKey:
+ *       businessKey:
  *         $ref: "#/definitions/Key"
  *       image:
  *         type: string
@@ -291,7 +291,7 @@ export * from './utilities/Text';
  *       modified:
  *         $ref: "#/definitions/Datetime"
  *
- *   Store:
+ *   Business:
  *     type: object
  *     properties:
  *       key:
@@ -302,10 +302,10 @@ export * from './utilities/Text';
  *         type: string
  *         minLength: 1
  *       landline:
- *         type: string
+ *         type: number
  *         minLength: 1
  *       mobile:
- *         type: string
+ *         type: number
  *         minLength: 1
  *       email:
  *         type: string

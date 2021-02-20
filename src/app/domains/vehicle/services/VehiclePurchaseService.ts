@@ -3,7 +3,7 @@ import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, VehiclePurchase } from '../../shared/models/models';
 import { FileUploadService } from '../../shared/services/FileUploadService';
-import { StoreService } from '../../store/services/StoreService';
+import { BusinessService } from '../../business/services/BusinessService';
 import { VehiclePurchaseCollectionService } from './collections/VehiclePurchaseCollectionService';
 import { VEHICLE_SERVICE_MESSAGES } from './VehicleService';
 
@@ -23,9 +23,9 @@ export enum VEHICLE_PURCHASE_SERVICE_MESSAGES {
  */
 export const vehiclePurchaseMappingKeys = {
     date: [
+        'purchased',
         'created',
-        'modified',
-        'purchased'
+        'modified'
     ],
     decimals: [
         'odometer'
@@ -46,7 +46,7 @@ export const vehiclePurchaseMappingKeys = {
 export class VehiclePurchaseService {
 
     @Inject()
-    private storeService: StoreService = Container.get(StoreService);
+    private businessService: BusinessService = Container.get(BusinessService);
 
     @Inject()
     private vehiclePurchaseCollectionService: VehiclePurchaseCollectionService = Container.get(VehiclePurchaseCollectionService);
@@ -190,7 +190,7 @@ export class VehiclePurchaseService {
     private async addDependencies(purchase: any, host?: string): Promise<any> {
         return {
             ...purchase,
-            store: await this.storeService.getStore(purchase.storeKey),
+            business: await this.businessService.getBusiness(purchase.businessKey),
             filePath: this.fileUploadService.setFilePath(purchase.agreement, host)
         };
     }

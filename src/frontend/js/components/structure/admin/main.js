@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Routes, Route } from 'react-router-dom';
 import AppContext from '../../../appcontext';
-import VehiclesDashboard from './vehicles/dashboard';
+import VehiclesDashboard from '../../domains/admin/vehicle/dashboard';
+import VehiclesList from '../../domains/admin/vehicle/list'
+import VehiclesModify from '../../domains/admin/vehicle/modify';
+import BusinessesDashboard from '../../domains/admin/business/dashboard';
+import BusinessesList from '../../domains/admin/business/list';
 import VehiclesMenu from './leftmenu/vehiclesmenu';
 import PropertiesMenu from './leftmenu/propertiesmenu';
-import StoresMenu from './leftmenu/storesmenu';
-import VehiclesModify from './vehicles/modify';
-import VehiclesMain from './vehicles/main';
+import BusinessesMenu from './leftmenu/businessesmenu';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -19,7 +21,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
@@ -112,7 +114,7 @@ export default function Main() {
 						<List>
 							<ListItem button>
 								<ListItemIcon>
-									<DashboardIcon />
+									<MenuBookIcon />
 								</ListItemIcon>
 								<ListItemText primary='Main' />
 							</ListItem>
@@ -121,14 +123,16 @@ export default function Main() {
 							<Divider />
 							<PropertiesMenu />
 							<Divider />
-							<StoresMenu />
+							<BusinessesMenu />
 							<Divider />
 						</List>
 					</Drawer>
 					<div className={classes.appBarSpacer} />
 					<Routes>
 						<Route path='vehicles/dashboard' element={ <VehiclesDashboard /> } />
-						<Route path='vehicles/main' element={ <VehiclesMain /> } />
+						<Route path='vehicles/list' element={ <VehiclesList /> } />
+						<Route path='businesses/dashboard' element={ <BusinessesDashboard /> } />
+						<Route path='businesses/list' element={ <BusinessesList /> } />
 					</Routes>
 				</React.Fragment>
 			)}

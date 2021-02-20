@@ -2,9 +2,9 @@ import { Datetime } from '../utilities/Datetime';
 import { Key } from '../utilities/Key';
 
 /**
- * Store
+ * Business
  */
-export class Store {
+export class Business {
     key: Key;
     addressKey: Key;
     name: string;

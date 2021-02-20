@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
-import StoreIcon from '@material-ui/icons/Store';
+import BusinessIcon from '@material-ui/icons/Business';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import Button from '@material-ui/core/Button';
@@ -148,8 +148,8 @@ export default function Information() {
 						onChange={ handleChange }
 					>
 						<Tab label='Details' icon={<DirectionsCarIcon />} component={Link} to='details' />
-						<Tab label='Purchase' icon={<StoreIcon />} component={Link} to='purchase' />
-						<Tab label='Finance' icon={<AttachMoneyIcon />} component={Link} to='finance' disabled />
+						<Tab label='Purchase' icon={<BusinessIcon />} component={Link} to='purchase' />
+						<Tab label='Finance' icon={<AttachMoneyIcon />} component={Link} to='finance' />
 						<Tab label='Insurance' icon={<BeachAccessIcon />} component={Link} to='insurance' disabled />
 					</Tabs>
 				</AppBar>

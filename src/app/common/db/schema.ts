@@ -89,7 +89,7 @@ export const schema: Array<TableSchema> = [
         isBlob: false,
         columns: [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'storeKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'businessKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'image', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'name', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'finish', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
@@ -106,8 +106,8 @@ export const schema: Array<TableSchema> = [
         ]
     },
     {
-        collectionName: 'Store',
-        tableName: 'stores',
+        collectionName: 'Business',
+        tableName: 'businesses',
         isBlob: false,
         columns: [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
@@ -152,7 +152,7 @@ export const schema: Array<TableSchema> = [
         columns: [
             { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'vehicleKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
-            { name: 'storeKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'businessKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'odometer', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'deposit', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
             { name: 'downPayment', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
@@ -162,6 +162,58 @@ export const schema: Array<TableSchema> = [
             { name: 'agreement', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'purchaseType', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
             { name: 'purchased', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
+        ]
+    },
+    {
+        collectionName: 'VehicleFinance',
+        tableName: 'vehicle_finances',
+        isBlob: false,
+        columns: [
+            { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'vehicleKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'businessKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'accountNumber', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'originalLoan', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'currentPrincipal', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'paymentAmount', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'interestRate', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'term', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'originated', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
+        ]
+    },
+    {
+        collectionName: 'VehicleInsurance',
+        tableName: 'vehicle_insurances',
+        isBlob: false,
+        columns: [
+            { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'vehicles', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'agencyKey', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'policyNumber', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
+        ]
+    },
+    {
+        collectionName: 'VehicleInsuranceDetails',
+        tableName: 'vehicle_insurances_Details',
+        isBlob: false,
+        columns: [
+            { name: 'key', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'policyNumber', type: 'CHAR', shouldParse: false, hasPersistentColumn: false },
+            { name: 'bodilyInjuryPerson', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'bodilyInjuryIncident', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'uninsuredMotoristPerson', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'uninsuredMotoristIncident', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'collision', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'comprehensive', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'totalPremium', type: 'INTEGER', shouldParse: false, hasPersistentColumn: false },
+            { name: 'started', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
+            { name: 'ended', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'created', type: 'DATE', shouldParse: false, hasPersistentColumn: false },
             { name: 'modified', type: 'DATE', shouldParse: false, hasPersistentColumn: false }
         ]

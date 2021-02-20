@@ -14,7 +14,6 @@ export default function Details(props) {
 	const { key } = useParams();
 	const { ...other } = props;
 
-	// Needs to be implemented
 	const tableCells = {
 		condition: 'Condition',
 		year: 'Year',

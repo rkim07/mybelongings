@@ -4,12 +4,11 @@ import moment from 'moment';
 import AppContext from '../../../../appcontext';
 import { decimalFormatter } from '../../../../helpers/input';
 import { DropzoneArea } from 'material-ui-dropzone';
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import StoreIcon from '@material-ui/icons/Store';
-import EmojiTransportationIcon from '@material-ui/icons/EmojiTransportation';
+import BusinessIcon from '@material-ui/icons/Business';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -70,18 +69,18 @@ export default function Purchase(props) {
 	} = props;
 
 	const initialValues = {
-		stores: []
+		businesses: []
 	};
 
 	const [values, setValues] = useState(initialValues);
 
 	// Determine if user is an admin
 	useEffect(() => {
-		apis.getStoresByType('dealership').then(response => {
+		apis.getBusinessesByType('dealership').then(response => {
 			if (response.statusCode < 400) {
 				setValues(prevState => ({
 					...prevState,
-					stores: response.payload
+					businesses: response.payload
 				}));
 			}
 		});
@@ -115,25 +114,25 @@ export default function Purchase(props) {
 				<SelectValidator
 					fullWidth
 					variant='outlined'
-					label='Store'
-					name='storeKey'
-					value={ values.stores ? purchase.storeKey : '' }
+					label='Business'
+					name='businessKey'
+					value={ values.businesses ? purchase.businessKey : '' }
 					onChange={ handleChange }
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position="start">
-								<StoreIcon />
+								<BusinessIcon />
 							</InputAdornment>
 						)
 					}}
 				>
 					<MenuItem aria-label='None' value='' />
-					{ values.stores && values.stores.map((store) => (
+					{ values.businesses && values.businesses.map((business) => (
 						<MenuItem
-							key={ store.key }
-							value={ store.key }
+							key={ business.key }
+							value={ business.key }
 						>
-							{ store.customName }
+							{ business.customName }
 						</MenuItem>
 					))}
 				</SelectValidator>
@@ -142,7 +141,6 @@ export default function Purchase(props) {
 				<MuiPickersUtilsProvider utils={ DateFnsUtils }>
 					<KeyboardDatePicker
 						autoOk={ true }
-						disableToolbar
 						variant='inline'
 						label='Purchased date'
 						format='MM/dd/yyyy'
@@ -199,7 +197,7 @@ export default function Purchase(props) {
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position="start">
-								<EmojiTransportationIcon />
+								<AccessTimeIcon />
 							</InputAdornment>
 						)
 					}}

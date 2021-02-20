@@ -1,6 +1,6 @@
 import { Container, Inject, Service } from 'typedi';
 import { FileUploadService } from '../../shared/services/FileUploadService';
-import { StoreService } from '../../store/services/StoreService';
+import { BusinessService } from '../../business/services/BusinessService';
 import { PaintCollectionService } from './PaintCollectionService';
 import { HandleUpstreamError, Key, Paint } from '../../shared/models/models';
 
@@ -39,7 +39,7 @@ export class PaintService {
     private paintCollectionService: PaintCollectionService = Container.get(PaintCollectionService);
 
     @Inject()
-    private storeService: StoreService = Container.get(StoreService);
+    private businessService: BusinessService = Container.get(BusinessService);
 
     @Inject()
     private fileUploadService: FileUploadService = Container.get(FileUploadService);
@@ -104,7 +104,7 @@ export class PaintService {
     private async addDependencies(host, paint) {
         return {
             ...paint,
-            store: paint.storeKey ? await this.storeService.getStore(paint.storeKey, host) : {},
+            business: paint.businessKey ? await this.businessService.getBusiness(paint.businessKey, host) : {},
             imagePath: this.fileUploadService.setFilePath(host, paint.image)
         };
     }

@@ -5,6 +5,7 @@ import { decimalFormatter } from '../../../../helpers/input';
 import AppContext from '../../../../appcontext';
 import Details from './details';
 import Purchase from './purchase';
+import Finance from './finance';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Stepper from '@material-ui/core/Stepper';
@@ -12,6 +13,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import ReplayIcon from '@material-ui/icons/Replay';
 import SaveIcon from '@material-ui/icons/Save';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -77,7 +79,7 @@ export default function Modify(props) {
 			image: '',
 			imagePath: '',
 			purchase: {
-				storeKey: '',
+				businessKey: '',
 				odometer: 0,
 				deposit: 0,
 				downPayment: 0,
@@ -87,6 +89,16 @@ export default function Modify(props) {
 				agreement: '',
 				purchaseType: '',
 				purchased: new Date()
+			},
+			finance: {
+				businessKey: '',
+				accountNumber: '',
+				originalLoan: 0,
+				currentPrincipal: 0,
+				paymentAmount: 0,
+				interestRate: 0,
+				term: 60,
+				originated: new Date()
 			},
 			insurance: {}
 		},
@@ -141,6 +153,20 @@ export default function Modify(props) {
 				...values.vehicle,
 				purchase: {
 					...values.vehicle.purchase,
+					[name]: value
+				}
+			}
+		});
+	}
+
+	// Handle finance step changes
+	const handleFinanceChange = (name, value) => {
+		setValues({
+			...values,
+			vehicle: {
+				...values.vehicle,
+				finance: {
+					...values.vehicle.finance,
 					[name]: value
 				}
 			}
@@ -236,7 +262,7 @@ export default function Modify(props) {
 						<Step key='3'>
 							<StepLabel>Insurance information</StepLabel>
 						</Step>
-						</Stepper>
+					</Stepper>
 				)}
 				<ValidatorForm
 					onSubmit={ (e) => handleSubmit(e) }
@@ -246,7 +272,16 @@ export default function Modify(props) {
 					{ values.activeStep === steps ? (
 						<React.Fragment>
 							<Typography className={classes.instructions}>All steps completed</Typography>
-							<Button onClick={ handleReset }>Reset</Button>
+							<Button
+								fullWidth
+								size='small'
+								variant='contained'
+								className={classes.button}
+								startIcon={<ReplayIcon />}
+								onClick={ handleReset }
+							>
+								Reset
+							</Button>
 						</React.Fragment>
 					) : (
 						<React.Fragment>
@@ -262,7 +297,10 @@ export default function Modify(props) {
 										onHandleFileChange={ handleFileChange }
 										onHandlePurchaseChange={ handlePurchaseChange }
 									/>,
-									'2': <h1>Finance</h1>,
+									'2': <Finance
+										finance={ values.vehicle.finance }
+										onHandleFinanceChange={ handleFinanceChange }
+									/>,
 									'3': <h1>Insurance</h1>
 								}[values.activeStep]
 							}

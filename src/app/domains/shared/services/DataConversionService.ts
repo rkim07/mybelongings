@@ -6,10 +6,11 @@ import { addressMappingKeys } from '../../address/services/AddressService';
 import { paintMappingKeys} from '../../paint/services/PaintService';
 import { propertyMappingKeys} from '../../property/services/PropertyService';
 import { propertyAreaMappingKeys} from '../../property/services/PropertyAreaService';
-import { storeMappingKeys} from '../../store/services/StoreService';
+import { businessMappingKeys} from '../../business/services/BusinessService';
 import { userMappingKeys} from '../../user/services/UserService';
 import { vehicleMappingKeys } from '../../vehicle/services/VehicleService';
 import { vehiclePurchaseMappingKeys } from '../../vehicle/services/VehiclePurchaseService';
+import { vehicleFinanceMappingKeys } from '../../vehicle/services/VehicleFinanceService';
 import { vehicleApiMappingKeys } from '../../vehicle/services/VehicleApiService';
 
 @Service()
@@ -30,10 +31,11 @@ export class DataConversionService {
             paintMappingKeys,
             propertyMappingKeys,
             propertyAreaMappingKeys,
-            storeMappingKeys,
+            businessMappingKeys,
             userMappingKeys,
             vehicleMappingKeys,
             vehiclePurchaseMappingKeys,
+            vehicleFinanceMappingKeys,
             vehicleApiMappingKeys
         ];
     }
@@ -100,7 +102,6 @@ export class DataConversionService {
             switch(mappingType) {
                 case 'decimals':
                 case 'price':
-                case 'phone':
                     return Text.numberWithoutCommas(convertingValue);
                 case 'upperText':
                 case 'capitalizedText':
@@ -109,6 +110,8 @@ export class DataConversionService {
                     return Datetime.getUTCFormat(new Date(convertingValue));
                 case 'stringToNumber':
                     return Text.toInteger(convertingValue);
+                case 'phone':
+                    return Text.formatDBPhoneNumber(convertingValue);
                 default:
                     return convertingValue;
             }
@@ -141,7 +144,7 @@ export class DataConversionService {
      * @param path
      */
     public isReqRoute(path: string): boolean {
-        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,})|store-svc\/store(s?|s?\/[0-9a-zA-Z-]{1,}))$/;
+        const regex = /^\/(vehicle-svc\/vehicle(s?|s?\/[0-9a-zA-Z-]{1,})|property-svc\/propert(y?|ies?|ies?\/[0-9a-zA-Z-]{1,})|business-svc\/business(s?|s?\/[0-9a-zA-Z-]{1,}))$/;
         return regex.test(path);
     }
 
@@ -153,7 +156,7 @@ export class DataConversionService {
      * @param path
      */
     public isResRoute(path: string): boolean {
-        const regex = /^\/(=?vehicle-svc|property-svc|store-svc)/;
+        const regex = /^\/(=?vehicle-svc|property-svc|business-svc)/;
         return regex.test(path);
     }
 

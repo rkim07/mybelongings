@@ -54,8 +54,8 @@ export class VehicleCollectionService extends DatabaseCollectionService {
     /**
      * Update vehicle
      *
-     * @param vehicle
      * @param vehicleKey
+     * @param vehicle
      */
     public async update(vehicleKey: Key, vehicle: any): Promise<any> {
         await this.loadCollection();

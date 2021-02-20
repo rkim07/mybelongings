@@ -54,7 +54,7 @@ export class Vehicle {
 export class VehiclePurchase {
     key: Key;
     vehicleKey: Key;
-    storeKey: Key;
+    businessKey: Key;
     image: string;
     odometer: number;
     deposit: number;
@@ -75,7 +75,7 @@ export class VehiclePurchase {
      */
     constructor(data: {
         vehicleKey: Key;
-        storeKey: Key,
+        businessKey: Key,
         odometer: number,
         deposit: number,
         downPayment: number,
@@ -88,7 +88,7 @@ export class VehiclePurchase {
     }) {
         this.key = Key.generate();
         this.vehicleKey = data.vehicleKey;
-        this.storeKey = data.storeKey;
+        this.businessKey = data.businessKey;
         this.odometer = data.odometer;
         this.deposit = data.deposit;
         this.downPayment = data.downPayment;
@@ -98,6 +98,50 @@ export class VehiclePurchase {
         this.agreement = data.agreement;
         this.purchaseType = data.purchaseType;
         this.purchased = data.purchased;
+        this.modified = this.created = Datetime.getNow();
+    }
+}
+
+export class VehicleFinance {
+    key: Key;
+    vehicleKey: Key;
+    businessKey: Key;
+    accountNumber: string;
+    originalLoan: number;
+    currentPrincipal: number;
+    paymentAmount: number;
+    interestRate: number;
+    term: number;
+    originated: string;
+    created: string;
+    modified: string;
+
+    /**
+     * Constructor
+     *
+     * @param data
+     */
+    constructor(data: {
+        vehicleKey: Key;
+        businessKey: Key;
+        accountNumber: string;
+        originalLoan: number;
+        currentPrincipal: number;
+        paymentAmount: number;
+        interestRate: number;
+        term: number;
+        originated: string;
+    }) {
+        this.key = Key.generate();
+        this.vehicleKey = data.vehicleKey,
+        this.businessKey = data.businessKey,
+        this.accountNumber = data.accountNumber,
+        this.originalLoan = data.originalLoan,
+        this.currentPrincipal = data.currentPrincipal,
+        this.paymentAmount = data.paymentAmount,
+        this.interestRate = data.interestRate,
+        this.term = data.term,
+        this.originated = data.originated,
         this.modified = this.created = Datetime.getNow();
     }
 }
