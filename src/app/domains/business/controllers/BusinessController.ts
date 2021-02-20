@@ -15,7 +15,7 @@ export class BusinessController {
     /**
      * @swagger
      * paths:
-     *   /business-svc/business/{business_key}:
+     *   /business-svc/businesses/{business_key}:
      *     get:
      *       description: Fetch a specific business.
      *       tags:

@@ -42,7 +42,7 @@ export class AddressController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/addresss/:address_key')
+    @Get('/addressses/:address_key')
     public async getAddress(@Param('address_key') addressKey: string): Promise<any> {
         try {
             const address = await this.addressService.getAddress(addressKey);
@@ -277,7 +277,7 @@ export class AddressController {
      *             $ref: '#/definitions/ResponseError'
      */
     @HttpCode(204)
-    @Delete('/addresss/:address_key')
+    @Delete('/addressses/:address_key')
     public async deleteAddress(
         @Req() { requestor: { userKey }}: AuthorisedRequest,
         @Param('address_key') addressKey: string,
