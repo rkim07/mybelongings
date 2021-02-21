@@ -30,8 +30,8 @@ export const addressMappingKeys = {
       'state'
     ],
     phone: [
-        'landline',
-        'mobile'
+        'customlandline',
+        'customMobile'
     ]
 };
 
@@ -53,7 +53,7 @@ export class AddressService {
 
         const address = await this.addressCollectionService.findOne({ key: { $eq: addressKey }});
 
-        return address
+        return this.addFetchDependencies(address);
     }
 
     /**
@@ -66,7 +66,9 @@ export class AddressService {
             return [];
         }
 
-        return addresses;
+        const results = await Promise.all(addresses.map(async (address) => {
+            return this.addFetchDependencies(addresses);
+        }));
     }
 
     /**
@@ -84,8 +86,8 @@ export class AddressService {
         if (!addedAddress) {
             throw new HandleUpstreamError(ADDRESS_SERVICE_MESSAGES.ADDRESS_NOT_ADDED);
         }
-        
-        return addedAddress;
+
+        return this.addFetchDependencies(addedAddress);
     }
 
     /**
@@ -105,7 +107,7 @@ export class AddressService {
             throw new HandleUpstreamError(ADDRESS_SERVICE_MESSAGES.ADDRESS_NOT_UPDATED);
         }
 
-        return updatedaddress;
+        return this.addFetchDependencies(updatedaddress);
     }
 
     /**
@@ -126,6 +128,22 @@ export class AddressService {
 
         await this.addressCollectionService.removeByFieldValue('key', addressKey);
 
-        return address;
+        return this.addFetchDependencies(address);
+    }
+
+    /**
+     * Fetch dependencies when returning object.
+     * Minimize DB fetches
+     *
+     * @param host
+     * @param vehicle
+     * @private
+     */
+    private async addFetchDependencies(address: any): Promise<any> {
+        return {
+            ...address,
+            customMobile: address.mobile,
+            customLandline: address.landline
+        };
     }
 }

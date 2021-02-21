@@ -1,13 +1,13 @@
 import { NextFunction, Response } from 'express';
 import { Request } from '../domains/shared/interfaces/interfaces';
 import { Container } from 'typedi';
-import { DataConversionService } from '../domains/shared/services/DataConversionService';
+import { DataNormalizationService } from '../domains/shared/services/DataNormalizationService';
 import { VehicleApiConversionService } from '../domains/shared/services/VehicleApiConversionService';
 import { SystemMessageService } from '../domains/shared/services/SystemMessageService';
 import * as _ from 'lodash';
 import { logger } from '../common/logging';
 
-export namespace DataConversionMiddleware {
+export namespace DataNormalizationMiddleware {
 
     /**
      * Convert request body to DB
@@ -17,7 +17,7 @@ export namespace DataConversionMiddleware {
      * @param next
      */
     export function requestInterceptor(req: Request, res: Response, next: NextFunction) {
-        const dataConversionService = new DataConversionService('request');
+        const dataConversionService = new DataNormalizationService('request');
 
         try {
             if (dataConversionService.isReqRoute(req.url)) {
@@ -38,8 +38,8 @@ export namespace DataConversionMiddleware {
      * @param next
      */
     export function responseInterceptor(req: Request, res: Response, next: NextFunction) {
-        const dataConversionService = new DataConversionService('response');
-        const vehicleApiConversionService = new VehicleApiConversionService('response');
+        const dataConversionService = new DataNormalizationService('response');
+        const nhtsaApiConversionService = new VehicleApiConversionService('response');
         const systemMessageService: SystemMessageService = Container.get(SystemMessageService);
 
         try {
@@ -59,9 +59,9 @@ export namespace DataConversionMiddleware {
                 }
 
                 // Convert payload for API services
-                if (vehicleApiConversionService.isResApiRoute(req.url)) {
+                if (nhtsaApiConversionService.isResApiRoute(req.url)) {
                     if (parsedData.payload) {
-                        const apiParsedPayload = vehicleApiConversionService.process(parsedData.payload);
+                        const apiParsedPayload = nhtsaApiConversionService.process(parsedData.payload);
                         parsedData.payload = apiParsedPayload;
                     }
                 }

@@ -1,13 +1,22 @@
 import axios from 'axios';
 
 /**
- * Get API manufacturers
+ * Sync NHTSA API
  *
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
-export function getApiMfrs() {
+export function syncNhtsa() {
+	return axios.get(`/api-svc/nhtsa/sync`);
+}
+
+/**
+ * Get NHTSA manufacturers
+ *
+ * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
+ */
+export function getNhtsaMfrs() {
 	return axios
-		.get(`/vehicle-api-svc/manufacturers`)
+		.get(`/api-svc/nhtsa/manufacturers`)
 		.then(response => {
 			if (response.status < 400) {
 				return response.data;
@@ -21,14 +30,14 @@ export function getApiMfrs() {
 }
 
 /**
- * Get API models by manufacturer
+ * Get NHTSA models by manufacturer
  *
  * @param mfrKey
  * @returns {Promise<T | string | "rejected" | number | "fulfilled">}
  */
-export function getApiModelsByMfrKey(mfrKey) {
+export function getNhtsaModelsByMfrKey(mfrKey) {
 	return axios
-		.get(`/vehicle-api-svc/manufacturers/${mfrKey}/models`)
+		.get(`/api-svc/nhtsa/manufacturers/${mfrKey}/models`)
 		.then(response => {
 			if (response.status < 400) {
 				return response.data;

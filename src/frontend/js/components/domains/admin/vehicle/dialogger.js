@@ -67,7 +67,7 @@ const Dialogger = forwardRef((props, ref) => {
 						</React.Fragment>,
 					'delete':
 						<React.Fragment>
-							<DialogTitle id='alert-dialog-title'>{ 'Delete vehicle' }</DialogTitle>
+							<DialogTitle id='alert-dialog-title'>{ `Delete vehicle?` }</DialogTitle>
 							<DialogContent>
 								<DialogContentText id='alert-dialog-description'>
 									This action will permanently remove the vehicle from the database.  Do you want to continue?

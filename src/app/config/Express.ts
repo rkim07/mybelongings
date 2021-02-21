@@ -11,7 +11,7 @@ import * as stoppable from 'stoppable';
 import { Container } from 'typedi';
 import { AuthorizationMiddleware } from '../middleware/AuthorizationMiddleware';
 import { RequestorDecoratorMiddleware } from '../middleware/RequestDecoratorMiddleware';
-import { DataConversionMiddleware } from '../middleware/DataConversionMiddleware';
+import { DataNormalizationMiddleware } from '../middleware/DataNormalizationMiddleware';
 
 import { logger } from '../common/logging';
 
@@ -56,8 +56,8 @@ export class ExpressConfig {
         });
 
         this.app.use(
-            DataConversionMiddleware.requestInterceptor,
-            DataConversionMiddleware.responseInterceptor
+            DataNormalizationMiddleware.requestInterceptor,
+            DataNormalizationMiddleware.responseInterceptor
         );
 
         SwaggerExpressMiddleware('./spec.json', this.app, (err, middleware: SwaggerExpressMiddleware.SwaggerMiddleware) => {

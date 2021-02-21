@@ -1,20 +1,20 @@
 import { Get, JsonController, Param } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 import { HandleUpstreamError, ResponseError } from '../../shared/models/models';
-import { VEHICLE_API_SERVICE_MESSAGES, VehicleApiService } from '../services/VehicleApiService';
+import { API_SERVICE_MESSAGES, ApiService } from '../services/ApiService';
 
-const DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
+const DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE = 'An unexpected error occurred in the vehicle service.';
 
-@JsonController('/vehicle-api-svc')
-export class VehicleApiController {
+@JsonController('/api-svc')
+export class ApiController {
 
     @Inject()
-    private apiVehicleService: VehicleApiService = Container.get(VehicleApiService);
+    private apiService: ApiService = Container.get(ApiService);
 
     /**
      * @swagger
      * paths:
-     *   /vehicle-api-svc/sync/nhtsa:
+     *   /api-svc/nhtsa/sync:
      *     get:
      *       description: Sync with NHTSA API
      *       tags:
@@ -36,28 +36,28 @@ export class VehicleApiController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/sync/nhtsa')
+    @Get('/nhtsa/sync')
     public async syncNhtsaApi(): Promise<any> {
         try {
-            const mfrs = await this.apiVehicleService.syncNhtsaApi();
+            const mfrs = await this.apiService.syncNhtsaApi();
 
             return {
                 payload: mfrs,
                 statusCode: 200,
-                successCode: 'VEHICLE_API_SERVICE_MESSAGES.SYNC'
+                successCode: 'API_SERVICE_MESSAGES.NHTSA_SYNC'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_API_SERVICE_MESSAGES.MFR_KEY_EMPTY:
+                    case API_SERVICE_MESSAGES.NHTSA_MFR_KEY_EMPTY:
                         return new ResponseError(500, err.key, '');
-                    case VEHICLE_API_SERVICE_MESSAGES.VEHICLE_MFRS_NOT_FOUND:
+                    case API_SERVICE_MESSAGES.NHTSA_MFRS_NOT_FOUND:
                         return new ResponseError(500, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                        return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -65,7 +65,7 @@ export class VehicleApiController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-api-svc/manufacturers:
+     *   /api-svc/nhtsa/manufacturers:
      *     get:
      *       description: Retrieve manufacturers
      *       tags:
@@ -87,26 +87,26 @@ export class VehicleApiController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/manufacturers')
+    @Get('/nhtsa/manufacturers')
     public async getManufacturers(): Promise<any> {
         try {
-            const mfrs = await this.apiVehicleService.getApiMfrs();
+            const mfrs = await this.apiService.getNhtsaMfrs();
 
             return {
                 payload: mfrs,
                 statusCode: 200,
-                successCode: 'VEHICLE_API_SERVICE_MESSAGES.FETCHED_MFRS'
+                successCode: 'API_SERVICE_MESSAGES.FETCHED_NHTSA_MFRS'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_API_SERVICE_MESSAGES.VEHICLE_MFRS_NOT_FOUND:
+                    case API_SERVICE_MESSAGES.NHTSA_MFRS_NOT_FOUND:
                         return new ResponseError(500, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                        return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
             }
         }
     }
@@ -114,7 +114,7 @@ export class VehicleApiController {
     /**
      * @swagger
      * paths:
-     *   /vehicle-api-svc/manufacturers/{mfr_key}/models:
+     *   /api-svc/nhtsa/manufacturers/{mfr_key}/models:
      *     get:
      *       description: Fetch all models by manufacturer
      *       tags:
@@ -145,28 +145,28 @@ export class VehicleApiController {
      *           schema:
      *             $ref: '#/definitions/ResponseError'
      */
-    @Get('/manufacturers/:mfr_key/models')
+    @Get('/nhtsa/manufacturers/:mfr_key/models')
     public async getManufacturerModels(@Param('mfr_key') mfrKey: string): Promise<any> {
         try {
-            const models = await this.apiVehicleService.getApiModelsByMfrKey(mfrKey);
+            const models = await this.apiService.getNhtsaModelsByMfrKey(mfrKey);
 
             return {
                 payload: models,
                 statusCode: 200,
-                successCode: 'VEHICLE_API_SERVICE_MESSAGES.FETCHED_MODELS'
+                successCode: 'API_SERVICE_MESSAGES.FETCHED_NHTSA_MODELS'
             };
         } catch (err) {
             if (err instanceof HandleUpstreamError) {
                 switch(err.key) {
-                    case VEHICLE_API_SERVICE_MESSAGES.MFR_KEY_EMPTY:
+                    case API_SERVICE_MESSAGES.NHTSA_MFR_KEY_EMPTY:
                         return new ResponseError(500, err.key, '');
-                    case VEHICLE_API_SERVICE_MESSAGES.VEHICLE_MODELS_NOT_FOUND:
+                    case API_SERVICE_MESSAGES.NHTSA_MODELS_NOT_FOUND:
                         return new ResponseError(404, err.key, '');
                     default:
-                        return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                        return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
                 }
             } else {
-                return new ResponseError(500, 'VEHICLE_API_SERVICE_MESSAGES', DEFAULT_VEHICLE_API_SERVICE_ERROR_MESSAGE);
+                return new ResponseError(500, 'API_SERVICE_MESSAGES', DEFAULT_NHTSA_API_SERVICE_ERROR_MESSAGE);
             }
         }
     }

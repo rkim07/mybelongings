@@ -88,7 +88,7 @@ export default function Details(props) {
 
 	// Fetch manufacturers
 	useEffect(() => {
-		apis.getApiMfrs().then(response => {
+		apis.getNhtsaMfrs().then(response => {
 			setValues(prevState => ({
 				...prevState,
 				manufacturers: response.payload
@@ -99,7 +99,7 @@ export default function Details(props) {
 	// Fetch models when a particular manufacturer is selected
 	useEffect(() => {
 		if (vehicle.mfrKey !== '') {
-			apis.getApiModelsByMfrKey(vehicle.mfrKey).then(response => {
+			apis.getNhtsaModelsByMfrKey(vehicle.mfrKey).then(response => {
 				setValues(prevState => ({
 					...prevState,
 					models: response.payload

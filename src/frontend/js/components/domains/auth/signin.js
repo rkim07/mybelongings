@@ -87,12 +87,12 @@ export default function SignIn(props) {
 
 	return (
 		<Container component='main' maxWidth='xs'>
-			{ (values.submitted && values.statusType === 'success') && (<Navigate to={ redirectUrl } />)}
-			{ (values.submitted && values.statusType === 'error') && (
+			{ (values.submitted && values.statusType === 'success') && <Navigate to={ redirectUrl } />}
+			{ (values.submitted && values.statusType === 'error') &&
 				<Alert variant='filled' severity='error'>
 					{ values.message }
 				</Alert>
-			)}
+			}
 			<div className={classes.root}>
 				<AuthHeader title='Sign In' />
 				<ValidatorForm

@@ -1,9 +1,9 @@
 import { activatePasswordReset, isAdmin, isSignedIn, signin, signout, resetPassword, signup } from "./auth";
+import { getNhtsaMfrs, getNhtsaModelsByMfrKey, syncNhtsa } from './nhtsa';
 import { uploadFile } from './upload';
 import { getVehiclesByUser, addVehicle, deleteVehicle, getVehicle, getVehicles, updateVehicle } from './vehicles';
-import { deleteBusiness, getBusiness, getBusinesses, getBusinessesByType } from './businesses';
-import { getApiMfrs, getApiModelsByMfrKey } from './vehicleapi';
 import { getUserProperties } from './properties';
+import { deleteBusiness, getBusiness, getBusinesses, getBusinessesByType } from './businesses';
 
 const globalApis = {
 	signup,
@@ -14,8 +14,9 @@ const globalApis = {
 	activatePasswordReset,
 	resetPassword,
 	uploadFile,
-	getApiMfrs,
-	getApiModelsByMfrKey,
+	syncNhtsa,
+	getNhtsaMfrs,
+	getNhtsaModelsByMfrKey,
 	getVehiclesByUser,
 	getVehicle,
 	getVehicles,

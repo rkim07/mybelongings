@@ -4,7 +4,7 @@ import { Datetime } from '../../../shared/models/utilities/Datetime';
 import { DatabaseCollectionService } from '../../../shared/services/DatabaseCollectionService';
 
 @Service()
-export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionService {
+export class NhtsaMfrsCollectionService extends DatabaseCollectionService {
 
     /**
      * Constructor
@@ -14,9 +14,9 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
     }
 
     /**
-     * Get all API manufacturers
+     * Get all NHTSA manufacturers
      */
-    public async getApiMfrs(): Promise<any> {
+    public async getNhtsaMfrs(): Promise<any> {
         await this.loadCollection();
 
         return this.collection.chain()
@@ -26,7 +26,7 @@ export class NhtsaApiVehicleMfrCollectionService extends DatabaseCollectionServi
     }
 
     /**
-     * Stepper or update API manufacturer
+     * Update NHTSA manufacturer
      *
      * @param mfr
      */

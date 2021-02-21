@@ -11,10 +11,10 @@ import { userMappingKeys} from '../../user/services/UserService';
 import { vehicleMappingKeys } from '../../vehicle/services/VehicleService';
 import { vehiclePurchaseMappingKeys } from '../../vehicle/services/VehiclePurchaseService';
 import { vehicleFinanceMappingKeys } from '../../vehicle/services/VehicleFinanceService';
-import { vehicleApiMappingKeys } from '../../vehicle/services/VehicleApiService';
+import { nhtsaApiMappingKeys } from '../../api/services/ApiService';
 
 @Service()
-export class DataConversionService {
+export class DataNormalizationService {
 
     method: string;
     keyMappers: Array<object>;
@@ -36,7 +36,7 @@ export class DataConversionService {
             vehicleMappingKeys,
             vehiclePurchaseMappingKeys,
             vehicleFinanceMappingKeys,
-            vehicleApiMappingKeys
+            nhtsaApiMappingKeys
         ];
     }
 

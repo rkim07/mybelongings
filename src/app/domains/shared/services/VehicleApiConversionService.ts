@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { XML } from 'sxml';
 import { Container, Inject, Service } from 'typedi';
-import { VehicleApiService } from '../../vehicle/services/VehicleApiService';
+import { ApiService } from '../../api/services/ApiService';
 import { NhtsaApiVehicleMfr } from '../models/domains/Vehicle';
 import { Datetime } from '../models/utilities/Datetime';
 import { Text } from '../models/utilities/Text';
@@ -11,7 +11,7 @@ import decode_value = XML.decode_value;
 export class VehicleApiConversionService {
 
     @Inject()
-    private vehicleApiService: VehicleApiService = Container.get(VehicleApiService);
+    private apiService: ApiService = Container.get(ApiService);
 
     method: string;
 
@@ -56,7 +56,7 @@ export class VehicleApiConversionService {
         const clonedObj = { ...obj };
 
         _.forIn(obj, (value, key) => {
-            const filterClass = this.vehicleApiService.getFilterClass(obj.mfrName);
+            const filterClass = this.apiService.getFilterClass(obj.mfrName);
 
             switch (key) {
                 case 'key':
@@ -82,7 +82,7 @@ export class VehicleApiConversionService {
      * @param path
      */
     public isResApiRoute(path): boolean {
-        const regex = /^\/(=?vehicle-api-svc)/;
+        const regex = /^\/(=?api-svc)/;
         return regex.test(path);
     }
 }

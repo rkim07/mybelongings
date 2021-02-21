@@ -41,7 +41,7 @@ class Add extends React.Component
 	 * After component is mounted
 	 */
 	componentDidMount() {
-		this.props.getApiMfrs();
+		this.props.getNhtsaMfrs();
 	}
 
 	onMfgHandleChange = (property) => {

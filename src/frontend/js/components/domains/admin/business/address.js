@@ -12,6 +12,7 @@ import WallpaperIcon from '@material-ui/icons/Wallpaper';
 import LocationCityIcon from '@material-ui/icons/LocationCity';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MapIcon from '@material-ui/icons/Map';
+import ExploreIcon from '@material-ui/icons/Explore';
 import PublicIcon from '@material-ui/icons/Public';
 import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { makeStyles } from '@material-ui/core/styles';

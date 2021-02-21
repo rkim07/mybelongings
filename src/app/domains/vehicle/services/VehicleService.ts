@@ -3,7 +3,7 @@ import { Container, Inject } from 'typedi';
 import { Service } from 'typedi';
 import { Code, HandleUpstreamError, Key, Vehicle } from '../../shared/models/models';
 import { FileUploadService } from '../../shared/services/FileUploadService';
-import { VehicleApiService } from './VehicleApiService';
+import { ApiService } from '../../api/services/ApiService';
 import { VehiclePurchaseService } from './VehiclePurchaseService';
 import { VehicleFinanceService } from './VehicleFinanceService';
 import { VehicleCollectionService } from './collections/VehicleCollectionService';
@@ -54,7 +54,7 @@ export class VehicleService {
     private vehicleCollectionService: VehicleCollectionService = Container.get(VehicleCollectionService);
 
     @Inject()
-    private vehicleApiService: VehicleApiService = Container.get(VehicleApiService);
+    private apiService: ApiService = Container.get(ApiService);
 
     @Inject()
     private vehiclePurchaseService: VehiclePurchaseService = Container.get(VehiclePurchaseService);
@@ -238,8 +238,8 @@ export class VehicleService {
      * @private
      */
     private async addFetchDependencies(vehicle: any, host?: string): Promise<any> {
-        const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
-        const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
+        const mfr = await this.apiService.getNhtsaMfr(vehicle.mfrKey);
+        const model = await this.apiService.getNhtsaModel(vehicle.modelKey);
         const purchase = await this.vehiclePurchaseService.getPurchaseByVehicle(vehicle.key, host);
         const finance = await this.vehicleFinanceService.getFinanceByVehicle(vehicle.key, host);
         //const insurance = await this.insuranceService.getInsuranceByVehicle(vehicle.key);
@@ -267,8 +267,8 @@ export class VehicleService {
      * @private
      */
     private async addCrudDependecies(vehicle: any, purchase: any, finance: any, insurance: any, host?: string): Promise<any> {
-        const mfr = await this.vehicleApiService.getApiMfr(vehicle.mfrKey);
-        const model = await this.vehicleApiService.getApiModel(vehicle.modelKey);
+        const mfr = await this.apiService.getNhtsaMfr(vehicle.mfrKey);
+        const model = await this.apiService.getNhtsaModel(vehicle.modelKey);
 
         return {
             ...vehicle,

@@ -59,6 +59,17 @@ export class SystemMessageService {
 
         const messages = {
             auth: {
+                nhtsaApi: {
+                    success: {
+                        NHTSA_SYNC: 'Finished sync successfully.',
+                        FETCHED_NHTSA_MFRS: 'Successfully retrieved all manufactures.',
+                        FETCHED_NHTSA_MODELS: 'Successfully retrieved all models for a particular manufacturer.'
+                    },
+                    error: {
+                        NHTSA_MFRS_NOT_FOUND: 'No manufacturers were found for sync.',
+                        NHTSA_MODELS_NOT_FOUND: 'No models for this particular manufacturer were found.'
+                    }
+                },
                 success: {
                     LOGIN: 'User loggen in.',
                     SIGNUP: 'You have successfully submitted all your information. Please check your email in order to finish setting up your account.',
@@ -103,17 +114,6 @@ export class SystemMessageService {
                     ADDED: 'Vehicle purchase information successfully added.'
                 },
                 error: {
-                }
-            },
-            vehicleApi: {
-                success: {
-                    SYNC: 'Finished sync successfully.',
-                    FETCHED_MFRS: 'Successfully retrieved all manufactures.',
-                    FETCHED_MODELS: 'Successfully retrieved all models for a particular manufacturer.'
-                },
-                error: {
-                    VEHICLE_MFRS_NOT_FOUND: 'No manufacturers were found for sync.',
-                    VEHICLE_MODELS_NOT_FOUND: 'No models for this particular manufacturer were found.'
                 }
             },
             business: {

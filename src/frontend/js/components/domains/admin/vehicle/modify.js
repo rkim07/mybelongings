@@ -248,7 +248,7 @@ export default function Modify(props) {
 						</Typography>
 					</Grid>
 				</Grid>
-				{ !vehicleKey && (
+				{ !vehicleKey &&
 					<Stepper activeStep={values.activeStep} alternativeLabel>
 						<Step key='0'>
 							<StepLabel>Vehicle information</StepLabel>
@@ -263,7 +263,7 @@ export default function Modify(props) {
 							<StepLabel>Insurance information</StepLabel>
 						</Step>
 					</Stepper>
-				)}
+				}
 				<ValidatorForm
 					onSubmit={ (e) => handleSubmit(e) }
 					className={classes.form}

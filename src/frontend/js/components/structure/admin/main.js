@@ -8,6 +8,8 @@ import VehiclesModify from '../../domains/admin/vehicle/modify';
 import PropertiesDashboard from '../../domains/admin/property/dashboard';
 import BusinessesDashboard from '../../domains/admin/business/dashboard';
 import BusinessesList from '../../domains/admin/business/list';
+import ApiDashboard from '../../domains/admin/api/dashboard';
+import ApiNhtsaSync from '../../domains/admin/api/nhtsasync';
 import VehiclesMenu from './leftmenu/vehiclesmenu';
 import PropertiesMenu from './leftmenu/propertiesmenu';
 import BusinessesMenu from './leftmenu/businessesmenu';
@@ -104,7 +106,7 @@ export default function Main() {
 
 	return (
 		<div className={classes.root}>
-			{ values.showAdmin && (
+			{ values.showAdmin &&
 				<React.Fragment>
 					<Drawer
 						variant='permanent'
@@ -139,9 +141,11 @@ export default function Main() {
 						<Route path='properties/dashboard' element={ <PropertiesDashboard /> } />
 						<Route path='businesses/dashboard' element={ <BusinessesDashboard /> } />
 						<Route path='businesses/list' element={ <BusinessesList /> } />
+						<Route path='apis/dashboard' element={ <ApiDashboard /> } />
+						<Route path='apis/nhtsa/sync' element={ <ApiNhtsaSync /> } />
 					</Routes>
 				</React.Fragment>
-			)}
+			}
 		</div>
 	)
 }

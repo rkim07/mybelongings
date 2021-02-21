@@ -62,7 +62,7 @@ export default function ApiMenu() {
 				<ListItemIcon>
 					<ComputerIcon />
 				</ListItemIcon>
-				<ListItemText primary='Api' />
+				<ListItemText primary='API' />
 				{ values.openApiSubMenu ? <ExpandLess /> : <ExpandMore /> }
 			</ListItem>
 			<Collapse in={ values.openApiSubMenu } timeout='auto' unmountOnExit>
@@ -82,7 +82,7 @@ export default function ApiMenu() {
 						button
 						className={classes.nested}
 						component={ Link }
-						to='apis/sync'
+						to='apis/nhtsa/sync'
 					>
 						<ListItemIcon>
 							<SyncIcon />

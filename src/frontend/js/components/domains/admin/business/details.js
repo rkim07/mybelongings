@@ -71,8 +71,8 @@ export default function Details(props) {
 	} = props;
 
 	const initialValues = {
-		landlineTextmask: business.landline ? business.landline : '(   )    -    ',
-		mobileTextmask: business.mobile ? business.mobile : '(   )    -    '
+		landlineTextmask: '(   )    -    ',
+		mobileTextmask: '(   )    -    '
 	}
 	const [values, setValues] = React.useState(initialValues);
 
@@ -151,16 +151,16 @@ export default function Details(props) {
 			<Grid item xs={12} sm={6}>
 				<InputLabel>Landline number</InputLabel>
 				<Input
-					value={ values.landlineTextmask }
+					value={ business.landlineTextmask }
 					onChange={ handleChange }
 					name='landline'
-					inputComponent={ TextMaskCustom }
+					inputComponent={ TextMaskCustom(business.landlineTextmask) }
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6}>
 				<InputLabel>Mobile number</InputLabel>
 				<Input
-					value={ values.mobileTextmask }
+					value={ business.mobileTextmask }
 					onChange={ handleChange }
 					name='mobile'
 					inputComponent={ TextMaskCustom }
@@ -200,7 +200,7 @@ export default function Details(props) {
 					}}
 				/>
 			</Grid>
-			{business.notes && (
+			{business.notes &&
 				<Grid item xs={12}>
 					<InputLabel>Notes</InputLabel>
 					<TextareaAutosize
@@ -209,7 +209,7 @@ export default function Details(props) {
 						placeholder={business.notes}
 						onChange={handleChange}
 					/>
-				</Grid>)
+				</Grid>
 			}
 		</Grid>
 	)
